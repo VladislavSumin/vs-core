@@ -4,7 +4,7 @@ plugins {
     id("empty_plugin")
 }
 
-group = "org.example"
+group = "ru.vs"
 version = "1.0-SNAPSHOT"
 
 

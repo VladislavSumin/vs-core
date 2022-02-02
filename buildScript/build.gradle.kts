@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation(coreLibs.gradlePlugins.kotlin.core)
 }
 
 java {

@@ -1,0 +1,129 @@
+[versions]
+kotlin-core = "1.6.10"
+#ksp = "1.6.10-1.0.2"
+kotlin-coroutines = "1.6.0"
+#kotlin-serialization = "1.3.2"
+#sqldelight = "1.5.3"
+#kotlinpoet = "1.10.2"
+#decompose = "0.5.0"
+#moko-resources = "0.18.0"
+#multiplatformSettings="0.8.1"
+#
+#ktor = "1.6.7"
+#kodein = "7.10.0"
+#
+#logging-kermit = "1.0.3"
+#logging-log4j = "2.17.1"
+#logging-slf4j = "1.7.35"
+#
+#gradlePlugins-checkUpdates = "0.39.0"
+#gradlePlugins-buildConfig = "3.0.3"
+#gradlePlugins-android = "7.0.3"
+#gradlePlugins-detekt = "1.19.0"
+#
+#android-core = "1.7.0"
+#android-datastore = "1.0.0"
+#android-compose = "1.1.0-rc01"
+#android-composeCompiler = "1.1.0-rc02" # TODO убрать когда выйдет новая версия
+#android-activity-compose = "1.4.0"
+#android-lifecycle = "2.4.0"
+#android-navigation = "2.4.0-rc01"
+#android-accompanist = "0.22.0-rc"
+#
+#jb-compose = "1.0.1"
+#
+#testing-junit5-core = "5.8.2"
+#testing-junit5-platformSuite = "1.8.2"
+#testing-mockito-core = "4.3.1"
+#testing-mockito-kotlin = "4.0.0"
+#testing-turbine = "0.7.0"
+
+[libraries]
+# Plugins
+gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
+#gradlePlugins-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+#gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
+#gradlePlugins-jb-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jb-compose" }
+#gradlePlugins-sqldelight = { module = "com.squareup.sqldelight:gradle-plugin", version.ref = "sqldelight" }
+#gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradlePlugins-checkUpdates" }
+#gradlePlugins-buildConfig = { module = "com.github.gmazzo:gradle-buildconfig-plugin", version.ref = "gradlePlugins-buildConfig" }
+#gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
+#gradlePlugins-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
+#gradlePlugins-moko-resources = { module = "dev.icerock.moko:resources-generator", version.ref = "moko-resources" }
+
+# Kotlin
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+#kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+#kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }
+#kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+#
+## Ktor
+#ktor-cio = { module = "io.ktor:ktor-http-cio", version.ref = "ktor" }
+#ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+#ktor-server-serialization = { module = "io.ktor:ktor-serialization", version.ref = "ktor" }
+#ktor-server-websocket = { module = "io.ktor:ktor-websockets", version.ref = "ktor" }
+#ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+#ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+#ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+#ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+#ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
+#ktor-client-websocket = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+#
+#
+## Logging
+#logging-kermit = { module = "co.touchlab:kermit", version.ref = "logging-kermit" }
+#logging-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "logging-log4j" }
+#logging-log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "logging-log4j" }
+#logging-log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "logging-log4j" }
+#logging-slf4j = { module = "org.slf4j:slf4j-api", version.ref = "logging-slf4j" }
+#
+## Kodein
+#kodein-core = { module = "org.kodein.di:kodein-di", version.ref = "kodein" }
+#kodein-compose = { module = "org.kodein.di:kodein-di-framework-compose", version.ref = "kodein" }
+#
+## Sqldelight
+#sqldelight-sqlite = { module = "com.squareup.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+#sqldelight-android = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqldelight" }
+#sqldelight-coroutines = { module = "com.squareup.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+#
+## MultiplatformSettings
+#multiplatformSettings-core = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
+#
+## Decompose
+#decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+#decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "decompose" }
+#decompose-android = { module = "com.arkivanov.decompose:extensions-android", version.ref = "decompose" }
+#
+## Android Compose
+#android-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "android-compose" }
+#android-compose-material = { module = "androidx.compose.material:material", version.ref = "android-compose" }
+#android-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "android-compose" }
+#android-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "android-compose" }
+#android-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "android-compose" }
+## Other Android
+#android-core = { module = "androidx.core:core-ktx", version.ref = "android-core" }
+#android-datastore-android = { module = "androidx.datastore:datastore", version.ref = "android-datastore" }
+#android-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "android-datastore" }
+#android-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "android-activity-compose" }
+#android-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "android-lifecycle" }
+#android-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "android-lifecycle" }
+#android-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "android-navigation" }
+#android-accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "android-accompanist" }
+#android-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "android-accompanist" }
+#
+## Other
+#kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
+#kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
+#ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+#moko-resources-core = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
+#moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko-resources" }
+#
+## Testing
+#testing-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "testing-junit5-core" }
+#testing-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "testing-junit5-core" }
+#testing-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "testing-junit5-core" }
+#testing-jupiter-platformSuite = { module = "org.junit.platform:junit-platform-suite", version.ref = "testing-junit5-platformSuite" }
+#testing-mockito-core = { module = "org.mockito:mockito-core", version.ref = "testing-mockito-core" }
+#testing-mockito-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "testing-mockito-core" }
+#testing-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "testing-mockito-kotlin" }
+#testing-turbine = { module = "app.cash.turbine:turbine", version.ref = "testing-turbine" }

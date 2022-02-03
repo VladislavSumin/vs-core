@@ -1,3 +1,7 @@
+# Available libs
+
+* [coroutines](docs/coroutines.md)
+
 # Installation
 
 ## Plugin installation

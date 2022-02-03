@@ -1,5 +1,5 @@
 # Available libs
-
+* [conventions](docs/conventions.md)
 * [coroutines](docs/coroutines.md)
 
 # Installation

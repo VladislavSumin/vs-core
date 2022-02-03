@@ -1,7 +1,7 @@
 import ru.vs.build_script.printHelloBuildScript
 
 plugins {
-    id("empty_plugin")
+    id("ru.vs.empty_plugin")
 }
 
 group = "ru.vs"

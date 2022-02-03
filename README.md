@@ -24,4 +24,15 @@ pluginManagement {
 
 ## Library installation
 
-TODO
+```kotlin
+// settings.gradle.kts
+
+// For work as project
+includeBuild("../vs-core")
+
+// OR
+// For work as library
+repositories {
+    mavenLocal()
+}
+```

@@ -16,9 +16,9 @@ kotlin-coroutines = "1.6.0"
 #logging-log4j = "2.17.1"
 #logging-slf4j = "1.7.35"
 #
+gradlePlugins-android = "7.0.3"
 #gradlePlugins-checkUpdates = "0.39.0"
 #gradlePlugins-buildConfig = "3.0.3"
-#gradlePlugins-android = "7.0.3"
 #gradlePlugins-detekt = "1.19.0"
 #
 #android-core = "1.7.0"
@@ -42,7 +42,7 @@ kotlin-coroutines = "1.6.0"
 # Plugins
 gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
 #gradlePlugins-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
-#gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
+gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
 #gradlePlugins-jb-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jb-compose" }
 #gradlePlugins-sqldelight = { module = "com.squareup.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 #gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradlePlugins-checkUpdates" }

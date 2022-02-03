@@ -9,6 +9,7 @@ version = "0.1.0"
 
 dependencies {
     implementation(coreLibs.gradlePlugins.kotlin.core)
+    implementation(coreLibs.gradlePlugins.android)
 }
 
 java {

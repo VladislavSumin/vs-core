@@ -2,7 +2,7 @@
 @file:Suppress("UnstableApiUsage")
 
 pluginManagement {
-    includeBuild("buildScript")
+    includeBuild("build-script")
 
     repositories {
         gradlePluginPortal()

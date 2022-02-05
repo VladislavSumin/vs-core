@@ -32,7 +32,10 @@ rootProject.name = "vs-core"
 include(
     ":compose",
     ":coroutines",
+    ":decompose",
     ":di",
     ":logging",
     ":logging-slf4j",
+    ":navigation",
+    ":uikit",
 )

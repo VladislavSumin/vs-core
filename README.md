@@ -2,8 +2,11 @@
 * [compose](docs/compose.md)
 * [conventions](docs/conventions.md)
 * [coroutines](docs/coroutines.md)
+* [decompose](docs/decompose.md)
 * [di](docs/di.md)
 * [logging](docs/logging.md)
+* [navigation](docs/navigation.md)
+* [uikit](docs/uikit.md)
 
 # Installation
 

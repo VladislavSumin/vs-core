@@ -29,4 +29,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "vs-core"
 
-include(":coroutines")
+include(
+    ":coroutines",
+    ":di",
+)

@@ -1,4 +1,4 @@
-package ru.vs.iot.logging
+package ru.vs.core.logging
 
 import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Severity

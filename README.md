@@ -1,4 +1,5 @@
 # Available libs
+* [compose](docs/compose.md)
 * [conventions](docs/conventions.md)
 * [coroutines](docs/coroutines.md)
 * [di](docs/di.md)

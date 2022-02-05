@@ -30,6 +30,7 @@ dependencyResolutionManagement {
 rootProject.name = "vs-core"
 
 include(
+    ":compose",
     ":coroutines",
     ":di",
     ":logging",

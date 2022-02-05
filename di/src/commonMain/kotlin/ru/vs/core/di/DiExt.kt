@@ -1,4 +1,4 @@
-package ru.vs.iot.di
+package ru.vs.core.di
 
 import org.kodein.di.DirectDIAware
 import org.kodein.di.instance

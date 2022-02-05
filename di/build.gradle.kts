@@ -10,10 +10,5 @@ kotlin {
                 api(coreLibs.kodein.core)
             }
         }
-        named("androidMain") {
-            dependencies {
-                api(coreLibs.kodein.compose)
-            }
-        }
     }
 }

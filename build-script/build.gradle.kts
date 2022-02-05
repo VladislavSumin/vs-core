@@ -9,7 +9,9 @@ version = "0.1.0"
 
 dependencies {
     implementation(coreLibs.gradlePlugins.kotlin.core)
+    implementation(coreLibs.gradlePlugins.kotlin.serialization)
     implementation(coreLibs.gradlePlugins.android)
+    implementation(coreLibs.gradlePlugins.jb.compose)
 }
 
 java {

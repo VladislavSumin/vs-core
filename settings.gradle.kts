@@ -32,4 +32,6 @@ rootProject.name = "vs-core"
 include(
     ":coroutines",
     ":di",
+    ":logging",
+    ":logging-slf4j",
 )

@@ -1,6 +1,8 @@
 # Available libs
 * [conventions](docs/conventions.md)
 * [coroutines](docs/coroutines.md)
+* [di](docs/di.md)
+* [logging](docs/logging.md)
 
 # Installation
 

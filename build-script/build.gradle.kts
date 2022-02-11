@@ -8,10 +8,11 @@ group = "ru.vs"
 version = "0.1.0"
 
 dependencies {
-    implementation(coreLibs.gradlePlugins.kotlin.core)
-    implementation(coreLibs.gradlePlugins.kotlin.serialization)
-    implementation(coreLibs.gradlePlugins.android)
-    implementation(coreLibs.gradlePlugins.jb.compose)
+    api(coreLibs.gradlePlugins.kotlin.core)
+    api(coreLibs.gradlePlugins.kotlin.serialization)
+    api(coreLibs.gradlePlugins.android)
+    api(coreLibs.gradlePlugins.jb.compose)
+    api(coreLibs.gradlePlugins.checkUpdates)
 }
 
 java {

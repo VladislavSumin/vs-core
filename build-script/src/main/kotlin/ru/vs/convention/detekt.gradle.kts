@@ -29,7 +29,11 @@ tasks.withType<Detekt>().configureEach {
 
 // Исправляем путь к файлам только для дефолтных detekt тасок
 tasks.named<Detekt>("detekt").configure {
-    source = fileTree(project.projectDir.resolve("src"))
+    source = fileTree(project.projectDir) {
+        include("src/**/*")
+        include("build.gradle.kts")
+        include("settings.gradle.kts")
+    }
 }
 
 // TODO поправить костыль

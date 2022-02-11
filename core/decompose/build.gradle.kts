@@ -13,8 +13,8 @@ kotlin {
 
                 api(coreLibs.kodein.compose)
 
-                implementation(project(":compose"))
-                implementation(project(":logging"))
+                implementation(project(":core:compose"))
+                implementation(project(":core:logging"))
             }
         }
         named("androidMain") {

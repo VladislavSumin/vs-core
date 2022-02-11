@@ -30,12 +30,12 @@ dependencyResolutionManagement {
 rootProject.name = "vs-core"
 
 include(
-    ":compose",
-    ":coroutines",
-    ":decompose",
-    ":di",
-    ":logging",
-    ":logging-slf4j",
-    ":navigation",
-    ":uikit",
+    ":core:compose",
+    ":core:coroutines",
+    ":core:decompose",
+    ":core:di",
+    ":core:logging",
+    ":core:logging-slf4j",
+    ":core:navigation",
+    ":core:uikit",
 )

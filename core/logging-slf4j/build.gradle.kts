@@ -6,7 +6,7 @@ kotlin {
     sourceSets {
         named("commonMain") {
             dependencies {
-                api(project(":logging"))
+                api(project(":core:logging"))
             }
         }
         named("jvmMain") {

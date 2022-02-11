@@ -8,7 +8,7 @@ kotlin {
     sourceSets {
         named("commonMain") {
             dependencies {
-                api(project(":compose"))
+                api(project(":core:compose"))
             }
         }
     }

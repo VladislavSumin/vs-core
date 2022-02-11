@@ -9,8 +9,8 @@ kotlin {
     sourceSets {
         named("commonMain") {
             dependencies {
-                implementation(project(":compose"))
-                implementation(project(":decompose"))
+                implementation(project(":core:compose"))
+                implementation(project(":core:decompose"))
             }
         }
     }

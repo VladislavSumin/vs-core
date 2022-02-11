@@ -4,6 +4,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
+@Suppress("MagicNumber")
 internal val DarkColorPalette = darkColors(
     primary = Purple200,
     primaryVariant = Purple700,

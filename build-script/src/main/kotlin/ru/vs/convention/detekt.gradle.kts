@@ -2,10 +2,18 @@ package ru.vs.convention
 
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
+import ru.vs.build_script.tasks.CopyFromResourceTask
 import java.util.Properties
 
 plugins {
     id("io.gitlab.arturbosch.detekt")
+}
+
+val detektConfigFile = project.buildDir.resolve("detektConfig").resolve("detekt.yml")
+
+val copyDetektConfigTaskProvider = tasks.register("copyDetektConfig", CopyFromResourceTask::class) {
+    from.set("ru/vs/build_script/detekt.yml")
+    to.set(project.buildDir.resolve("detektConfig").resolve("detekt.yml"))
 }
 
 // Конфигурирем на уровне тасок, а не на уровне плагина, так как таски созданные в ручную
@@ -14,7 +22,9 @@ tasks.withType<Detekt>().configureEach {
     autoCorrect = true
     parallel = true
     buildUponDefaultConfig = true
-    config.setFrom(files("${project.rootProject.projectDir}/config/detekt/detekt.yml"))
+    config.setFrom(files(detektConfigFile))
+
+    dependsOn(copyDetektConfigTaskProvider)
 }
 
 // Исправляем путь к файлам только для дефолтных detekt тасок

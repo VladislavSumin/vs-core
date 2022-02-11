@@ -11,6 +11,10 @@ plugins {
 }
 
 allprojects {
+    apply { plugin("ru.vs.convention.detekt") }
+}
+
+allprojects {
     val path = mutableListOf<String>()
     var project = this.parent
     while (project != null && project != project.rootProject) {

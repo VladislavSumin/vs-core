@@ -21,6 +21,7 @@ jobs:
           cache: gradle
 
       - name: Run gradle
+        shell: bash
         env:
           VS_MAVEN_PASSWORD: ${{ secrets.VS_MAVEN_PASSWORD }}
         run: >-

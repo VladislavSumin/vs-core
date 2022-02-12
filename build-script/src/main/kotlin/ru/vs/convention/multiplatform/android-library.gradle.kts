@@ -7,7 +7,9 @@ plugins {
 }
 
 kotlin {
-    android()
+    android {
+        publishAllLibraryVariants()
+    }
 }
 
 android {

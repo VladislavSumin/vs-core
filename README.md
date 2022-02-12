@@ -1,19 +1,28 @@
 # Available libs
-* [compose](docs/compose.md)
+
 * [conventions](docs/conventions.md)
+
+
+* [compose](docs/compose.md)
 * [coroutines](docs/coroutines.md)
 * [decompose](docs/decompose.md)
 * [di](docs/di.md)
+* [ktor-client](docs/ktor-client.md)
+* [ktor-server](docs/ktor-server.md)
 * [logging](docs/logging.md)
 * [navigation](docs/navigation.md)
+* [serialization](docs/serialization.md)
 * [uikit](docs/uikit.md)
+* [utils](docs/utils.md)
 
 # Installation
 
 ## Plugin installation
 
 ### On project level
+
 For work as project:
+
 ```kotlin
 // settings.gradle.kts
 pluginManagement {
@@ -23,7 +32,9 @@ pluginManagement {
     }
 }
 ```
+
 For work as library:
+
 ```kotlin
 // settings.gradle.kts
 pluginManagement {
@@ -39,17 +50,21 @@ pluginManagement {
 ### Or on build script level
 
 For work as project:
+
 ```kotlin
 // settings.gradle.kts
 includeBuild("../../vs-core/build-script")
 ```
+
 ```kotlin
 // build.gradle.kts
 dependencies {
     implementation("ru.vs:build-script:<any version>")
 }
 ```
+
 For work as library:
+
 ```kotlin
 // settings.gradle.kts
 dependencyResolutionManagement {
@@ -58,6 +73,7 @@ dependencyResolutionManagement {
     }
 }
 ```
+
 ```kotlin
 // build.gradle.kts
 dependencies {

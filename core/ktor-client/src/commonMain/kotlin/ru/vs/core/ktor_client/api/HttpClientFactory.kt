@@ -1,4 +1,4 @@
-package ru.vs.iot.ktor_client.api
+package ru.vs.core.ktor_client.api
 
 import io.ktor.client.HttpClient
 import org.kodein.di.DirectDI

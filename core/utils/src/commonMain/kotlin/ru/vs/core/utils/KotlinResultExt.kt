@@ -1,4 +1,4 @@
-package ru.vs.iot.utils
+package ru.vs.core.utils
 
 inline fun <T> Result<T>.onException(action: (exception: Exception) -> Unit): Result<T> = onFailure {
     when (it) {

@@ -1,4 +1,4 @@
-package ru.vs.iot.serialization
+package ru.vs.core.serialization
 
 import kotlinx.serialization.modules.SerializersModule
 import org.kodein.di.DI

@@ -28,5 +28,5 @@ jobs:
           ./gradlew
           -PpIsGithubActions=true
           -PpIsBuildAgent=true
-          -PpBuildNumber=${{ github.run_id }}
+          -PpBuildNumber=${{ github.run_number }}
           :ci

@@ -29,4 +29,5 @@ jobs:
           -PpIsGithubActions=true
           -PpIsBuildAgent=true
           -PpBuildNumber=${{ github.run_number }}
+          :build-script:publishAllPublicationsToMavenRepository
           :ci

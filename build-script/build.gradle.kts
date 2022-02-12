@@ -4,8 +4,9 @@ plugins {
     id("com.gradle.plugin-publish") version "0.16.0"
 }
 
+val pBuildNumber: String? by project
 group = "ru.vs"
-version = "0.1.0"
+version = "0.0.1.${pBuildNumber ?: "1"}"
 
 dependencies {
     // TODO подождать пока эта фича появится в гредле
@@ -31,6 +32,20 @@ gradlePlugin {
         create("EmptyPlugin") {
             id = "ru.vs.empty_plugin"
             implementationClass = "ru.vs.build_script.EmptyPlugin"
+        }
+    }
+}
+
+// TODO дублирование кода
+val passwordFromEnvironment = System.getenv("VS_MAVEN_PASSWORD") ?: ""
+
+publishing {
+    this.repositories {
+        maven("https://sumin.jfrog.io/artifactory/vs/") {
+            credentials {
+                username = "deployer"
+                password = passwordFromEnvironment
+            }
         }
     }
 }

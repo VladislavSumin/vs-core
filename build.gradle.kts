@@ -15,6 +15,7 @@ allprojects {
     apply { plugin("ru.vs.convention.detekt") }
 }
 
+val pBuildNumber: String by project
 allprojects {
     val path = mutableListOf<String>()
     var project = this.parent
@@ -27,11 +28,24 @@ allprojects {
     group = if (subpackage.isBlank()) "ru.vs"
     else "ru.vs.$subpackage"
 
-    version = "0.1.0"
+    version = "0.0.1.$pBuildNumber"
 }
 
 allprojects {
     apply { plugin("ru.vs.convention.maven.publish-to-vs") }
 }
 
-printHelloBuildScript("vs-core")
+tasks.register("ci") {
+    dependsOn(":core:compose:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:coroutines:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:decompose:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:di:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:ktor-client:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:ktor-server:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:logging:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:logging-slf4j:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:navigation:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:serialization:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:uikit:publishAllPublicationsToMavenRepository")
+    dependsOn(":core:utils:publishAllPublicationsToMavenRepository")
+}

@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+    steps:
+      - name: Clone vs-core repository
+        uses: actions/checkout@v2
+
+      - name: Setup java
+        uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 17
+          cache: gradle
+
+      - name: Run gradle
+        env:
+          VS_MAVEN_PASSWORD: ${{ secrets.VS_MAVEN_PASSWORD }}
+        run: >-
+          ./gradlew
+          -PpIsGithubActions=true
+          -PpIsBuildAgent=true
+          -PpBuildNumber=${{ github.run_id }}
+          :ci

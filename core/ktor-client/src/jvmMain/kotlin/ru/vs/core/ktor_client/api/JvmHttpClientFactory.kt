@@ -7,7 +7,6 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.serialization.json.Json
 import org.kodein.di.DirectDI
 import org.kodein.di.instance
-import ru.vs.core.ktor_client.api.HttpClientFactory
 
 private class AndroidHttpClientFactory(private val json: Json) : HttpClientFactory {
     override fun createHttpClient(): HttpClient {

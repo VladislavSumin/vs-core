@@ -1,6 +1,6 @@
+
 plugins {
     id("ru.vs.convention.multiplatform.jvm")
-    id("maven-publish")
 }
 
 kotlin {
@@ -8,6 +8,17 @@ kotlin {
         named("commonMain") {
             dependencies {
                 api(coreLibs.kotlin.coroutines.core)
+            }
+        }
+    }
+}
+
+publishing {
+    this.repositories {
+        maven("https://sumin.jfrog.io/artifactory/vs/") {
+            credentials {
+                username = "deployer"
+                password = "usxb5Y50E5U="
             }
         }
     }

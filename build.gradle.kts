@@ -30,4 +30,8 @@ allprojects {
     version = "0.1.0"
 }
 
+allprojects {
+    apply { plugin("ru.vs.convention.maven.publish-to-vs") }
+}
+
 printHelloBuildScript("vs-core")

@@ -8,6 +8,7 @@ buildscript {
 
 plugins {
     id("ru.vs.convention.detekt-build-scripts")
+    id("ru.vs.convention.check-updates")
 }
 
 allprojects {

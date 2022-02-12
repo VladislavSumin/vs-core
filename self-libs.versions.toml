@@ -1,0 +1,16 @@
+[versions]
+vs-core = "0.1.0"
+
+[libraries]
+vs-core-compose = { module = "ru.vs.core:compose", version.ref = "vs-core" }
+vs-core-coroutines = { module = "ru.vs.core:coroutines", version.ref = "vs-core" }
+vs-core-decompose = { module = "ru.vs.core:decompose", version.ref = "vs-core" }
+vs-core-di = { module = "ru.vs.core:di", version.ref = "vs-core" }
+vs-core-ktor-client = { module = "ru.vs.core:ktor-client", version.ref = "vs-core" }
+vs-core-ktor-server = { module = "ru.vs.core:ktor-server", version.ref = "vs-core" }
+vs-core-logging-core = { module = "ru.vs.core:logging", version.ref = "vs-core" }
+vs-core-logging-slf4j = { module = "ru.vs.core:logging-slf4j", version.ref = "vs-core" }
+vs-core-navigation = { module = "ru.vs.core:navigation", version.ref = "vs-core" }
+vs-core-serialization = { module = "ru.vs.core:serialization", version.ref = "vs-core" }
+vs-core-uikit = { module = "ru.vs.core:uikit", version.ref = "vs-core" }
+vs-core-utils = { module = "ru.vs.core:utils", version.ref = "vs-core" }

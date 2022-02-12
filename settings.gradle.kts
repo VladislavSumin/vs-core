@@ -34,8 +34,12 @@ include(
     ":core:coroutines",
     ":core:decompose",
     ":core:di",
+    ":core:ktor-client",
+    ":core:ktor-server",
     ":core:logging",
     ":core:logging-slf4j",
     ":core:navigation",
+    ":core:serialization",
     ":core:uikit",
+    ":core:utils",
 )

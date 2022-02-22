@@ -4,10 +4,11 @@ import co.touchlab.kermit.Logger
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
 abstract class ViewModel : InstanceKeeper.Instance {
-    protected val viewModelScope = CoroutineScope(Dispatchers.Main)
+    protected val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     init {
         logger.i { "Create ${this::class.simpleName}" }

@@ -1,3 +1,7 @@
 [versions]
+kotlin-core = "2.1.0"
+kotlin-coroutines = "1.9.0"
 
 [libraries]
+gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }

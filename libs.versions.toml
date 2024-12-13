@@ -1,7 +1,14 @@
 [versions]
 kotlin-core = "2.1.0"
 kotlin-coroutines = "1.9.0"
+gradlePlugins-android = "8.5.2"
+
 
 [libraries]
+
+# Gradle Plugins
 gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
+gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
+
+# Kotlin
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }

@@ -1,4 +1,4 @@
-package ru.vs.core.decompose.components
+package ru.vladislavsumin.core.decompose.components
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.vs.core.decompose.components.utils.asValue
-import ru.vs.core.decompose.components.utils.createCoroutineScope
+import ru.vladislavsumin.core.decompose.components.utils.asValue
+import ru.vladislavsumin.core.decompose.components.utils.createCoroutineScope
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 

@@ -1,4 +1,4 @@
-package ru.vs.core.decompose.components.utils
+package ru.vladislavsumin.core.decompose.components.utils
 
 import com.arkivanov.decompose.Cancellation
 import com.arkivanov.decompose.value.Value

@@ -1,7 +1,6 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.android-library")
-    id("ru.vladislavsumin.convention.publication.group")
-    id("ru.vladislavsumin.convention.publication.version")
+    id("ru.vladislavsumin.convention.publication.sonatype")
     `maven-publish`
 }
 

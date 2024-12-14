@@ -21,6 +21,7 @@ open class ProjectConfiguration(propertyProvider: PropertyProvider) :
         val jvmVersion = property("jvmVersion", "17")
 
         val android = Android()
+        val signing = Signing()
 
         /**
          * Настройки android плагина.
@@ -30,6 +31,15 @@ open class ProjectConfiguration(propertyProvider: PropertyProvider) :
             val minSdk = property("minSdk", 26)
             val targetSdk = property("targetSdk", 35)
             val compileSdk = property("compileSdk", 35)
+        }
+
+        /**
+         * Настройки подписи
+         */
+        inner class Signing : Configuration("signing", this) {
+            val keyId = property("keyId", "")
+            val password = property("password", "")
+            val secretKeyRingFile = property("secretKeyRingFile", "")
         }
     }
 }
@@ -41,5 +51,10 @@ val Project.projectConfiguration: ProjectConfiguration
     get() = rootProject.extensions.findByType()
         ?: rootProject.extensions.create(
             ProjectConfiguration::class.java.simpleName,
-            PropertyProvider { project.findProperty(it)?.toString() },
+            propertyProvider,
         )
+
+private val Project.propertyProvider
+    get() = PropertyProvider {
+        System.getenv(it) ?: project.findProperty(it)?.toString()
+    }

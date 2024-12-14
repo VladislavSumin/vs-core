@@ -1,4 +1,4 @@
-package ru.vs.configuration
+package ru.vladislavsumin.configuration
 
 import kotlin.reflect.KClass
 

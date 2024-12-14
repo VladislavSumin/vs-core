@@ -1,4 +1,4 @@
-package ru.vs.utils
+package ru.vladislavsumin.utils
 
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project

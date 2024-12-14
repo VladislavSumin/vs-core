@@ -1,4 +1,4 @@
-package ru.vs.convention.kmp
+package ru.vladislavsumin.convention.kmp
 
 /**
  * Дополнительная настройка unit тестов для android таргета.

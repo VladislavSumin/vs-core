@@ -1,15 +1,15 @@
-package ru.vs.convention.android
+package ru.vladislavsumin.convention.android
 
-import ru.vs.configuration.projectConfiguration
-import ru.vs.utils.android
-import ru.vs.utils.kotlinOptions
+import ru.vladislavsumin.configuration.projectConfiguration
+import ru.vladislavsumin.utils.android
+import ru.vladislavsumin.utils.kotlinOptions
 
 /**
  * Расширение базовой android настройки, включает в себя настройку kotlin.
  */
 
 plugins {
-    id("ru.vs.convention.android.base")
+    id("ru.vladislavsumin.convention.android.base")
     kotlin("android")
 }
 

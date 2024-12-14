@@ -1,8 +1,12 @@
 [versions]
+
+# Kotlin
 kotlin-core = "2.1.0"
 kotlin-coroutines = "1.9.0"
-gradlePlugins-android = "8.5.2"
+kotlin-serialization = "1.7.3"
 
+gradlePlugins-android = "8.5.2"
+decompose = "3.2.2"
 
 [libraries]
 
@@ -11,4 +15,10 @@ gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugi
 gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
 
 # Kotlin
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+
+# Decompose
+decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }

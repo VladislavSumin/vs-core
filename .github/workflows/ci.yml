@@ -27,4 +27,4 @@ jobs:
       - name: Run gradle
         uses: ./.github/actions/run_gradle
         with:
-          gradle_command: :tasks
+          gradle_command: :core:decompose:components:assemble

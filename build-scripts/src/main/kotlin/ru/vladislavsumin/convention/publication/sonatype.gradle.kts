@@ -18,10 +18,18 @@ publishing {
         maven {
             name = "sonatype"
             setUrl("https://s01.oss.sonatype.org/service/local/")
+            credentials {
+                username = projectConfiguration.sonatype.username
+                password = projectConfiguration.sonatype.password
+            }
         }
         maven {
             name = "sonatypeSnapshot"
             setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            credentials {
+                username = projectConfiguration.sonatype.username
+                password = projectConfiguration.sonatype.password
+            }
         }
     }
 }
@@ -51,9 +59,9 @@ publishing.publications.withType<MavenPublication>().configureEach {
     }
 }
 
-ext["signing.keyId"] = projectConfiguration.core.signing.keyId
-ext["signing.password"] = projectConfiguration.core.signing.password
-ext["signing.secretKeyRingFile"] = projectConfiguration.core.signing.secretKeyRingFile
+ext["signing.keyId"] = projectConfiguration.signing.keyId
+ext["signing.password"] = projectConfiguration.signing.password
+ext["signing.secretKeyRingFile"] = projectConfiguration.signing.secretKeyRingFile
 
 signing {
     sign(publishing.publications)

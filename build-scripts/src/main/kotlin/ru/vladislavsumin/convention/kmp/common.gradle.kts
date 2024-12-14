@@ -1,6 +1,6 @@
-package ru.vs.convention.kmp
+package ru.vladislavsumin.convention.kmp
 
-import ru.vs.utils.libs
+import ru.vladislavsumin.utils.libs
 
 /**
  * Базовая настройка KMP.

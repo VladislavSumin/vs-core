@@ -1,7 +1,7 @@
-package ru.vs.convention.android
+package ru.vladislavsumin.convention.android
 
-import ru.vs.configuration.projectConfiguration
-import ru.vs.utils.android
+import ru.vladislavsumin.configuration.projectConfiguration
+import ru.vladislavsumin.utils.android
 
 /**
  * Базовая настройка android плагина без привязки к конкретной имплементации (application/library/итд).

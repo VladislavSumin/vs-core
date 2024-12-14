@@ -1,4 +1,4 @@
-package ru.vs.convention.android
+package ru.vladislavsumin.convention.android
 
 /**
  * Базовая настройка android application.
@@ -6,5 +6,5 @@ package ru.vs.convention.android
 
 plugins {
     id("com.android.application")
-    id("ru.vs.convention.android.base-kotlin")
+    id("ru.vladislavsumin.convention.android.base-kotlin")
 }

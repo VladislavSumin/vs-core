@@ -1,4 +1,4 @@
-package ru.vs.core.decompose.components
+package ru.vladislavsumin.core.decompose.components
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher

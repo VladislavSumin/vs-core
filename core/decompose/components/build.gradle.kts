@@ -1,5 +1,5 @@
 plugins {
-    id("ru.vs.convention.kmp.android-library")
+    id("ru.vladislavsumin.convention.kmp.android-library")
 }
 
 kotlin {

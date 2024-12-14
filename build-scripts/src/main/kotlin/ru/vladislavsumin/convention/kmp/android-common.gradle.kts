@@ -1,19 +1,19 @@
-package ru.vs.convention.kmp
+package ru.vladislavsumin.convention.kmp
 
-import ru.vs.configuration.projectConfiguration
-import ru.vs.utils.android
+import ru.vladislavsumin.configuration.projectConfiguration
+import ru.vladislavsumin.utils.android
 
 /**
  * Базовая настройка android таргета для KMP (без привязки к library/application).
  */
 
 plugins {
-    id("ru.vs.convention.kmp.common")
-    id("ru.vs.convention.kmp.android-tests")
+    id("ru.vladislavsumin.convention.kmp.common")
+    id("ru.vladislavsumin.convention.kmp.android-tests")
     // мы не можем использовать ru.vs.convention.android.library здесь, поскольку этот плагин подключат kotlin плагин,
     // а нам нужен kotlin-multiplatform плагин.
-    id("ru.vs.convention.android.base")
-    id("ru.vs.convention.android.default-namespace")
+    id("ru.vladislavsumin.convention.android.base")
+    id("ru.vladislavsumin.convention.android.default-namespace")
 }
 
 kotlin {

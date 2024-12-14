@@ -1,4 +1,4 @@
-package ru.vs.configuration
+package ru.vladislavsumin.configuration
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create

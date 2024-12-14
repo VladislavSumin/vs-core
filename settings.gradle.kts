@@ -6,4 +6,4 @@ pluginManagement {
 
 rootProject.name = "vs-core"
 
-include(":core:decompose")
+include(":core:decompose:components")

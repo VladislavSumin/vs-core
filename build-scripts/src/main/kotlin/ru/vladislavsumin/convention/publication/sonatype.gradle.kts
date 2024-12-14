@@ -26,6 +26,31 @@ publishing {
     }
 }
 
+publishing.publications.withType<MavenPublication>().configureEach {
+    pom {
+        url = "https://github.com/VladislavSumin/vs-core"
+
+        scm {
+            url = "https://github.com/VladislavSumin/vs-core"
+        }
+
+        licenses {
+            license {
+                name = "Apache License, Version 2.0"
+                url = "https://github.com/VladislavSumin/vs-core/blob/master/LICENSE"
+            }
+        }
+
+        developers {
+            developer {
+                id = "VladislavSumin"
+                name = "Vladislav Sumin"
+                url = "https://github.com/VladislavSumin"
+            }
+        }
+    }
+}
+
 ext["signing.keyId"] = projectConfiguration.core.signing.keyId
 ext["signing.password"] = projectConfiguration.core.signing.password
 ext["signing.secretKeyRingFile"] = projectConfiguration.core.signing.secretKeyRingFile

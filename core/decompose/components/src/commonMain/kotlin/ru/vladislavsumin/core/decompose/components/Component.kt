@@ -18,7 +18,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Базовая реализация компонента с набором полезных расширений.
  */
-abstract class Component(context: ComponentContext) : ComponentContext by context {
+public abstract class Component(context: ComponentContext) : ComponentContext by context {
     private val scope = lifecycle.createCoroutineScope()
 
     /**

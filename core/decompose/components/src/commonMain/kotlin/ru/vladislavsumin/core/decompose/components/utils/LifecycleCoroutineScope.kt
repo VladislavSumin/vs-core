@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
  * Создает [CoroutineScope] связанный с [Lifecycle]. [CoroutineScope] будет автоматически закрыт
  * при переходе [Lifecycle] в состояние [Lifecycle.State.DESTROYED].
  */
-fun Lifecycle.createCoroutineScope(context: CoroutineContext = Dispatchers.Main.immediate) =
+public fun Lifecycle.createCoroutineScope(context: CoroutineContext = Dispatchers.Main.immediate) =
     LifecycleCoroutineScope(context, this)
 
 private fun LifecycleCoroutineScope(

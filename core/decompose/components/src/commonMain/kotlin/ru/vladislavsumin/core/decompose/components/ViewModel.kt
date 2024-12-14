@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.decompose.components
 
+import com.arkivanov.essenty.statekeeper.StateKeeper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  *
  * Так же обладает полезными функциями-расширениями для удобного решения типовых задач встречающихся в viewModel.
  */
-abstract class ViewModel {
+public abstract class ViewModel {
     /**
      * [CoroutineScope] с viewmodel lifecycle.
      *
@@ -30,7 +31,7 @@ abstract class ViewModel {
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate)
 
     @PublishedApi
-    internal val stateKeeper = WhileConstructedViewModelStateKeeper!!
+    internal val stateKeeper: StateKeeper = WhileConstructedViewModelStateKeeper!!
 
     /**
      * Укороченная версия [stateIn] с использованием [viewModelScope] и [SharingStarted.Eagerly] по умолчанию.

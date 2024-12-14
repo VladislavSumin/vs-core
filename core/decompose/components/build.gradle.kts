@@ -3,6 +3,8 @@ plugins {
 }
 
 kotlin {
+    explicitApi()
+
     sourceSets {
         commonMain.dependencies {
             api(libs.kotlin.coroutines.core)

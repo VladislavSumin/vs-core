@@ -10,6 +10,8 @@ import org.gradle.kotlin.dsl.findByType
 @Suppress("UnnecessaryAbstractClass")
 open class ProjectConfiguration(propertyProvider: PropertyProvider) :
     Configuration("ru.vs", propertyProvider) {
+
+    val version = property("version", "0.0.1")
     val core = CoreConfiguration()
 
     inner class CoreConfiguration : Configuration("core", this) {

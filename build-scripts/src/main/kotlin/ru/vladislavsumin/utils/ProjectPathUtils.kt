@@ -14,3 +14,14 @@ fun Project.pathSequence(): Sequence<Project> {
         }
     }
 }
+
+/**
+ * Возвращает полное имя проекта, используя "." как разделитель
+ */
+fun Project.fullName(): String = pathSequence()
+    .asIterable()
+    .reversed()
+    .drop(1) // отбрасываем root project
+    .joinToString(separator = ".") {
+        it.name.replace("-", "_")
+    }

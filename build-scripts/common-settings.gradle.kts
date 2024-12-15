@@ -10,7 +10,7 @@ dependencyResolutionManagement {
         gradlePluginPortal()
     }
     versionCatalogs {
-        create("libs") {
+        create("vsCoreLibs") {
             from(files("../libs.versions.toml"))
         }
     }

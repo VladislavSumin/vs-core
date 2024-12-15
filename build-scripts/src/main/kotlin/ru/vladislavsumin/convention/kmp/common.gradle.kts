@@ -1,6 +1,6 @@
 package ru.vladislavsumin.convention.kmp
 
-import ru.vladislavsumin.utils.libs
+import ru.vladislavsumin.utils.vsCoreLibs
 
 /**
  * Базовая настройка KMP.
@@ -19,7 +19,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                implementation(libs.kotlin.coroutines.test)
+                implementation(vsCoreLibs.kotlin.coroutines.test)
             }
         }
     }

@@ -8,10 +8,11 @@ import org.gradle.kotlin.dsl.findByType
  * Файл пропертей проекта, содержит dsl для доступа к любым проперти используемым при сборке.
  */
 @Suppress("UnnecessaryAbstractClass")
-open class ProjectConfiguration(propertyProvider: PropertyProvider) :
-    Configuration("ru.vs", propertyProvider) {
+open class ProjectConfiguration(project: Project, propertyProvider: PropertyProvider) :
+    Configuration(project, "ru.vs", propertyProvider) {
 
     val version = property("version", "0.0.1")
+    val basePackage = property<String>("basePackage")
     val core = CoreConfiguration()
     val signing = Signing()
     val sonatype = Sonatype()
@@ -60,6 +61,7 @@ val Project.projectConfiguration: ProjectConfiguration
     get() = rootProject.extensions.findByType()
         ?: rootProject.extensions.create(
             ProjectConfiguration::class.java.simpleName,
+            project,
             propertyProvider,
         )
 

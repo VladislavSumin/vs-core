@@ -1,5 +1,7 @@
 package ru.vladislavsumin.configuration
 
+import org.gradle.api.Project
+import ru.vladislavsumin.utils.isDslAccessors
 import kotlin.reflect.KClass
 
 /**
@@ -11,7 +13,10 @@ import kotlin.reflect.KClass
  */
 @Suppress("UnnecessaryAbstractClass") // Создавать этот класс напрямую не имеет смысла
 abstract class Configuration(
-    private val basePath: String,
+    @PublishedApi
+    internal val project: Project,
+    @PublishedApi
+    internal val basePath: String,
     private val propertyProvider: PropertyProvider,
 ) {
     /**
@@ -19,6 +24,7 @@ abstract class Configuration(
      * @param relativePath путь, который будет добавлен к пути родителя для получения финального пути этой конфигурации.
      */
     constructor(relativePath: String, parent: Configuration) : this(
+        parent.project,
         "${parent.basePath}.$relativePath",
         parent.propertyProvider,
     )
@@ -26,8 +32,14 @@ abstract class Configuration(
     protected inline fun <reified T : Any> property(relativePath: String, defaultValue: T): T =
         propertyOrNull(relativePath, T::class) ?: defaultValue
 
-    protected inline fun <reified T : Any> property(relativePath: String): T =
-        propertyOrNull(relativePath, T::class)!!
+    protected inline fun <reified T : Any> property(relativePath: String): T {
+        val prop = propertyOrNull(relativePath, T::class)
+        return when {
+            prop != null -> prop
+            project.isDslAccessors -> fakeDefaultValue()
+            else -> error("Property $basePath.$relativePath is required but not set")
+        }
+    }
 
     protected inline fun <reified T : Any> propertyOrNull(relativePath: String): T? =
         propertyOrNull(relativePath, T::class)
@@ -49,6 +61,16 @@ abstract class Configuration(
             Boolean::class -> rawProperty.toBoolean()
             Integer::class -> rawProperty.toInt()
             else -> Error("Unsupported cast to ${kClass.simpleName}")
+        } as T
+    }
+
+    @PublishedApi
+    internal inline fun <reified T : Any> fakeDefaultValue(): T {
+        return when (T::class) {
+            String::class -> ""
+            Boolean::class -> false
+            Integer::class -> 0
+            else -> Error("Unsupported cast to ${T::class.simpleName}")
         } as T
     }
 }

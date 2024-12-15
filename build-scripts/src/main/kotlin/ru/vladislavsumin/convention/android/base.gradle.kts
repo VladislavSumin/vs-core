@@ -2,7 +2,7 @@ package ru.vladislavsumin.convention.android
 
 import ru.vladislavsumin.configuration.projectConfiguration
 import ru.vladislavsumin.utils.android
-import ru.vladislavsumin.utils.protectFormDslAccessors
+import ru.vladislavsumin.utils.protectFromDslAccessors
 
 /**
  * Базовая настройка android плагина без привязки к конкретной имплементации (application/library/итд).
@@ -10,7 +10,7 @@ import ru.vladislavsumin.utils.protectFormDslAccessors
 
 val configuration = project.projectConfiguration
 
-protectFormDslAccessors {
+protectFromDslAccessors {
     android {
         setCompileSdkVersion(configuration.core.android.compileSdk)
 

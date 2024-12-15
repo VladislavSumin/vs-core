@@ -13,6 +13,8 @@ open class ProjectConfiguration(propertyProvider: PropertyProvider) :
 
     val version = property("version", "0.0.1")
     val core = CoreConfiguration()
+    val signing = Signing()
+    val sonatype = Sonatype()
 
     inner class CoreConfiguration : Configuration("core", this) {
         /**
@@ -32,6 +34,23 @@ open class ProjectConfiguration(propertyProvider: PropertyProvider) :
             val compileSdk = property("compileSdk", 35)
         }
     }
+
+    /**
+     * Настройки подписи
+     */
+    inner class Signing : Configuration("signing", this) {
+        val keyId = property("keyId", "")
+        val password = property("password", "")
+        val secretKeyRingFile = property("secretKeyRingFile", "")
+    }
+
+    /**
+     * Настройки для sonatype репозитория
+     */
+    inner class Sonatype : Configuration("sonatype", this) {
+        val username = property("username", "")
+        val password = property("password", "")
+    }
 }
 
 /**
@@ -41,5 +60,10 @@ val Project.projectConfiguration: ProjectConfiguration
     get() = rootProject.extensions.findByType()
         ?: rootProject.extensions.create(
             ProjectConfiguration::class.java.simpleName,
-            PropertyProvider { project.findProperty(it)?.toString() },
+            propertyProvider,
         )
+
+private val Project.propertyProvider
+    get() = PropertyProvider {
+        System.getenv(it) ?: project.findProperty(it)?.toString()
+    }

@@ -1,7 +1,6 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.android-library")
-    id("ru.vladislavsumin.convention.publication.group")
-    id("ru.vladislavsumin.convention.publication.version")
+    id("ru.vladislavsumin.convention.publication.sonatype")
     `maven-publish`
 }
 
@@ -16,5 +15,12 @@ kotlin {
             implementation(libs.kotlin.serialization.core)
             implementation(libs.kotlin.serialization.json)
         }
+    }
+}
+
+publishing.publications.withType<MavenPublication>().configureEach {
+    pom {
+        name = "VS core decompose components"
+        description = "Core decompose components framework"
     }
 }

@@ -1,0 +1,42 @@
+name: Publication Sonatype
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version (for example 0.0.0-SNAPSHOT)
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Setup java
+        uses: ./.github/actions/setup_java
+
+      - name: Gradle cache
+        uses: ./.github/actions/gradle_cache
+        with:
+          key: "publish"
+
+      - name: Load GPG Keys
+        env:
+          SONATYPE_GPG_BASE64: ${{ secrets.SONATYPE_GPG_BASE64 }}
+        run: |
+          echo $SONATYPE_GPG_BASE64 | base64 --decode > ~/sonatype.gpg
+
+      - name: Run gradle publish
+        uses: ./.github/actions/run_gradle
+        env:
+          ru.vs.signing.password: ${{ secrets.SONATYPE_GPG_PASSWORD }}
+        with:
+          gradle_command: >-
+            -Pru.vs.version={{ inputs.version }}
+            -Pru.vs.signing.keyId={{ vars.SONATYPE_GPG_KEY_ID }}
+            -Pru.vs.signing.secretKeyRingFile=~/sonatype.gpg
+            :core:decompose:components:publishToMavenLocal

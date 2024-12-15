@@ -3,13 +3,6 @@ name: Publication Sonatype
 on:
   workflow_dispatch:
     inputs:
-      repositoy-channel:
-        description: Repository channel
-        required: true
-        type: choice
-        options:
-          - SonatypeReleases
-          - SonatypeSnapshots
       version:
         description: Version (for example 0.0.0-SNAPSHOT)
         required: true
@@ -41,11 +34,9 @@ jobs:
         uses: ./.github/actions/run_gradle
         env:
           ru.vs.signing.password: ${{ secrets.SONATYPE_GPG_PASSWORD }}
-          ru.vs.sonatype.password: ${{ secrets.SONATYPE_PASSWORD }}
         with:
           gradle_command: >-
             -Pru.vs.version={{ inputs.version }}
-            -Pru.vs.sonatype.username={{ vars.SONATYPE_USERNAME }}
             -Pru.vs.signing.keyId={{ vars.SONATYPE_GPG_KEY_ID }}
             -Pru.vs.signing.secretKeyRingFile=~/sonatype.gpg
             :core:decompose:components:publishToMavenLocal

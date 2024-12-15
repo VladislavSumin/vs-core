@@ -13,23 +13,13 @@ plugins {
     signing
 }
 
+val sonatypeDir = "${project.layout.buildDirectory.get().asFile.absolutePath}/sonatype"
+
 publishing {
     repositories {
         maven {
-            name = "sonatype"
-            setUrl("https://s01.oss.sonatype.org/service/local/")
-            credentials {
-                username = projectConfiguration.sonatype.username
-                password = projectConfiguration.sonatype.password
-            }
-        }
-        maven {
-            name = "sonatypeSnapshot"
-            setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            credentials {
-                username = projectConfiguration.sonatype.username
-                password = projectConfiguration.sonatype.password
-            }
+            name = "projectLocal"
+            setUrl("file://${sonatypeDir}/localRepository")
         }
     }
 }
@@ -65,4 +55,13 @@ ext["signing.secretKeyRingFile"] = projectConfiguration.signing.secretKeyRingFil
 
 signing {
     sign(publishing.publications)
+}
+
+// TODO это временное решение до написание нормального плагина для релизов
+project.tasks.register<Zip>("zipLocalRepositoryForSonatypeUpload") {
+    dependsOn(tasks.named("publishAllPublicationsToProjectLocalRepository"))
+    from("$sonatypeDir/localRepository")
+    exclude("**/maven-metadata.xml*")
+    archiveFileName.set("localRepository.zip")
+    destinationDirectory.set(File(sonatypeDir))
 }

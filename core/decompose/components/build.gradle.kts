@@ -9,11 +9,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(libs.kotlin.coroutines.core)
-            api(libs.decompose.core)
+            api(vsCoreLibs.kotlin.coroutines.core)
+            api(vsCoreLibs.decompose.core)
 
-            implementation(libs.kotlin.serialization.core)
-            implementation(libs.kotlin.serialization.json)
+            implementation(vsCoreLibs.kotlin.serialization.core)
+            implementation(vsCoreLibs.kotlin.serialization.json)
         }
     }
 }

@@ -12,4 +12,5 @@ dependencies {
     implementation(vsCoreLibs.gradlePlugins.kotlin.core)
     implementation(vsCoreLibs.gradlePlugins.android)
     implementation(vsCoreLibs.gradlePlugins.detekt)
+    implementation(vsCoreLibs.gradlePlugins.checkUpdates)
 }

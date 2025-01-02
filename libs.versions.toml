@@ -2,11 +2,12 @@
 
 # Kotlin
 kotlin-core = "2.1.0"
-kotlin-coroutines = "1.9.0"
+kotlin-coroutines = "1.10.1"
 kotlin-serialization = "1.7.3"
 
-gradlePlugins-android = "8.5.2"
+gradlePlugins-android = "8.7.3"
 gradlePlugins-detekt = "1.23.7"
+gradlePlugins-checkUpdates = "0.51.0"
 decompose = "3.2.2"
 
 [libraries]
@@ -15,6 +16,7 @@ decompose = "3.2.2"
 gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
 gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
 gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
+gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradlePlugins-checkUpdates" }
 
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }

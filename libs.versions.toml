@@ -6,6 +6,7 @@ kotlin-coroutines = "1.9.0"
 kotlin-serialization = "1.7.3"
 
 gradlePlugins-android = "8.5.2"
+gradlePlugins-detekt = "1.23.7"
 decompose = "3.2.2"
 
 [libraries]
@@ -13,6 +14,7 @@ decompose = "3.2.2"
 # Gradle Plugins
 gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
 gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
+gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
 
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
@@ -22,3 +24,6 @@ kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 
 # Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+
+# Other
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "gradlePlugins-detekt" }

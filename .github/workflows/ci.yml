@@ -8,6 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  detekt:
+    name: Detekt
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Setup java
+        uses: ./.github/actions/setup_java
+
+      - name: Gradle cache
+        uses: ./.github/actions/gradle_cache
+        with:
+          key: "detekt"
+
+      - name: Run gradle
+        uses: ./.github/actions/run_gradle
+        with:
+          gradle_command: detekt
+
   check:
     name: Check
     runs-on: ubuntu-24.04

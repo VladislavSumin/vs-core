@@ -1,6 +1,7 @@
 package ru.vladislavsumin.convention.analyze
 
 import io.gitlab.arturbosch.detekt.Detekt
+import ru.vladislavsumin.utils.protectFromDslAccessors
 import ru.vladislavsumin.utils.vsCoreLibs
 
 /**
@@ -34,7 +35,9 @@ tasks.named<Detekt>("detekt").configure {
     }
 }
 
-dependencies {
-    // Добавляет проверку форматирования кода.
-    detektPlugins(vsCoreLibs.detekt.formatting)
+protectFromDslAccessors {
+    dependencies {
+        // Добавляет проверку форматирования кода.
+        detektPlugins(vsCoreLibs.detekt.formatting)
+    }
 }

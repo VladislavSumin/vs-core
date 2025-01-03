@@ -31,7 +31,11 @@ public abstract class ViewModel {
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate)
 
     @PublishedApi
-    internal val stateKeeper: StateKeeper = WhileConstructedViewModelStateKeeper!!
+    internal val stateKeeper: StateKeeper = let {
+        val keeper = WhileConstructedViewModelStateKeeper ?: throw WrongViewModelUsageException()
+        WhileConstructedViewModelStateKeeper = null
+        keeper
+    }
 
     /**
      * Укороченная версия [stateIn] с использованием [viewModelScope] и [SharingStarted.Eagerly] по умолчанию.
@@ -95,3 +99,10 @@ public abstract class ViewModel {
         viewModelScope.cancel()
     }
 }
+
+internal class WrongViewModelUsageException : Exception(
+    """Wrong ViewModel usage. 
+        |ViewModel creation allowed only inside view model function in Component class. 
+        |Only ONE view model can be create inside viewModel function at same time"""
+        .trimMargin(),
+)

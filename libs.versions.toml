@@ -4,6 +4,7 @@
 kotlin-core = "2.1.0"
 kotlin-coroutines = "1.10.1"
 kotlin-serialization = "1.7.3"
+kotlin-binaryValidator = "0.17.0"
 
 gradlePlugins-android = "8.7.3"
 gradlePlugins-detekt = "1.23.7"
@@ -14,6 +15,7 @@ decompose = "3.2.2"
 
 # Gradle Plugins
 gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
+gradlePlugins-kotlin-binaryValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "kotlin-binaryValidator" }
 gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
 gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
 gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradlePlugins-checkUpdates" }

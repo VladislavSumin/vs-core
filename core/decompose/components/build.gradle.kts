@@ -3,6 +3,7 @@ plugins {
     id("ru.vladislavsumin.convention.kmp.js")
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.publication.sonatype")
+    id("ru.vladislavsumin.convention.analyze.binary-validator")
     `maven-publish`
 }
 

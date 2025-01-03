@@ -2,6 +2,8 @@ plugins {
     id("ru.vladislavsumin.convention.kmp.android-library")
     id("ru.vladislavsumin.convention.kmp.js")
     id("ru.vladislavsumin.convention.kmp.jvm")
+    id("ru.vladislavsumin.convention.publication.group")
+    id("ru.vladislavsumin.convention.publication.version")
 }
 
 kotlin {

@@ -17,6 +17,10 @@ kotlin {
             implementation(vsCoreLibs.kotlin.serialization.core)
             implementation(vsCoreLibs.kotlin.serialization.json)
         }
+
+        commonTest.dependencies {
+            implementation(projects.core.decompose.test)
+        }
     }
 }
 

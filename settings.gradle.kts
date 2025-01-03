@@ -7,3 +7,4 @@ pluginManagement {
 rootProject.name = "vs-core"
 
 include(":core:decompose:components")
+include(":core:decompose:test")

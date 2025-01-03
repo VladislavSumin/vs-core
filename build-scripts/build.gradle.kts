@@ -10,6 +10,7 @@ dependencies {
     implementation(files(vsCoreLibs.javaClass.superclass.protectionDomain.codeSource.location))
 
     implementation(vsCoreLibs.gradlePlugins.kotlin.core)
+    implementation(vsCoreLibs.gradlePlugins.kotlin.binaryValidator)
     implementation(vsCoreLibs.gradlePlugins.android)
     implementation(vsCoreLibs.gradlePlugins.detekt)
     implementation(vsCoreLibs.gradlePlugins.checkUpdates)

@@ -8,6 +8,7 @@ package ru.vladislavsumin.convention.kmp
 plugins {
     id("ru.vladislavsumin.convention.kmp.js")
     id("ru.vladislavsumin.convention.kmp.jvm")
+    id("ru.vladislavsumin.convention.kmp.ios")
     id("ru.vladislavsumin.convention.kmp.macos")
     id("ru.vladislavsumin.convention.kmp.wasm")
 }

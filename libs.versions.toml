@@ -2,19 +2,26 @@
 
 # Kotlin
 kotlin-core = "2.1.10"
+kotlin-ksp = "2.1.10-1.0.29"
 kotlin-coroutines = "1.10.1"
 kotlin-serialization = "1.8.0"
 kotlin-binaryValidator = "0.17.0"
 
+# Gradle
 gradlePlugins-android = "8.7.3"
 gradlePlugins-detekt = "1.23.7"
 gradlePlugins-checkUpdates = "0.51.0"
+
+# Other
 decompose = "3.2.2"
 
 [libraries]
 
 # Gradle Plugins
 gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
+gradlePlugins-kotlin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "kotlin-ksp" }
+gradlePlugins-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin-core" }
+gradlePlugins-kotlin-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin-core" }
 gradlePlugins-kotlin-binaryValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "kotlin-binaryValidator" }
 gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
 gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
@@ -22,12 +29,20 @@ gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-pl
 
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-serialization" }
 
 # Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+decompose-extensions-composeExperimental = { module = "com.arkivanov.decompose:extensions-compose-experimental", version.ref = "decompose" }
+decompose-extensions-android = { module = "com.arkivanov.decompose:extensions-android", version.ref = "decompose" }
+
+# Code generation
+kotlin-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "kotlin-ksp" }
 
 # Other
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "gradlePlugins-detekt" }

@@ -1,0 +1,36 @@
+public abstract interface class ru/vladislavsumin/core/collections/tree/LinkedTreeNode : ru/vladislavsumin/core/collections/tree/TreeNode {
+	public abstract fun getParent ()Lru/vladislavsumin/core/collections/tree/LinkedTreeNode;
+}
+
+public final class ru/vladislavsumin/core/collections/tree/LinkedTreeNodeImpl : ru/vladislavsumin/core/collections/tree/LinkedTreeNode {
+	public fun getChildren ()Ljava/util/Collection;
+	public synthetic fun getParent ()Lru/vladislavsumin/core/collections/tree/LinkedTreeNode;
+	public fun getParent ()Lru/vladislavsumin/core/collections/tree/LinkedTreeNodeImpl;
+	public fun getValue ()Ljava/lang/Object;
+}
+
+public final class ru/vladislavsumin/core/collections/tree/LinkedTreeNodeKt {
+	public static final fun asSequenceUp (Lru/vladislavsumin/core/collections/tree/LinkedTreeNode;)Lkotlin/sequences/Sequence;
+	public static final fun linkedNodeOf (Ljava/lang/Object;Ljava/util/Collection;)Lru/vladislavsumin/core/collections/tree/LinkedTreeNodeImpl;
+	public static final fun linkedNodeOf (Ljava/lang/Object;[Lru/vladislavsumin/core/collections/tree/LinkedTreeNodeImpl;)Lru/vladislavsumin/core/collections/tree/LinkedTreeNodeImpl;
+	public static synthetic fun linkedNodeOf$default (Ljava/lang/Object;Ljava/util/Collection;ILjava/lang/Object;)Lru/vladislavsumin/core/collections/tree/LinkedTreeNodeImpl;
+	public static final fun path (Lru/vladislavsumin/core/collections/tree/LinkedTreeNode;)Ljava/util/List;
+}
+
+public abstract interface class ru/vladislavsumin/core/collections/tree/TreeNode {
+	public abstract fun getChildren ()Ljava/util/Collection;
+	public abstract fun getValue ()Ljava/lang/Object;
+}
+
+public final class ru/vladislavsumin/core/collections/tree/TreeNodeImpl : ru/vladislavsumin/core/collections/tree/TreeNode {
+	public fun getChildren ()Ljava/util/Collection;
+	public fun getValue ()Ljava/lang/Object;
+}
+
+public final class ru/vladislavsumin/core/collections/tree/TreeNodeKt {
+	public static final fun asSequence (Lru/vladislavsumin/core/collections/tree/TreeNode;Lkotlin/jvm/functions/Function1;)Lkotlin/sequences/Sequence;
+	public static synthetic fun asSequence$default (Lru/vladislavsumin/core/collections/tree/TreeNode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlin/sequences/Sequence;
+	public static final fun findByPath (Lru/vladislavsumin/core/collections/tree/TreeNode;Ljava/util/List;Lkotlin/jvm/functions/Function1;)Lru/vladislavsumin/core/collections/tree/TreeNode;
+	public static final fun nodeOf (Ljava/lang/Object;[Lru/vladislavsumin/core/collections/tree/TreeNodeImpl;)Lru/vladislavsumin/core/collections/tree/TreeNodeImpl;
+}
+

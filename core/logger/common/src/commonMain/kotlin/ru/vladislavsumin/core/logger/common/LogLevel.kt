@@ -4,7 +4,7 @@ package ru.vladislavsumin.core.logger.common
  * Перечисление уровней логирования.
  */
 @Suppress("MagicNumber") // В данном случае смысл чисел понятен без вынесения в константы
-enum class LogLevel(private val rawLevel: Int) {
+public enum class LogLevel(private val rawLevel: Int) {
     TRACE(6),
     DEBUG(5),
     INFO(4),
@@ -17,14 +17,15 @@ enum class LogLevel(private val rawLevel: Int) {
     /**
      * Проверяет допустимо ли на этом уровне логирования логировать [logLevel]
      */
-    fun allowLog(logLevel: LogLevel): Boolean {
+    @PublishedApi
+    internal fun allowLog(logLevel: LogLevel): Boolean {
         return this.rawLevel >= logLevel.rawLevel
     }
 
     /**
      * Объединяет два [LogLevel] возвращая уровень с меньшим уровнем (более узкий)
      */
-    infix fun merge(logLevel: LogLevel): LogLevel {
+    public infix fun merge(logLevel: LogLevel): LogLevel {
         return if (this.rawLevel <= logLevel.rawLevel) this else logLevel
     }
 }

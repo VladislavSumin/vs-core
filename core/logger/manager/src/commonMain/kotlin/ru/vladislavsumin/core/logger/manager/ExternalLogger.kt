@@ -5,11 +5,11 @@ import ru.vladislavsumin.core.logger.common.LogLevel
 /**
  * Внешний интерфейс для использования внешнего логера.
  */
-interface ExternalLogger {
-    fun log(level: LogLevel, msg: String)
-    fun log(level: LogLevel, throwable: Throwable, msg: String)
+public interface ExternalLogger {
+    public fun log(level: LogLevel, msg: String)
+    public fun log(level: LogLevel, throwable: Throwable, msg: String)
 }
 
-fun interface ExternalLoggerFactory {
-    fun create(tag: String): ExternalLogger
+public fun interface ExternalLoggerFactory {
+    public fun create(tag: String): ExternalLogger
 }

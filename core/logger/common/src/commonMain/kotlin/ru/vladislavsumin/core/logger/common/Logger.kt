@@ -21,11 +21,11 @@ package ru.vladislavsumin.core.logger.common
  * функцию из inline функций не делая ее публичной.
  */
 @Suppress("TooManyFunctions") // Для логера допустимо большое количество функций так как они все типовые.
-abstract class Logger {
+public abstract class Logger {
     /**
      * Возвращает текущий уровень логирования для данного логера.
      */
-    abstract val logLevel: LogLevel
+    public abstract val logLevel: LogLevel
 
     /**
      * Логирует **без** проверки уровня (это необходимо, что бы не проверять уровень логирования дважды).
@@ -38,63 +38,63 @@ abstract class Logger {
     protected abstract fun logInternal(level: LogLevel, throwable: Throwable, msg: String)
 
     @PublishedApi
-    internal fun accessLogInternal(level: LogLevel, msg: String) = logInternal(level, msg)
+    internal fun accessLogInternal(level: LogLevel, msg: String): Unit = logInternal(level, msg)
 
     @PublishedApi
-    internal fun accessLogInternal(level: LogLevel, throwable: Throwable, msg: String) =
+    internal fun accessLogInternal(level: LogLevel, throwable: Throwable, msg: String): Unit =
         logInternal(level, throwable, msg)
 
-    fun log(level: LogLevel, msg: String) {
+    public fun log(level: LogLevel, msg: String) {
         if (logLevel.allowLog(logLevel)) {
             logInternal(level, msg)
         }
     }
 
-    fun log(level: LogLevel, throwable: Throwable, msg: String) {
+    public fun log(level: LogLevel, throwable: Throwable, msg: String) {
         if (logLevel.allowLog(logLevel)) {
             logInternal(level, throwable, msg)
         }
     }
 
-    inline fun log(level: LogLevel, msg: () -> String) {
+    public inline fun log(level: LogLevel, msg: () -> String) {
         if (logLevel.allowLog(level)) {
             accessLogInternal(level, msg())
         }
     }
 
-    inline fun log(level: LogLevel, throwable: Throwable, msg: () -> String) {
+    public inline fun log(level: LogLevel, throwable: Throwable, msg: () -> String) {
         if (logLevel.allowLog(level)) {
             accessLogInternal(level, throwable, msg())
         }
     }
 
-    fun t(throwable: Throwable, msg: String) = log(LogLevel.TRACE, throwable, msg)
-    fun t(msg: String) = log(LogLevel.TRACE, msg)
-    inline fun t(throwable: Throwable, msg: () -> String) = log(LogLevel.TRACE, throwable, msg)
-    inline fun t(msg: () -> String) = log(LogLevel.TRACE, msg)
+    public fun t(throwable: Throwable, msg: String): Unit = log(LogLevel.TRACE, throwable, msg)
+    public fun t(msg: String): Unit = log(LogLevel.TRACE, msg)
+    public inline fun t(throwable: Throwable, msg: () -> String): Unit = log(LogLevel.TRACE, throwable, msg)
+    public inline fun t(msg: () -> String): Unit = log(LogLevel.TRACE, msg)
 
-    fun d(throwable: Throwable, msg: String) = log(LogLevel.DEBUG, throwable, msg)
-    fun d(msg: String) = log(LogLevel.DEBUG, msg)
-    inline fun d(throwable: Throwable, msg: () -> String) = log(LogLevel.DEBUG, throwable, msg)
-    inline fun d(msg: () -> String) = log(LogLevel.DEBUG, msg)
+    public fun d(throwable: Throwable, msg: String): Unit = log(LogLevel.DEBUG, throwable, msg)
+    public fun d(msg: String): Unit = log(LogLevel.DEBUG, msg)
+    public inline fun d(throwable: Throwable, msg: () -> String): Unit = log(LogLevel.DEBUG, throwable, msg)
+    public inline fun d(msg: () -> String): Unit = log(LogLevel.DEBUG, msg)
 
-    fun i(throwable: Throwable, msg: String) = log(LogLevel.INFO, throwable, msg)
-    fun i(msg: String) = log(LogLevel.INFO, msg)
-    inline fun i(throwable: Throwable, msg: () -> String) = log(LogLevel.INFO, throwable, msg)
-    inline fun i(msg: () -> String) = log(LogLevel.INFO, msg)
+    public fun i(throwable: Throwable, msg: String): Unit = log(LogLevel.INFO, throwable, msg)
+    public fun i(msg: String): Unit = log(LogLevel.INFO, msg)
+    public inline fun i(throwable: Throwable, msg: () -> String): Unit = log(LogLevel.INFO, throwable, msg)
+    public inline fun i(msg: () -> String): Unit = log(LogLevel.INFO, msg)
 
-    fun w(throwable: Throwable, msg: String) = log(LogLevel.WARN, throwable, msg)
-    fun w(msg: String) = log(LogLevel.WARN, msg)
-    inline fun w(throwable: Throwable, msg: () -> String) = log(LogLevel.WARN, throwable, msg)
-    inline fun w(msg: () -> String) = log(LogLevel.WARN, msg)
+    public fun w(throwable: Throwable, msg: String): Unit = log(LogLevel.WARN, throwable, msg)
+    public fun w(msg: String): Unit = log(LogLevel.WARN, msg)
+    public inline fun w(throwable: Throwable, msg: () -> String): Unit = log(LogLevel.WARN, throwable, msg)
+    public inline fun w(msg: () -> String): Unit = log(LogLevel.WARN, msg)
 
-    fun e(throwable: Throwable, msg: String) = log(LogLevel.ERROR, throwable, msg)
-    fun e(msg: String) = log(LogLevel.ERROR, msg)
-    inline fun e(throwable: Throwable, msg: () -> String) = log(LogLevel.ERROR, throwable, msg)
-    inline fun e(msg: () -> String) = log(LogLevel.ERROR, msg)
+    public fun e(throwable: Throwable, msg: String): Unit = log(LogLevel.ERROR, throwable, msg)
+    public fun e(msg: String): Unit = log(LogLevel.ERROR, msg)
+    public inline fun e(throwable: Throwable, msg: () -> String): Unit = log(LogLevel.ERROR, throwable, msg)
+    public inline fun e(msg: () -> String): Unit = log(LogLevel.ERROR, msg)
 
-    fun f(throwable: Throwable, msg: String) = log(LogLevel.FATAL, throwable, msg)
-    fun f(msg: String) = log(LogLevel.FATAL, msg)
-    inline fun f(throwable: Throwable, msg: () -> String) = log(LogLevel.FATAL, throwable, msg)
-    inline fun f(msg: () -> String) = log(LogLevel.FATAL, msg)
+    public fun f(throwable: Throwable, msg: String): Unit = log(LogLevel.FATAL, throwable, msg)
+    public fun f(msg: String): Unit = log(LogLevel.FATAL, msg)
+    public inline fun f(throwable: Throwable, msg: () -> String): Unit = log(LogLevel.FATAL, throwable, msg)
+    public inline fun f(msg: () -> String): Unit = log(LogLevel.FATAL, msg)
 }

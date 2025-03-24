@@ -26,7 +26,7 @@ public abstract class ViewModel {
     /**
      * [CoroutineScope] с viewmodel lifecycle.
      */
-    protected val viewModelScope:CoroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+    protected val viewModelScope: CoroutineScope = CoroutineScope(Dispatchers.Main.immediate)
 
     @PublishedApi
     internal val stateKeeper: StateKeeper = let {

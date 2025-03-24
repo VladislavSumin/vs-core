@@ -25,10 +25,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 public abstract class ViewModel {
     /**
      * [CoroutineScope] с viewmodel lifecycle.
-     *
-     * Пока сделал приватным, кажется экстеншен функций должно хватать, если что можно сделать protected.
      */
-    private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate)
+    protected val viewModelScope:CoroutineScope = CoroutineScope(Dispatchers.Main.immediate)
 
     @PublishedApi
     internal val stateKeeper: StateKeeper = let {

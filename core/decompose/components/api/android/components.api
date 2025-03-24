@@ -5,6 +5,7 @@ public abstract class ru/vladislavsumin/core/decompose/components/Component : co
 	public fun getComponentContextFactory ()Lcom/arkivanov/decompose/ComponentContextFactory;
 	public fun getInstanceKeeper ()Lcom/arkivanov/essenty/instancekeeper/InstanceKeeper;
 	public fun getLifecycle ()Lcom/arkivanov/essenty/lifecycle/Lifecycle;
+	protected final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
 	public fun getStateKeeper ()Lcom/arkivanov/essenty/statekeeper/StateKeeper;
 	protected final fun launch (Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lru/vladislavsumin/core/decompose/components/Component;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
@@ -14,6 +15,7 @@ public abstract class ru/vladislavsumin/core/decompose/components/Component : co
 public abstract class ru/vladislavsumin/core/decompose/components/ViewModel {
 	public fun <init> ()V
 	public final fun getStateKeeper ()Lcom/arkivanov/essenty/statekeeper/StateKeeper;
+	protected final fun getViewModelScope ()Lkotlinx/coroutines/CoroutineScope;
 	protected final fun launch (Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lru/vladislavsumin/core/decompose/components/ViewModel;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	protected final fun stateIn (Lkotlinx/coroutines/flow/Flow;Ljava/lang/Object;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;

@@ -16,6 +16,13 @@ gradlePlugins-checkUpdates = "0.51.0"
 jb-compose = "1.7.1"
 decompose = "3.2.2"
 
+# Logging
+logging-log4j = "2.24.3"
+logging-slf4j = "2.0.16"
+
+# Testing
+testing-mockk = "1.13.14"
+
 [libraries]
 
 # Gradle Plugins
@@ -45,6 +52,15 @@ decompose-extensions-android = { module = "com.arkivanov.decompose:extensions-an
 
 # Code generation
 kotlin-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "kotlin-ksp" }
+
+# Testing
+testing-mockk = { module = "io.mockk:mockk", version.ref = "testing-mockk" }
+
+# Logging
+logging-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "logging-log4j" }
+logging-log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "logging-log4j" }
+logging-log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "logging-log4j" }
+logging-slf4j = { module = "org.slf4j:slf4j-api", version.ref = "logging-slf4j" }
 
 # Other
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "gradlePlugins-detekt" }

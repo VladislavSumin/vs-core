@@ -1,0 +1,15 @@
+public abstract interface class ru/vladislavsumin/core/logger/manager/ExternalLogger {
+	public abstract fun log (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/String;)V
+	public abstract fun log (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/Throwable;Ljava/lang/String;)V
+}
+
+public abstract interface class ru/vladislavsumin/core/logger/manager/ExternalLoggerFactory {
+	public abstract fun create (Ljava/lang/String;)Lru/vladislavsumin/core/logger/manager/ExternalLogger;
+}
+
+public final class ru/vladislavsumin/core/logger/manager/LoggerManager {
+	public static final field INSTANCE Lru/vladislavsumin/core/logger/manager/LoggerManager;
+	public final fun init (Lru/vladislavsumin/core/logger/manager/ExternalLoggerFactory;Lru/vladislavsumin/core/logger/common/LogLevel;)V
+	public static synthetic fun init$default (Lru/vladislavsumin/core/logger/manager/LoggerManager;Lru/vladislavsumin/core/logger/manager/ExternalLoggerFactory;Lru/vladislavsumin/core/logger/common/LogLevel;ILjava/lang/Object;)V
+}
+

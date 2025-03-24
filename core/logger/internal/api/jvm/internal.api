@@ -1,0 +1,5 @@
+public final class ru/vladislavsumin/core/logger/internal/LoggerFactoryKt {
+	public static final fun getLoggerFactory ()Lkotlin/jvm/functions/Function2;
+	public static final fun setLoggerFactory (Lkotlin/jvm/functions/Function2;)V
+}
+

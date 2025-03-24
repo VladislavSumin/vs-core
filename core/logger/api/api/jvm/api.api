@@ -1,0 +1,5 @@
+public final class ru/vladislavsumin/core/logger/api/LoggerFactoryKt {
+	public static final fun logger (Ljava/lang/String;Lru/vladislavsumin/core/logger/common/LogLevel;)Lru/vladislavsumin/core/logger/common/Logger;
+	public static synthetic fun logger$default (Ljava/lang/String;Lru/vladislavsumin/core/logger/common/LogLevel;ILjava/lang/Object;)Lru/vladislavsumin/core/logger/common/Logger;
+}
+

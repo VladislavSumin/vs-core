@@ -1,0 +1,52 @@
+public final class ru/vladislavsumin/core/logger/common/LogLevel : java/lang/Enum {
+	public static final field DEBUG Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static final field ERROR Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static final field FATAL Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static final field INFO Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static final field NONE Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static final field TRACE Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static final field WARN Lru/vladislavsumin/core/logger/common/LogLevel;
+	public final fun allowLog (Lru/vladislavsumin/core/logger/common/LogLevel;)Z
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun merge (Lru/vladislavsumin/core/logger/common/LogLevel;)Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static fun valueOf (Ljava/lang/String;)Lru/vladislavsumin/core/logger/common/LogLevel;
+	public static fun values ()[Lru/vladislavsumin/core/logger/common/LogLevel;
+}
+
+public abstract class ru/vladislavsumin/core/logger/common/Logger {
+	public fun <init> ()V
+	public final fun accessLogInternal (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/String;)V
+	public final fun accessLogInternal (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun d (Ljava/lang/String;)V
+	public final fun d (Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun d (Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public final fun d (Lkotlin/jvm/functions/Function0;)V
+	public final fun e (Ljava/lang/String;)V
+	public final fun e (Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun e (Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public final fun e (Lkotlin/jvm/functions/Function0;)V
+	public final fun f (Ljava/lang/String;)V
+	public final fun f (Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun f (Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public final fun f (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun getLogLevel ()Lru/vladislavsumin/core/logger/common/LogLevel;
+	public final fun i (Ljava/lang/String;)V
+	public final fun i (Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun i (Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public final fun i (Lkotlin/jvm/functions/Function0;)V
+	public final fun log (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/String;)V
+	public final fun log (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun log (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public final fun log (Lru/vladislavsumin/core/logger/common/LogLevel;Lkotlin/jvm/functions/Function0;)V
+	protected abstract fun logInternal (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/String;)V
+	protected abstract fun logInternal (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun t (Ljava/lang/String;)V
+	public final fun t (Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun t (Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public final fun t (Lkotlin/jvm/functions/Function0;)V
+	public final fun w (Ljava/lang/String;)V
+	public final fun w (Ljava/lang/Throwable;Ljava/lang/String;)V
+	public final fun w (Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public final fun w (Lkotlin/jvm/functions/Function0;)V
+}
+

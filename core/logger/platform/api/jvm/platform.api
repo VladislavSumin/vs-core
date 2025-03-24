@@ -1,0 +1,5 @@
+public final class ru/vladislavsumin/core/logger/platform/LoggerManagerExtKt {
+	public static final fun initDefault (Lru/vladislavsumin/core/logger/manager/LoggerManager;Lru/vladislavsumin/core/logger/common/LogLevel;)V
+	public static synthetic fun initDefault$default (Lru/vladislavsumin/core/logger/manager/LoggerManager;Lru/vladislavsumin/core/logger/common/LogLevel;ILjava/lang/Object;)V
+}
+

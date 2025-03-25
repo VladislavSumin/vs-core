@@ -7,11 +7,15 @@ pluginManagement {
 rootProject.name = "vs-core"
 
 include(":core:collections:tree")
+
 include(":core:decompose:components")
 include(":core:decompose:compose")
 include(":core:decompose:test")
+
 include(":core:logger:api")
 include(":core:logger:common")
 include(":core:logger:internal")
 include(":core:logger:manager")
 include(":core:logger:platform")
+
+include(":core:navigation:api")

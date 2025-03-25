@@ -1,0 +1,6 @@
+public abstract interface class ru/vladislavsumin/core/navigation/NavigationHost {
+}
+
+public abstract interface class ru/vladislavsumin/core/navigation/ScreenParams {
+}
+

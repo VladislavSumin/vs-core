@@ -19,3 +19,4 @@ include(":core:logger:manager")
 include(":core:logger:platform")
 
 include(":core:navigation:api")
+include(":core:navigation:impl")

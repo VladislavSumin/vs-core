@@ -6,10 +6,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.utils.createCoroutineScope
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
-import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.Navigation.NavigationEvent
 import ru.vladislavsumin.core.navigation.NavigationLogger
+import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.navigator.GlobalNavigator
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 import ru.vladislavsumin.core.navigation.screen.DefaultScreenContext

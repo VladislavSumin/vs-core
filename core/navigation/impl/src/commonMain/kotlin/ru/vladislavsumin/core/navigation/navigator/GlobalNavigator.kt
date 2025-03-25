@@ -4,9 +4,9 @@ import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.collections.tree.asSequenceUp
 import ru.vladislavsumin.core.collections.tree.findByPath
 import ru.vladislavsumin.core.collections.tree.path
-import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NavigationLogger
+import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.asErasedKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo

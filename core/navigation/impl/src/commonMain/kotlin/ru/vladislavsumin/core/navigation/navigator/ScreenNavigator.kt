@@ -7,8 +7,8 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.serialization.KSerializer
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.navigation.NavigationHost
-import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.NavigationLogger
+import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
@@ -194,5 +194,8 @@ public class ScreenNavigator internal constructor(
      */
     public fun open(screenParams: ScreenParams): Unit = globalNavigator.open(screenPath, screenParams)
     public fun close(screenParams: ScreenParams): Unit = globalNavigator.close(screenPath, screenParams)
-    public fun close(): Unit = globalNavigator.close(screenPath, (screenPath.last() as ScreenPath.PathElement.Params).screenParams)
+    public fun close(): Unit = globalNavigator.close(
+        screenPath,
+        (screenPath.last() as ScreenPath.PathElement.Params).screenParams,
+    )
 }

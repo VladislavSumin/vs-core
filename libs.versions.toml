@@ -15,6 +15,7 @@ gradlePlugins-checkUpdates = "0.51.0"
 # Other
 jb-compose = "1.7.1"
 decompose = "3.2.2"
+kotlinpoet = "2.0.0"
 
 # Logging
 logging-log4j = "2.24.3"
@@ -52,6 +53,8 @@ decompose-extensions-android = { module = "com.arkivanov.decompose:extensions-an
 
 # Code generation
 kotlin-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "kotlin-ksp" }
+kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
+kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
 
 # Testing
 testing-mockk = { module = "io.mockk:mockk", version.ref = "testing-mockk" }

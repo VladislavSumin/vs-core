@@ -1,0 +1,26 @@
+public final class ru/vladislavsumin/core/ksp/utils/ResolverExtKt {
+	public static final fun processAnnotated (Lcom/google/devtools/ksp/processing/Resolver;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+}
+
+public final class ru/vladislavsumin/core/ksp/utils/TypeSpecExtKt {
+	public static final fun primaryConstructorWithPrivateFields (Lcom/squareup/kotlinpoet/TypeSpec$Builder;Ljava/lang/Iterable;)Lcom/squareup/kotlinpoet/TypeSpec$Builder;
+	public static final fun writeTo (Lcom/squareup/kotlinpoet/TypeSpec;Lcom/google/devtools/ksp/processing/CodeGenerator;Ljava/lang/String;Z)V
+	public static synthetic fun writeTo$default (Lcom/squareup/kotlinpoet/TypeSpec;Lcom/google/devtools/ksp/processing/CodeGenerator;Ljava/lang/String;ZILjava/lang/Object;)V
+}
+
+public final class ru/vladislavsumin/core/ksp/utils/Types {
+	public static final field INSTANCE Lru/vladislavsumin/core/ksp/utils/Types;
+}
+
+public final class ru/vladislavsumin/core/ksp/utils/Types$Coroutines {
+	public static final field INSTANCE Lru/vladislavsumin/core/ksp/utils/Types$Coroutines;
+	public final fun getCoroutineScope ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getFlow ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getGlobalScope ()Lcom/squareup/kotlinpoet/ClassName;
+}
+
+public final class ru/vladislavsumin/core/ksp/utils/Types$Serialization {
+	public static final field INSTANCE Lru/vladislavsumin/core/ksp/utils/Types$Serialization;
+	public final fun getProtoBuf ()Lcom/squareup/kotlinpoet/ClassName;
+}
+

@@ -12,6 +12,8 @@ include(":core:decompose:components")
 include(":core:decompose:compose")
 include(":core:decompose:test")
 
+include(":core:ksp:utils")
+
 include(":core:logger:api")
 include(":core:logger:common")
 include(":core:logger:internal")

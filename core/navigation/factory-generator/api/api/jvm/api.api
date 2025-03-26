@@ -1,0 +1,3 @@
+public abstract interface annotation class ru/vladislavsumin/core/navigation/factoryGenerator/GenerateScreenFactory : java/lang/annotation/Annotation {
+}
+

@@ -22,6 +22,4 @@ fun Project.fullName(): String = pathSequence()
     .asIterable()
     .reversed()
     .drop(1) // отбрасываем root project
-    .joinToString(separator = ".") {
-        it.name.replace("-", "_")
-    }
+    .joinToString(separator = ".") { it.name }

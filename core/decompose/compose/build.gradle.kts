@@ -10,7 +10,7 @@ kotlin {
     explicitApi()
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core decompose compose support"
         description = "Compose support for decompose component"

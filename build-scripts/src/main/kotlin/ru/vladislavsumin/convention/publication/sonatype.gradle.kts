@@ -1,5 +1,6 @@
 package ru.vladislavsumin.convention.publication
 
+import com.vanniktech.maven.publish.SonatypeHost
 import ru.vladislavsumin.configuration.projectConfiguration
 
 /**
@@ -9,22 +10,21 @@ import ru.vladislavsumin.configuration.projectConfiguration
 plugins {
     id("ru.vladislavsumin.convention.publication.group")
     id("ru.vladislavsumin.convention.publication.version")
-    `maven-publish`
-    signing
+    id("com.vanniktech.maven.publish")
 }
 
-val sonatypeDir = "${project.layout.buildDirectory.get().asFile.absolutePath}/sonatype"
+ext["signing.keyId"] = projectConfiguration.signing.keyId
+ext["signing.password"] = projectConfiguration.signing.password
+ext["signing.secretKeyRingFile"] = projectConfiguration.signing.secretKeyRingFile
 
-publishing {
-    repositories {
-        maven {
-            name = "projectLocal"
-            setUrl("file://${sonatypeDir}/localRepository")
-        }
-    }
-}
+ext["mavenCentralUsername"] = projectConfiguration.sonatype.username
+ext["mavenCentralPassword"] = projectConfiguration.sonatype.password
 
-publishing.publications.withType<MavenPublication>().configureEach {
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
+    signAllPublications()
+
     pom {
         url = "https://github.com/VladislavSumin/vs-core"
 
@@ -47,21 +47,4 @@ publishing.publications.withType<MavenPublication>().configureEach {
             }
         }
     }
-}
-
-ext["signing.keyId"] = projectConfiguration.signing.keyId
-ext["signing.password"] = projectConfiguration.signing.password
-ext["signing.secretKeyRingFile"] = projectConfiguration.signing.secretKeyRingFile
-
-signing {
-    sign(publishing.publications)
-}
-
-// TODO это временное решение до написание нормального плагина для релизов
-project.tasks.register<Zip>("zipLocalRepositoryForSonatypeUpload") {
-    dependsOn(tasks.named("publishAllPublicationsToProjectLocalRepository"))
-    from("$sonatypeDir/localRepository")
-    exclude("**/maven-metadata.xml*")
-    archiveFileName.set("localRepository.zip")
-    destinationDirectory.set(File(sonatypeDir))
 }

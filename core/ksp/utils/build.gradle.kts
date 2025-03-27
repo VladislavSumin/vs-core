@@ -14,7 +14,7 @@ dependencies {
     api(vsCoreLibs.kotlinpoet.ksp)
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core ksp utils"
         description = "Utils for work with ksp and kotlinpoet"

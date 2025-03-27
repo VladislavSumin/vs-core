@@ -15,7 +15,7 @@ kotlin {
     }
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core logger common"
         description = "Part of VS core logger framework"

@@ -13,7 +13,7 @@ dependencies {
     implementation(projects.core.navigation.factoryGenerator.api)
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core navigation ksp impl"
         description = "Part of VS core navigation framework"

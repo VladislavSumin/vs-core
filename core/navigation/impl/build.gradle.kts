@@ -11,9 +11,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.core.navigation.api)
+            api(projects.core.decompose.components)
+            api(projects.core.decompose.compose)
 
-            implementation(projects.core.decompose.components)
-            implementation(projects.core.decompose.compose)
             implementation(projects.core.collections.tree)
             implementation(projects.core.logger.api)
 

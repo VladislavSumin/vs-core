@@ -14,3 +14,10 @@ kotlin {
         }
     }
 }
+
+mavenPublishing {
+    pom {
+        name = "VS core logger manager"
+        description = "Part of VS core logger framework"
+    }
+}

@@ -9,7 +9,7 @@ kotlin {
     explicitApi()
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core collection tree"
         description = "Tree collection"

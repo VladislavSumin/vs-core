@@ -23,7 +23,7 @@ kotlin {
     }
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core decompose components"
         description = "Core decompose components framework"

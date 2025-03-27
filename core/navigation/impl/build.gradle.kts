@@ -23,7 +23,7 @@ kotlin {
     }
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core navigation impl"
         description = "Part of VS core navigation framework"

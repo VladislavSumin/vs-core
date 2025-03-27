@@ -8,7 +8,7 @@ kotlin {
     explicitApi()
 }
 
-publishing.publications.withType<MavenPublication>().configureEach {
+mavenPublishing {
     pom {
         name = "VS core navigation ksp api"
         description = "Part of VS core navigation framework"

@@ -12,6 +12,9 @@ include(":core:decompose:components")
 include(":core:decompose:compose")
 include(":core:decompose:test")
 
+include(":core:factory-generator:api")
+include(":core:factory-generator:ksp")
+
 include(":core:ksp:utils")
 
 include(":core:logger:api")

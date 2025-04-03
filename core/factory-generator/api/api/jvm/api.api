@@ -1,0 +1,6 @@
+public abstract interface annotation class ru/vladislavsumin/core/factoryGenerator/ByCreate : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class ru/vladislavsumin/core/factoryGenerator/GenerateFactory : java/lang/annotation/Annotation {
+}
+

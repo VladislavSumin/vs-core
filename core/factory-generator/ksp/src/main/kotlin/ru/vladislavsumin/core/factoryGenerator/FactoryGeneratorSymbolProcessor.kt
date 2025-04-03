@@ -88,6 +88,6 @@ internal class FactoryGeneratorSymbolProcessor(
     }
 
     companion object {
-        private val BY_CREATE_ANNOTATION = ClassName("ru.vs.core.factoryGenerator", "ByCreate")
+        private val BY_CREATE_ANNOTATION = ClassName("ru.vladislavsumin.core.factoryGenerator", "ByCreate")
     }
 }

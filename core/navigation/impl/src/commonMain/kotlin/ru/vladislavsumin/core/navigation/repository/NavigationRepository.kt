@@ -61,7 +61,7 @@ internal class NavigationRepositoryImpl(
 
         override fun <P : ScreenParams, S : Screen> registerScreen(
             key: ScreenKey<P>,
-            factory: ScreenFactory<P, S>,
+            factory: ScreenFactory<P, S>?,
             paramsSerializer: KSerializer<P>,
             defaultParams: P?,
             opensIn: Set<NavigationHost>,

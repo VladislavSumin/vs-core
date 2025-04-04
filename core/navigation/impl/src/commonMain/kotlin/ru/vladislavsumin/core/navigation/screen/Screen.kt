@@ -3,6 +3,7 @@ package ru.vladislavsumin.core.navigation.screen
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
 /**
@@ -33,6 +34,14 @@ public abstract class Screen(context: ScreenContext) :
         val viewModel = super.viewModel(factory)
         (viewModel as? NavigationViewModel)?.handleNavigation()
         return viewModel
+    }
+
+    /**
+     * Регистрирует кастомную фабрику для экрана [T]. Данный экран должен открываться в хостах навигации этого экрана.
+     * **Внимание** Регистрировать фабрики нужно ДО объявления хостов навигации. Это важно при восстановлении состояния.
+     */
+    protected inline fun <reified T : ScreenParams> registerCustomFactory(factory: ScreenFactory<T, Screen>) {
+        navigator.registerCustomFactory(ScreenKey(T::class), factory)
     }
 
     @PublishedApi

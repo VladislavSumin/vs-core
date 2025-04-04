@@ -18,7 +18,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenFactory
  * @param description опциональное описание экрана для дебага.
  */
 internal data class ScreenRegistration<P : ScreenParams, S : Screen>(
-    val factory: ScreenFactory<P, S>,
+    val factory: ScreenFactory<P, S>?,
     val defaultParams: P?,
     val opensIn: Set<NavigationHost>,
     val navigationHosts: Set<NavigationHost>,

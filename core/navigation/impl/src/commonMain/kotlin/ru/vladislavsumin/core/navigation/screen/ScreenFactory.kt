@@ -7,7 +7,7 @@ import ru.vladislavsumin.core.navigation.ScreenParams
  * @param P тип параметров экрана.
  * @param S тип экрана.
  */
-public interface ScreenFactory<P : ScreenParams, S : Screen> {
+public fun interface ScreenFactory<P : ScreenParams, S : Screen> {
     /**
      * Создает компонент экрана.
      * @param context контекст экрана.

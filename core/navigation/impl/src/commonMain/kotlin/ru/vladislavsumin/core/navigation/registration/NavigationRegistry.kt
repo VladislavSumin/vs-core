@@ -22,14 +22,14 @@ public abstract class NavigationRegistry {
      *
      * @param P тип параметров экрана.
      * @param S тип экрана.
-     * @param factory фабрика компонента экрана.
+     * @param factory фабрика компонента экрана, может быть явно задана как null, если используются customFactories.
      * @param defaultParams параметры экрана по умолчанию.
      * @param opensIn в каких [NavigationHost] может быть открыт этот экран.
      * @param navigationHosts хосты навигации расположенные на этом экране
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
     public inline fun <reified P : ScreenParams, S : Screen> registerScreen(
-        factory: ScreenFactory<P, S>,
+        factory: ScreenFactory<P, S>?,
         defaultParams: P? = null,
         opensIn: Set<NavigationHost> = emptySet(),
         navigationHosts: Set<NavigationHost> = emptySet(),
@@ -47,7 +47,7 @@ public abstract class NavigationRegistry {
     @PublishedApi
     internal abstract fun <P : ScreenParams, S : Screen> registerScreen(
         key: ScreenKey<P>,
-        factory: ScreenFactory<P, S>,
+        factory: ScreenFactory<P, S>?,
         paramsSerializer: KSerializer<P>,
         defaultParams: P? = null,
         opensIn: Set<NavigationHost> = emptySet(),

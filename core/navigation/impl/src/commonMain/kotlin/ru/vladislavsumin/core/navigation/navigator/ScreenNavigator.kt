@@ -40,6 +40,11 @@ public class ScreenNavigator internal constructor(
     private val navigationHosts = mutableMapOf<NavigationHost, HostNavigator>()
 
     /**
+     * Зарегистрированные кастомные фабрики экранов открываемых из хостов этого экрана.
+     */
+    private val customFactories = mutableMapOf<ScreenKey<out ScreenParams>, ScreenFactory<*, *>>()
+
+    /**
      * Текущие активные навигаторы среди дочерних экранов.
      */
     private val childScreenNavigators = mutableMapOf<ScreenParams, ScreenNavigator>()
@@ -56,6 +61,16 @@ public class ScreenNavigator internal constructor(
         parentNavigator?.registerScreenNavigator(this, lifecycle)
 
         lifecycle.doOnCreate {
+            // Проверяем что экран зарегистрировал кастомные фабрики для всех дочерних экранов которые требуют таковых.
+            val screenWithoutFactory = node.children
+                .filter { it.value.factory == null }
+                .map { it.value.screenKey }
+                .toSet()
+            val registeredScreenFactory = customFactories.keys
+            check(screenWithoutFactory == registeredScreenFactory) {
+                "Actual factory registration wrong. Expected $screenWithoutFactory, actual $registeredScreenFactory"
+            }
+
             // Проверяем что экран действительно зарегистрировал все типы навигации которые может открывать.
             val expectedHosts = node.value.navigationHosts
             val actualHosts = navigationHosts.keys
@@ -103,10 +118,22 @@ public class ScreenNavigator internal constructor(
     internal fun registerHostNavigator(navigationHost: NavigationHost, hostNavigator: HostNavigator) {
         val oldHost = navigationHosts.put(navigationHost, hostNavigator)
         check(oldHost == null) { "Navigation host $navigationHost already registered" }
-        lifecycle.doOnDestroy {
-            val host = navigationHosts.remove(navigationHost)
-            check(host != null) { "Navigation host $navigationHost not found" }
+    }
+
+    /**
+     * Регистрирует [ScreenFactory] для [screenKey] навигации. Учитывает lifecycle [ScreenContext].
+     */
+    @PublishedApi
+    internal fun <S : ScreenParams> registerCustomFactory(screenKey: ScreenKey<S>, screenFactory: ScreenFactory<*, *>) {
+        // Важно что бы фабрики регистрировались до инициализации навигационных хостов. Иначе при восстановлении
+        // состояния навигационные хосты будут восстановлены до регистрации фабрик, а следовательно не смогут создать
+        // экран.
+        check(navigationHosts.isEmpty()) {
+            "You must register screen factory before any navigation host, now registered hosts ${navigationHosts.keys}"
         }
+
+        val oldCustomFactory = customFactories.put(screenKey, screenFactory)
+        check(oldCustomFactory == null) { "Custom factory for $screenKey already registered" }
     }
 
     internal fun openInsideThisScreen(screenPath: ScreenPath) {
@@ -177,7 +204,9 @@ public class ScreenNavigator internal constructor(
      */
     @Suppress("UNCHECKED_CAST")
     internal fun getChildScreenFactory(screenKey: ScreenKey<ScreenParams>): ScreenFactory<ScreenParams, *> {
-        return node.children.find { it.value.screenKey == screenKey }!!.value.factory as ScreenFactory<ScreenParams, *>
+        // Ищем среди локальных фабрик, потом, если не нашли, смотрим в глобальных фабриках.
+        return customFactories[screenKey] as? ScreenFactory<ScreenParams, *>
+            ?: node.children.find { it.value.screenKey == screenKey }!!.value.factory as ScreenFactory<ScreenParams, *>
     }
 
     /**

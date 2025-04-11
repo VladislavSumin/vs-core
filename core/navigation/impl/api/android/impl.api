@@ -35,6 +35,7 @@ public final class ru/vladislavsumin/core/navigation/navigator/ScreenNavigator {
 	public final fun close ()V
 	public final fun close (Lru/vladislavsumin/core/navigation/ScreenParams;)V
 	public final fun open (Lru/vladislavsumin/core/navigation/ScreenParams;)V
+	public final fun registerCustomFactory-5BVeKMU (Lkotlin/reflect/KClass;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;)V
 }
 
 public abstract interface class ru/vladislavsumin/core/navigation/registration/NavigationRegistrar {

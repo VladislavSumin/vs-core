@@ -45,11 +45,6 @@ internal class NavigationRepositoryImpl(
     private val registry = NavigationRegistryImpl()
 
     init {
-// TODO вернуть после реализации базовой рефлексии в js.
-//        NavigationLogger.d {
-//            val registrarsString = registrars.joinToStingFormatted { it::class.qualifiedName!! }
-//            "Initializing NavigationRegistry, registrars:\n$registrarsString"
-//        }
         registrars.forEach { registry.register(it) }
         isFinalized = true
     }
@@ -68,7 +63,9 @@ internal class NavigationRepositoryImpl(
             navigationHosts: Set<NavigationHost>,
             description: String?,
         ) {
-            checkFinalization()
+            if (isFinalized) {
+                throw ScreenRegistrationAfterFinalizeException(key)
+            }
 
             serializers[key] = paramsSerializer
             val screenRegistration = ScreenRegistration(
@@ -79,11 +76,9 @@ internal class NavigationRepositoryImpl(
                 description = description,
             )
             val oldRegistration = screens.put(key, screenRegistration)
-            check(oldRegistration == null) { "Double registration for key=$key" }
-        }
-
-        private fun checkFinalization() = check(!isFinalized) {
-            "NavigationRegistry already finalized. Use NavigationRegistrar to navigation registration"
+            if (oldRegistration != null) {
+                throw DoubleScreenRegistrationException(key)
+            }
         }
     }
 }

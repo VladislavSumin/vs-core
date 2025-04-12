@@ -3,6 +3,8 @@ plugins {
     id("ru.vladislavsumin.convention.compose")
     id("ru.vladislavsumin.convention.publication.sonatype")
     id("ru.vladislavsumin.convention.analyze.binary-validator")
+
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 kotlin {

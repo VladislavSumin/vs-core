@@ -11,6 +11,7 @@ import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
+import ru.vladislavsumin.core.navigation.screen.asErasedKey
 
 /**
  * Навигация типа "страницы", означает что в ней одновременно может быть несколько экранов, но только один из них
@@ -32,7 +33,7 @@ public fun ScreenContext.childNavigationPages(
     val hostNavigator = PagesHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
 
-    val stack = childPages(
+    val pages = childPages(
         source = source,
         serializer = navigator.serializer,
         key = key,
@@ -42,101 +43,58 @@ public fun ScreenContext.childNavigationPages(
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
     )
-    return stack
+    return pages
 }
 
+@Suppress("EmptyFunctionBlock")
 private class PagesHostNavigator(
-    @Suppress("UnusedPrivateProperty")
     private val pagesNavigation: PagesNavigation<ScreenParams>,
 ) : HostNavigator {
     override fun open(params: ScreenParams) {
-        // Если такого экрана еще нет в стеке, то открываем его.
-        // Если же экран уже есть в стеке, то закрываем все экраны после него.
-//        pagesNavigation.navigate(
-//            transformer = { stack ->
-//                val indexOfScreen = stack.indexOf(params)
-//                if (indexOfScreen >= 0) {
-//                    stack.subList(0, indexOfScreen + 1)
-//                } else {
-//                    stack + params
-//                }
-//            },
-//            onComplete = { _, _ -> },
-//        )
-        TODO()
+        // Переключение между экранами, определёнными в initialPages
+        // Если экран не найден, то активный экран не изменяется
+        pagesNavigation.navigate(
+            transformer = { pages ->
+                val indexOfScreen = pages.items.indexOf(params)
+                if (indexOfScreen >= 0) {
+                    pages.copy(selectedIndex = indexOfScreen)
+                } else {
+                    pages
+                }
+            },
+            onComplete = { _, _ -> },
+        )
     }
 
     override fun open(
         screenKey: ScreenKey<*>,
         defaultParams: () -> ScreenParams,
     ) {
-        // Если экрана с таким ключом еще нет в стеке, то открываем его используя defaultParams.
-        // Если же экран с таким ключом уже есть в стеке, то закрываем все экраны после него.
-//        pagesNavigation.navigate(
-//            transformer = { stack ->
-//                val indexOfScreen = stack.map { it.asErasedKey() }.indexOf(screenKey)
-//                if (indexOfScreen >= 0) {
-//                    stack.subList(0, indexOfScreen + 1)
-//                } else {
-//                    stack + defaultParams()
-//                }
-//            },
-//            onComplete = { _, _ -> },
-//        )
-        TODO()
+        // Если экрана с таким ключом определён в initialPages, то активируем его
+        // иначе пытаемся активировать экран использую defaultParams
+        pagesNavigation.navigate(
+            transformer = { pages ->
+                val indexOfScreen = pages.items.map { it.asErasedKey() }.indexOf(screenKey)
+                if (indexOfScreen >= 0) {
+                    pages.copy(selectedIndex = indexOfScreen)
+                } else {
+                    val indexOfDefaultScreen = pages.items.indexOf(defaultParams())
+                    if (indexOfDefaultScreen >= 0) {
+                        pages.copy(selectedIndex = indexOfDefaultScreen)
+                    } else {
+                        pages
+                    }
+                }
+            },
+            onComplete = { _, _ -> },
+        )
     }
 
     override fun close(params: ScreenParams): Boolean {
-        // Если закрываемый экран расположен первым, то закрываем все экраны КРОМЕ этого, так как в стеке должен быть
-        // хотя бы один экран.
-        // Если закрываемый экран расположен вторым или далее, то закрываем этот экран и все после него.
-        // Если закрываемого экрана нет в стеке, то ничего не делаем.
-//        var isSuccess: Boolean? = null
-//        pagesNavigation.navigate(
-//            transformer = { stack ->
-//                val indexOfScreen = stack.indexOf(params)
-//                if (indexOfScreen >= 0) {
-//                    isSuccess = false
-//                    stack.subList(0, indexOfScreen)
-//                } else {
-//                    if (indexOfScreen == 0) {
-//                        isSuccess = false
-//                        listOf(params)
-//                    } else {
-//                        isSuccess = true
-//                        stack.subList(0, indexOfScreen)
-//                    }
-//                }
-//            },
-//            onComplete = { _, _ -> },
-//        )
-//        return isSuccess ?: error("unreachable")
-        TODO()
+        return false
     }
 
     override fun close(screenKey: ScreenKey<ScreenParams>): Boolean {
-        // То же самое как при закрытии по инстансу экрана, но ищем по ключу с конца стека до первого найденного экрана.
-//        var isSuccess: Boolean? = null
-//        pagesNavigation.navigate(
-//            transformer = { stack ->
-//                val keysStack = stack.map { it.asErasedKey() }
-//                val indexOfScreen = keysStack.indexOfLast { it == screenKey }
-//                if (indexOfScreen >= 0) {
-//                    isSuccess = false
-//                    stack.subList(0, indexOfScreen)
-//                } else {
-//                    if (indexOfScreen == 0) {
-//                        isSuccess = false
-//                        stack.subList(0, 1)
-//                    } else {
-//                        isSuccess = true
-//                        stack.subList(0, indexOfScreen)
-//                    }
-//                }
-//            },
-//            onComplete = { _, _ -> },
-//        )
-//        return isSuccess ?: error("unreachable")
-        TODO()
+        return false
     }
 }

@@ -12,7 +12,7 @@ package ru.vladislavsumin.core.navigation.registration
  *
  * Если вы не используете kodein используйте конструктор [ru.vladislavsumin.core.navigation.Navigation]
  */
-public interface NavigationRegistrar {
+public fun interface NavigationRegistrar {
     /**
      * Регистрирует фабрики, хосты навигации и экраны в хостах.
      */

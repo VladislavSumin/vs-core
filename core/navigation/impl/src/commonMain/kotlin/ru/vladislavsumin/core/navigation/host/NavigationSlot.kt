@@ -14,20 +14,22 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asErasedKey
 
 /**
- * Навигация типа "слот", означает что в ней одновременно может быть только один экран. Пред идущий экран при этом
+ * Навигация типа "слот", означает, что в ней одновременно может быть только один экран. Пред идущий экран при этом
  * полностью закрывается.
  *
- * @param navigationHost навигационный хост для возможности понять какие экраны будут открываться в этой навигации.
- * @param initialConfiguration начальный экран который будет открыт в данной навигации. Можно использовать null, если
+ * @param navigationHost навигационный хост для возможности понять, какие экраны будут открываться в этой навигации.
+ * @param initialConfiguration начальный экран, который будет открыт в данной навигации. Можно использовать null, если
  * в дальнейшем мы будем открывать тут экраны через навигационный граф.
  * @param key уникальный в пределах экрана ключ для навигации.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
+ * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
 public fun ScreenContext.childNavigationSlot(
     navigationHost: NavigationHost,
     initialConfiguration: () -> ScreenParams? = { null },
     key: String = "slot_navigation",
     handleBackButton: Boolean = false,
+    allowStateSave: Boolean = true,
 ): Value<ChildSlot<ScreenParams, Screen>> {
     val source = SlotNavigation<ScreenParams>()
 
@@ -36,7 +38,7 @@ public fun ScreenContext.childNavigationSlot(
 
     val slot = childSlot(
         source = source,
-        serializer = navigator.serializer,
+        serializer = if (allowStateSave) navigator.serializer else null,
         key = key,
         initialConfiguration = { navigator.getInitialParamsFor(navigationHost) ?: initialConfiguration() },
         handleBackButton = handleBackButton,

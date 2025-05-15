@@ -45,27 +45,14 @@ internal class NavigationTreeBuilder(
             factory = screenRegistration.factory,
             defaultParams = screenRegistration.defaultParams,
             description = screenRegistration.description,
-            navigationHosts = screenRegistration.navigationHosts,
+            navigationHosts = screenRegistration.navigationHosts.keys,
         )
 
-        // Пробегаемся по всем навигационным хостам объявленным для данной ноды.
-        val child: List<LinkedTreeNodeImpl<ScreenInfo>> = screenRegistration.navigationHosts.flatMap { navHost ->
-            // Пробегаемся по всем экранам которые могут быть открыты в данном navHost
-            repository.screens
-                .asSequence()
-                .filter { (_, v) -> navHost in v.opensIn }
-                .map { (k, v) ->
-                    // Проверяем что этот экран может открываться только в одном хосте родителя.
-                    check(
-                        screenRegistration.navigationHosts.intersect(v.opensIn).size == 1,
-                    ) { "Double children registration" }
-
-                    buildNode(
-                        hostInParent = navHost,
-                        screenKey = k,
-                    )
-                }
-        }
+        // Пробегаемся по всем навигационным хостам, объявленным для данной ноды.
+        val child: List<LinkedTreeNodeImpl<ScreenInfo>> = screenRegistration.navigationHosts
+            .flatMap { (host, screens) ->
+                screens.map { screen -> buildNode(host, screen) }
+            }
 
         return linkedNodeOf(screenInfo, children = child)
     }
@@ -74,10 +61,12 @@ internal class NavigationTreeBuilder(
      * Ищет root screen, этим экраном является такой экран который невозможно открыть из другой точки графа.
      */
     private fun findRootScreen(): ScreenKey<*> {
-        // Множество экранов у которых нет точек входа (множество рутовых экранов)
-        val roots: Set<ScreenKey<*>> = repository.screens
-            .filter { (_, v) -> v.opensIn.isEmpty() }
-            .keys
+        val nonRootScreens = repository.screens.values.map { registration ->
+            registration.navigationHosts.values.flatten()
+        }.flatten()
+
+        // Множество экранов, у которых нет точек входа (множество рутовых экранов)
+        val roots = repository.screens.keys - nonRootScreens
 
         check(roots.size == 1) {
             val formattedRoots = roots.joinToStingFormatted { it.key.simpleName!! }

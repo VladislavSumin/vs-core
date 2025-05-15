@@ -11,8 +11,8 @@ public final class ru/vladislavsumin/core/navigation/Navigation$Companion {
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationPagesKt {
-	public static final fun childNavigationPages (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Z)Lcom/arkivanov/decompose/value/Value;
-	public static synthetic fun childNavigationPages$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
+	public static final fun childNavigationPages (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
+	public static synthetic fun childNavigationPages$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationRootKt {
@@ -21,13 +21,13 @@ public final class ru/vladislavsumin/core/navigation/host/NavigationRootKt {
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationSlotKt {
-	public static final fun childNavigationSlot (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Z)Lcom/arkivanov/decompose/value/Value;
-	public static synthetic fun childNavigationSlot$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
+	public static final fun childNavigationSlot (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
+	public static synthetic fun childNavigationSlot$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationStackKt {
-	public static final fun childNavigationStack (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Z)Lcom/arkivanov/decompose/value/Value;
-	public static synthetic fun childNavigationStack$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
+	public static final fun childNavigationStack (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
+	public static synthetic fun childNavigationStack$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
 }
 
 public final class ru/vladislavsumin/core/navigation/navigator/ScreenNavigator {

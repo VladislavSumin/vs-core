@@ -13,16 +13,17 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asErasedKey
 
 /**
- * Навигация типа "стек", означает что в ней одновременно может быть несколько экранов, но только последний из них
+ * Навигация типа "стек", означает, что в ней одновременно может быть несколько экранов, но только последний из них
  * виден пользователю.
  *
- * @param navigationHost навигационный хост для возможности понять какие экраны будут открываться в этой навигации.
- * @param defaultStack стек по умолчанию, используется когда в навигации задан инициализирующий стек что бы добавить
- * экраны под экран который будет открыт на этом стеке.
- * @param initialStack начальный стек который будет открыт в данной навигации. Обратите внимание стек должен содержать
+ * @param navigationHost навигационный хост для возможности понять, какие экраны будут открываться в этой навигации.
+ * @param defaultStack стек по умолчанию, используется, когда в навигации задан инициализирующий стек, чтобы добавить
+ * экраны под экран, который будет открыт на этом стеке.
+ * @param initialStack начальный стек, который будет открыт в данной навигации. Обратите внимание стек должен содержать
  * как минимум один элемент.
  * @param key уникальный в пределах экрана ключ для навигации.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
+ * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
 public fun ScreenContext.childNavigationStack(
     navigationHost: NavigationHost,
@@ -30,6 +31,7 @@ public fun ScreenContext.childNavigationStack(
     initialStack: () -> List<ScreenParams> = defaultStack,
     key: String = "stack_navigation",
     handleBackButton: Boolean = false,
+    allowStateSave: Boolean = true,
 ): Value<ChildStack<ScreenParams, Screen>> {
     val source = StackNavigation<ScreenParams>()
 
@@ -38,7 +40,7 @@ public fun ScreenContext.childNavigationStack(
 
     val stack = childStack(
         source = source,
-        serializer = navigator.serializer,
+        serializer = if (allowStateSave) navigator.serializer else null,
         key = key,
         initialStack = {
             navigator.getInitialParamsFor(navigationHost)?.let { params ->

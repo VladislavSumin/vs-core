@@ -14,19 +14,21 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asErasedKey
 
 /**
- * Навигация типа "страницы", означает что в ней одновременно может быть несколько экранов, но только один из них
+ * Навигация типа "страницы", означает, что в ней одновременно может быть несколько экранов, но только один из них
  * активен, при этом в отличие от стека активен может быть любой экран, а не только последний
  *
- * @param navigationHost навигационный хост для возможности понять какие экраны будут открываться в этой навигации.
+ * @param navigationHost навигационный хост для возможности понять, какие экраны будут открываться в этой навигации.
  * @param initialPages начальный набор страниц.
  * @param key уникальный в пределах экрана ключ для навигации.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
+ * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
 public fun ScreenContext.childNavigationPages(
     navigationHost: NavigationHost,
     initialPages: () -> Pages<ScreenParams>,
     key: String = "pages_navigation",
     handleBackButton: Boolean = false,
+    allowStateSave: Boolean = true,
 ): Value<ChildPages<ScreenParams, Screen>> {
     val source = PagesNavigation<ScreenParams>()
 
@@ -35,7 +37,7 @@ public fun ScreenContext.childNavigationPages(
 
     val pages = childPages(
         source = source,
-        serializer = navigator.serializer,
+        serializer = if (allowStateSave) navigator.serializer else null,
         key = key,
         initialPages = {
             navigator.getInitialParamsFor(navigationHost)?.let { Pages(listOf(it), 0) } ?: initialPages()

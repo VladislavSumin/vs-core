@@ -8,5 +8,5 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
  */
 public class DoubleHostRegistrationException internal constructor(
     screenKey: ScreenKey<*>,
-    navigationHost: NavigationHost
+    navigationHost: NavigationHost,
 ) : Exception("Double registration for ScreenKey=$screenKey, host=$navigationHost")

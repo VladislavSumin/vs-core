@@ -61,7 +61,7 @@ internal class NavigationRepositoryImpl(
             paramsSerializer: KSerializer<P>,
             defaultParams: P?,
             description: String?,
-            navigationHosts: HostRegistry.() -> Unit
+            navigationHosts: HostRegistry.() -> Unit,
         ) {
             if (isFinalized) {
                 throw ScreenRegistrationAfterFinalizeException(key)
@@ -84,7 +84,6 @@ internal class NavigationRepositoryImpl(
                 throw DoubleScreenRegistrationException(key)
             }
         }
-
     }
 
     private class HostRegistryImpl(private val parentScreen: ScreenKey<*>) : NavigationRegistry.HostRegistry {

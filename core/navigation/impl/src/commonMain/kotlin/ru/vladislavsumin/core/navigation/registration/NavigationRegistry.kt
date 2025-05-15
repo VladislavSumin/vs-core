@@ -11,9 +11,9 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import kotlin.reflect.KClass
 
 /**
- * Позволяет регистрировать компоненты навигации.
- * Использовать напрямую этот интерфейс нельзя, так как его состояние финализируется в процессе инициализации приложения.
- * Для доступа к [NavigationRegistry] воспользуйтесь [NavigationRegistrar].
+ * Позволяет регистрировать компоненты навигации. Использовать напрямую этот интерфейс нельзя, так как его состояние
+ * финализируется в процессе инициализации приложения. Для доступа к [NavigationRegistry]
+ * воспользуйтесь [NavigationRegistrar].
  *
  * Абстрактный класс вместо интерфейса для возможности использовать internal && inline для создания удобного апи.
  */
@@ -25,7 +25,7 @@ public abstract class NavigationRegistry {
      * @param S тип экрана.
      * @param factory фабрика компонента экрана, может быть явно задана как null, если используются customFactories.
      * @param defaultParams параметры экрана по умолчанию.
-     * @param navigationHosts хосты навигации, расположенные на этом экране, а также экраны, которые они могут открывать.
+     * @param navigationHosts хосты навигации на этом экране, а также экраны, которые они могут открывать.
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
     public inline fun <reified P : ScreenParams, S : Screen> registerScreen(

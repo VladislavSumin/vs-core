@@ -4,6 +4,7 @@ import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
 /**
  * Содержит информацию о регистрации экрана.
@@ -13,14 +14,12 @@ import ru.vladislavsumin.core.navigation.screen.ScreenFactory
  *
  * @param factory фабрика для создания компонента экрана.
  * @param defaultParams параметры экрана по умолчанию.
- * @param opensIn список навигационных хостов в которых может открываться этот экран.
- * @param navigationHosts список [NavigationHost] которые открываются с этого экрана.
+ * @param navigationHosts список [NavigationHost] и их экранов, которые открываются с этого экрана.
  * @param description опциональное описание экрана для дебага.
  */
 internal data class ScreenRegistration<P : ScreenParams, S : Screen>(
     val factory: ScreenFactory<P, S>?,
     val defaultParams: P?,
-    val opensIn: Set<NavigationHost>,
-    val navigationHosts: Set<NavigationHost>,
+    val navigationHosts: Map<NavigationHost, Set<ScreenKey<*>>>,
     val description: String?,
 )

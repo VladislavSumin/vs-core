@@ -45,11 +45,22 @@ public abstract interface class ru/vladislavsumin/core/navigation/registration/N
 public abstract class ru/vladislavsumin/core/navigation/registration/NavigationRegistry {
 	public static final field $stable I
 	public fun <init> ()V
-	public abstract fun registerScreen-MLYS9jY (Lkotlin/reflect/KClass;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;Lkotlinx/serialization/KSerializer;Lru/vladislavsumin/core/navigation/ScreenParams;Ljava/util/Set;Ljava/util/Set;Ljava/lang/String;)V
-	public static synthetic fun registerScreen-MLYS9jY$default (Lru/vladislavsumin/core/navigation/registration/NavigationRegistry;Lkotlin/reflect/KClass;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;Lkotlinx/serialization/KSerializer;Lru/vladislavsumin/core/navigation/ScreenParams;Ljava/util/Set;Ljava/util/Set;Ljava/lang/String;ILjava/lang/Object;)V
+	public abstract fun registerScreen-eVoNSH0 (Lkotlin/reflect/KClass;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;Lkotlinx/serialization/KSerializer;Lru/vladislavsumin/core/navigation/ScreenParams;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+}
+
+public abstract interface class ru/vladislavsumin/core/navigation/registration/NavigationRegistry$HostRegistry {
+	public abstract fun opens (Lru/vladislavsumin/core/navigation/NavigationHost;Ljava/util/Set;)V
+}
+
+public final class ru/vladislavsumin/core/navigation/repository/DoubleHostRegistrationException : java/lang/Exception {
+	public static final field $stable I
 }
 
 public final class ru/vladislavsumin/core/navigation/repository/DoubleScreenRegistrationException : java/lang/Exception {
+	public static final field $stable I
+}
+
+public final class ru/vladislavsumin/core/navigation/repository/MultipleScreenRegistrationInSameParentException : java/lang/Exception {
 	public static final field $stable I
 }
 

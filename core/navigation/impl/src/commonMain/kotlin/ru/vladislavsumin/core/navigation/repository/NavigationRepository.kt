@@ -9,6 +9,7 @@ import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.tree.NavigationTree
+import kotlin.reflect.KClass
 
 /**
  * Репозиторий навигации, используется для построения [NavigationTree].
@@ -59,19 +60,22 @@ internal class NavigationRepositoryImpl(
             factory: ScreenFactory<P, S>?,
             paramsSerializer: KSerializer<P>,
             defaultParams: P?,
-            opensIn: Set<NavigationHost>,
-            navigationHosts: Set<NavigationHost>,
             description: String?,
+            navigationHosts: HostRegistry.() -> Unit,
         ) {
             if (isFinalized) {
                 throw ScreenRegistrationAfterFinalizeException(key)
             }
 
             serializers[key] = paramsSerializer
+
+            val hostRegistry = HostRegistryImpl(key)
+            navigationHosts(hostRegistry)
+            val navigationHosts = hostRegistry.build()
+
             val screenRegistration = ScreenRegistration(
                 factory = factory,
                 defaultParams = defaultParams,
-                opensIn = opensIn,
                 navigationHosts = navigationHosts,
                 description = description,
             )
@@ -79,6 +83,30 @@ internal class NavigationRepositoryImpl(
             if (oldRegistration != null) {
                 throw DoubleScreenRegistrationException(key)
             }
+        }
+    }
+
+    private class HostRegistryImpl(private val parentScreen: ScreenKey<*>) : NavigationRegistry.HostRegistry {
+        private val hosts = mutableMapOf<NavigationHost, Set<ScreenKey<*>>>()
+        override fun NavigationHost.opens(screens: Set<KClass<out ScreenParams>>) {
+            val oldRegistration = hosts.put(this, screens.map { ScreenKey(it) }.toSet())
+            if (oldRegistration != null) {
+                throw DoubleHostRegistrationException(parentScreen, this)
+            }
+        }
+
+        fun build(): Map<NavigationHost, Set<ScreenKey<*>>> {
+            // Проверяем двойную регистрацию экранов в разных хостах общего родителя.
+            val alreadyRegisteredScreens = mutableSetOf<ScreenKey<*>>()
+            hosts.values.forEach { screens ->
+                screens.forEach { screen ->
+                    if (!alreadyRegisteredScreens.add(screen)) {
+                        throw MultipleScreenRegistrationInSameParentException(parentScreen, screen)
+                    }
+                }
+            }
+
+            return hosts
         }
     }
 }

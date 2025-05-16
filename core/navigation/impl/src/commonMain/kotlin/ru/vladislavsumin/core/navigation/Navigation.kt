@@ -12,7 +12,8 @@ import ru.vladislavsumin.core.navigation.tree.NavigationTreeBuilder
  * Точка входа в навигацию, она же глобальный навигатор.
  */
 public class Navigation internal constructor(
-    internal val navigationTree: NavigationTree,
+    @InternalNavigationApi
+    public val navigationTree: NavigationTree,
     internal val navigationSerializer: NavigationSerializer,
 ) {
     internal val navigationChannel = Channel<NavigationEvent>(Channel.BUFFERED)

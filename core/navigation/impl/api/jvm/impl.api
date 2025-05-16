@@ -88,20 +88,6 @@ public abstract interface class ru/vladislavsumin/core/navigation/screen/ScreenF
 	public abstract fun create (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/ScreenParams;)Lru/vladislavsumin/core/navigation/screen/Screen;
 }
 
-public final class ru/vladislavsumin/core/navigation/screen/ScreenKey {
-	public static final synthetic fun box-impl (Lkotlin/reflect/KClass;)Lru/vladislavsumin/core/navigation/screen/ScreenKey;
-	public static fun constructor-impl (Lkotlin/reflect/KClass;)Lkotlin/reflect/KClass;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Lkotlin/reflect/KClass;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Lkotlin/reflect/KClass;Lkotlin/reflect/KClass;)Z
-	public final fun getKey ()Lkotlin/reflect/KClass;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Lkotlin/reflect/KClass;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Lkotlin/reflect/KClass;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Lkotlin/reflect/KClass;
-}
-
 public abstract class ru/vladislavsumin/core/navigation/viewModel/NavigationViewModel : ru/vladislavsumin/core/decompose/components/ViewModel {
 	public static final field $stable I
 	public fun <init> ()V

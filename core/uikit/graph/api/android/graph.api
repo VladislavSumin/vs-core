@@ -1,0 +1,4 @@
+public final class ru/vladislavsumin/core/uikit/graph/TreeKt {
+	public static final fun Tree-4y8Vi1c (Lru/vladislavsumin/core/collections/tree/TreeNode;Landroidx/compose/ui/Modifier;FFJFLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+}
+

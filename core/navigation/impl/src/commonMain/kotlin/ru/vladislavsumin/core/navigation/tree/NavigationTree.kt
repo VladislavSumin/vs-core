@@ -1,11 +1,10 @@
 package ru.vladislavsumin.core.navigation.tree
 
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
+import ru.vladislavsumin.core.navigation.InternalNavigationApi
 
 /**
- * Главное древо навигации, описывает связи между экранами, то какие экраны открывают внутри себя другие экраны.
- *
- * @param repository репозиторий с исходными данными для построения дерева.
+ * Главное древо навигации, описывает связи между экранами, то, какие экраны открывают внутри себя другие экраны.
  */
-
-internal class NavigationTree(root: LinkedTreeNode<ScreenInfo>) : LinkedTreeNode<ScreenInfo> by root
+@InternalNavigationApi
+public class NavigationTree(root: LinkedTreeNode<ScreenInfo>) : LinkedTreeNode<ScreenInfo> by root

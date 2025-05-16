@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.screen
 
+import ru.vladislavsumin.core.navigation.InternalNavigationApi
 import ru.vladislavsumin.core.navigation.ScreenParams
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
@@ -10,8 +11,8 @@ import kotlin.reflect.KClass
  * @param key сырой тип ключа.
  */
 @JvmInline
-@PublishedApi
-internal value class ScreenKey<P : ScreenParams>(val key: KClass<P>)
+@InternalNavigationApi
+public value class ScreenKey<P : ScreenParams>(public val key: KClass<P>)
 
 internal fun <T : ScreenParams> T.asKey(): ScreenKey<T> = ScreenKey(this::class) as ScreenKey<T>
 

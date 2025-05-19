@@ -20,6 +20,7 @@ internal class NavigationTreeBuilder(
     private fun buildNavGraph(): LinkedTreeNode<ScreenInfo> {
         val rootScreen = findRootScreen()
         return buildNode(
+            parent = null,
             hostInParent = null,
             screenKey = rootScreen,
         )
@@ -34,10 +35,12 @@ internal class NavigationTreeBuilder(
      * @param screenKey ключ соответствующий [Node] которую нужно создать.
      */
     private fun buildNode(
+        parent: ScreenKey<*>?,
         hostInParent: NavigationHost?,
         screenKey: ScreenKey<*>,
     ): LinkedTreeNodeImpl<ScreenInfo> {
-        val screenRegistration = repository.screens[screenKey] ?: error("Unreachable")
+        val screenRegistration = repository.screens[screenKey]
+            ?: throw ScreenNotRegisteredException(parent, hostInParent, screenKey)
 
         val screenInfo = ScreenInfo(
             screenKey = screenKey,
@@ -51,7 +54,7 @@ internal class NavigationTreeBuilder(
         // Пробегаемся по всем навигационным хостам, объявленным для данной ноды.
         val child: List<LinkedTreeNodeImpl<ScreenInfo>> = screenRegistration.navigationHosts
             .flatMap { (host, screens) ->
-                screens.map { screen -> buildNode(host, screen) }
+                screens.map { screen -> buildNode(screenKey, host, screen) }
             }
 
         return linkedNodeOf(screenInfo, children = child)

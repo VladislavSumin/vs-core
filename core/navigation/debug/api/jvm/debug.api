@@ -29,18 +29,20 @@ public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGrap
 
 public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info {
 	public static final field $stable I
-	public fun <init> (Ljava/lang/String;ZZLjava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;ZZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;)V
+	public synthetic fun <init> (Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Z
 	public final fun component3 ()Z
 	public final fun component4 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;ZZLjava/lang/String;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
-	public static synthetic fun copy$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;Ljava/lang/String;ZZLjava/lang/String;ILjava/lang/Object;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
+	public final fun component5 ()Ljava/util/Set;
+	public final fun copy (Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
+	public static synthetic fun copy$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;ILjava/lang/Object;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDescription ()Ljava/lang/String;
 	public final fun getHasDefaultParams ()Z
 	public final fun getName ()Ljava/lang/String;
+	public final fun getNavigationHosts ()Ljava/util/Set;
 	public fun hashCode ()I
 	public final fun isPartOfMainGraph ()Z
 	public fun toString ()Ljava/lang/String;

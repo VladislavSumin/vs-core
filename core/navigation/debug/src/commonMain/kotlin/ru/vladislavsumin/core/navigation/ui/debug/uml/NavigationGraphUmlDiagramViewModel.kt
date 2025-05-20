@@ -38,6 +38,7 @@ internal class NavigationGraphUmlDiagramViewModel(
                 hasDefaultParams = node.value.defaultParams != null,
                 isPartOfMainGraph = true,
                 description = node.value.description,
+                navigationHosts = node.value.navigationHosts,
             ),
             children = node.children.map { mapNodesRecursively(it) },
         )

@@ -1,7 +1,10 @@
 package ru.vladislavsumin.core.navigation.ui.debug.uml
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -10,6 +13,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
@@ -20,6 +24,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.core.navigation.NavigationHost
 
 /**
  * Одиночный элемент узла дерева навигационного графа.
@@ -73,7 +78,33 @@ internal fun NavigationGraphUmlDiagramElementContent(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
+            if (info.navigationHosts.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    info.navigationHosts.forEach { navigationHost ->
+                        NavigationHostsContent(navigationHost)
+                    }
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun RowScope.NavigationHostsContent(navigationHost: NavigationHost) {
+    Card(Modifier.weight(1f)) {
+        Text(
+            text = navigationHost::class.simpleName ?: "NoName",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(
+                    horizontal = 8.dp,
+                    vertical = 4.dp,
+                ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 

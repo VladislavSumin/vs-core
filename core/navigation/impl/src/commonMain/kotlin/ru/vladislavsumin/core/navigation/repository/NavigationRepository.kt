@@ -18,12 +18,12 @@ internal interface NavigationRepository {
     /**
      * Список всех зарегистрированных экранов.
      */
-    val screens: Map<ScreenKey<*>, ScreenRegistration<*, *>>
+    val screens: Map<ScreenKey, ScreenRegistration<*, *>>
 
     /**
      * Множество [KSerializer] для сериализации [ScreenParams].
      */
-    val serializers: Map<ScreenKey<*>, KSerializer<out ScreenParams>>
+    val serializers: Map<ScreenKey, KSerializer<out ScreenParams>>
 }
 
 /**
@@ -34,8 +34,8 @@ internal interface NavigationRepository {
 internal class NavigationRepositoryImpl(
     registrars: Set<NavigationRegistrar>,
 ) : NavigationRepository {
-    override val screens = mutableMapOf<ScreenKey<*>, ScreenRegistration<*, *>>()
-    override val serializers = mutableMapOf<ScreenKey<*>, KSerializer<out ScreenParams>>()
+    override val screens = mutableMapOf<ScreenKey, ScreenRegistration<*, *>>()
+    override val serializers = mutableMapOf<ScreenKey, KSerializer<out ScreenParams>>()
 
     /**
      * Состояние финализации [NavigationRegistry]. После создания [NavigationRepositoryImpl] добавлять новые элементы
@@ -56,7 +56,7 @@ internal class NavigationRepositoryImpl(
         }
 
         override fun <P : ScreenParams, S : Screen> registerScreen(
-            key: ScreenKey<P>,
+            key: ScreenKey,
             factory: ScreenFactory<P, S>?,
             paramsSerializer: KSerializer<P>,
             defaultParams: P?,
@@ -86,8 +86,8 @@ internal class NavigationRepositoryImpl(
         }
     }
 
-    private class HostRegistryImpl(private val parentScreen: ScreenKey<*>) : NavigationRegistry.HostRegistry {
-        private val hosts = mutableMapOf<NavigationHost, Set<ScreenKey<*>>>()
+    private class HostRegistryImpl(private val parentScreen: ScreenKey) : NavigationRegistry.HostRegistry {
+        private val hosts = mutableMapOf<NavigationHost, Set<ScreenKey>>()
         override fun NavigationHost.opens(screens: Set<KClass<out ScreenParams>>) {
             val oldRegistration = hosts.put(this, screens.map { ScreenKey(it) }.toSet())
             if (oldRegistration != null) {
@@ -95,9 +95,9 @@ internal class NavigationRepositoryImpl(
             }
         }
 
-        fun build(): Map<NavigationHost, Set<ScreenKey<*>>> {
+        fun build(): Map<NavigationHost, Set<ScreenKey>> {
             // Проверяем двойную регистрацию экранов в разных хостах общего родителя.
-            val alreadyRegisteredScreens = mutableSetOf<ScreenKey<*>>()
+            val alreadyRegisteredScreens = mutableSetOf<ScreenKey>()
             hosts.values.forEach { screens ->
                 screens.forEach { screen ->
                     if (!alreadyRegisteredScreens.add(screen)) {

@@ -8,7 +8,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
 @InternalNavigationApi
 public data class ScreenInfo(
-    val screenKey: ScreenKey<*>,
+    val screenKey: ScreenKey,
     val factory: ScreenFactory<*, *>?,
     val defaultParams: ScreenParams?,
     val description: String?,

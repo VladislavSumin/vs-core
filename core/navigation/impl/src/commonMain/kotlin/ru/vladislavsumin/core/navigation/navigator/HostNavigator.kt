@@ -15,7 +15,7 @@ internal interface HostNavigator {
      */
     fun open(params: ScreenParams)
 
-    fun open(screenKey: ScreenKey<*>, defaultParams: () -> ScreenParams)
+    fun open(screenKey: ScreenKey, defaultParams: () -> ScreenParams)
 
     /**
      * Пытается закрыть экран с соответствующими параметрами. Если закрыть экран невозможно по какой-либо причине **не**
@@ -35,5 +35,5 @@ internal interface HostNavigator {
      * @param screenKey ключ экрана.
      * @return true если экран был успешно закрыт, false в других случаях.
      */
-    fun close(screenKey: ScreenKey<ScreenParams>): Boolean
+    fun close(screenKey: ScreenKey): Boolean
 }

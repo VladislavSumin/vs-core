@@ -8,7 +8,7 @@ import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
-import ru.vladislavsumin.core.navigation.screen.asErasedKey
+import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
 /**
@@ -31,7 +31,7 @@ internal class GlobalNavigator(
     }
 
     internal fun createOpenPath(screenPath: ScreenPath, screenParams: ScreenParams): ScreenPath {
-        val screenKey = screenParams.asErasedKey()
+        val screenKey = screenParams.asKey()
 
         // Нода в графе навигации соответствующая переданному пути.
         val fromScreenNode: LinkedTreeNode<ScreenInfo> = navigation.navigationTree.findByPath(

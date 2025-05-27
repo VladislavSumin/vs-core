@@ -14,7 +14,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
-import ru.vladislavsumin.core.navigation.screen.asErasedKey
+import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
 /**
@@ -42,7 +42,7 @@ public class ScreenNavigator internal constructor(
     /**
      * Зарегистрированные кастомные фабрики экранов открываемых из хостов этого экрана.
      */
-    private val customFactories = mutableMapOf<ScreenKey<out ScreenParams>, ScreenFactory<*, *>>()
+    private val customFactories = mutableMapOf<ScreenKey, ScreenFactory<*, *>>()
 
     /**
      * Текущие активные навигаторы среди дочерних экранов.
@@ -124,7 +124,7 @@ public class ScreenNavigator internal constructor(
      * Регистрирует [ScreenFactory] для [screenKey] навигации. Учитывает lifecycle [ScreenContext].
      */
     @PublishedApi
-    internal fun <S : ScreenParams> registerCustomFactory(screenKey: ScreenKey<S>, screenFactory: ScreenFactory<*, *>) {
+    internal fun <S : ScreenParams> registerCustomFactory(screenKey: ScreenKey, screenFactory: ScreenFactory<S, *>) {
         // Важно что бы фабрики регистрировались до инициализации навигационных хостов. Иначе при восстановлении
         // состояния навигационные хосты будут восстановлены до регистрации фабрик, а следовательно не смогут создать
         // экран.
@@ -146,7 +146,7 @@ public class ScreenNavigator internal constructor(
             val childElement = screenPath.first()
             val childNavigator = when (childElement) {
                 is ScreenPath.PathElement.Key -> childScreenNavigators.asSequence()
-                    .first { entry -> entry.key.asErasedKey() == childElement.screenKey }.value
+                    .first { entry -> entry.key.asKey() == childElement.screenKey }.value
 
                 is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
             }
@@ -181,7 +181,7 @@ public class ScreenNavigator internal constructor(
             val childElement = screenPath.firstOrNull() ?: return
             val childNavigator = when (childElement) {
                 is ScreenPath.PathElement.Key -> childScreenNavigators.asSequence()
-                    .first { entry -> entry.key.asErasedKey() == childElement.screenKey }.value
+                    .first { entry -> entry.key.asKey() == childElement.screenKey }.value
 
                 is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
             }
@@ -203,7 +203,7 @@ public class ScreenNavigator internal constructor(
      * Возвращает фабрику для создания дочернего экрана.
      */
     @Suppress("UNCHECKED_CAST")
-    internal fun getChildScreenFactory(screenKey: ScreenKey<ScreenParams>): ScreenFactory<ScreenParams, *> {
+    internal fun getChildScreenFactory(screenKey: ScreenKey): ScreenFactory<ScreenParams, *> {
         // Ищем среди локальных фабрик, потом, если не нашли, смотрим в глобальных фабриках.
         return customFactories[screenKey] as? ScreenFactory<ScreenParams, *>
             ?: node.children.find { it.value.screenKey == screenKey }!!.value.factory as ScreenFactory<ScreenParams, *>

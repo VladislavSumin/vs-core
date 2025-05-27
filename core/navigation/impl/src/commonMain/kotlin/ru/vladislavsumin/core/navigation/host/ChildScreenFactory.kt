@@ -4,7 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
-import ru.vladislavsumin.core.navigation.screen.asErasedKey
+import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.screen.wrapWithScreenContext
 
 /**
@@ -15,7 +15,7 @@ internal fun ScreenContext.childScreenFactory(
     context: ComponentContext,
 ): Screen {
     val screenContext = context.wrapWithScreenContext(navigator, screenParams)
-    val screenFactory = navigator.getChildScreenFactory(screenParams.asErasedKey())
+    val screenFactory = navigator.getChildScreenFactory(screenParams.asKey())
     val screen = screenFactory.create(screenContext, screenParams)
     screenContext.navigator.screen = screen
     return screen

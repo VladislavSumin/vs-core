@@ -11,7 +11,7 @@ import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
-import ru.vladislavsumin.core.navigation.screen.asErasedKey
+import ru.vladislavsumin.core.navigation.screen.asKey
 
 /**
  * Навигация типа "слот", означает, что в ней одновременно может быть только один экран. Пред идущий экран при этом
@@ -57,13 +57,10 @@ private class SlotHostNavigator(
         slotNavigation.navigate { params }
     }
 
-    override fun open(
-        screenKey: ScreenKey<*>,
-        defaultParams: () -> ScreenParams,
-    ) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> ScreenParams) {
         // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
         slotNavigation.navigate { currentOpenedScreen ->
-            if (currentOpenedScreen != null && currentOpenedScreen.asErasedKey() == screenKey) {
+            if (currentOpenedScreen != null && currentOpenedScreen.asKey() == screenKey) {
                 currentOpenedScreen
             } else {
                 defaultParams()
@@ -85,7 +82,7 @@ private class SlotHostNavigator(
         return isSuccess ?: error("unreachable")
     }
 
-    override fun close(screenKey: ScreenKey<ScreenParams>): Boolean {
+    override fun close(screenKey: ScreenKey): Boolean {
         var isSuccess: Boolean? = null
         slotNavigation.navigate {
             when {
@@ -96,7 +93,7 @@ private class SlotHostNavigator(
                 }
 
                 // Открыт нужный нам экран
-                screenKey == it.asErasedKey() -> {
+                screenKey == it.asKey() -> {
                     isSuccess = true
                     null
                 }

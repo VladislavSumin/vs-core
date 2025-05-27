@@ -24,14 +24,14 @@ internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> 
      * Элемент пути, может быть ключом экрана, а может быть параметрами конкретного инстанса экрана.
      */
     sealed interface PathElement {
-        fun asErasedKey(): ScreenKey<*>
+        fun asErasedKey(): ScreenKey
 
-        data class Key(val screenKey: ScreenKey<*>) : PathElement {
-            override fun asErasedKey(): ScreenKey<*> = screenKey
+        data class Key(val screenKey: ScreenKey) : PathElement {
+            override fun asErasedKey(): ScreenKey = screenKey
         }
 
         data class Params(val screenParams: ScreenParams) : PathElement {
-            override fun asErasedKey(): ScreenKey<*> = screenParams.asErasedKey()
+            override fun asErasedKey(): ScreenKey = screenParams.asKey()
         }
     }
 }

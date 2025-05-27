@@ -44,7 +44,7 @@ public abstract class NavigationRegistry {
 
     @PublishedApi
     internal abstract fun <P : ScreenParams, S : Screen> registerScreen(
-        key: ScreenKey<P>,
+        key: ScreenKey,
         factory: ScreenFactory<P, S>?,
         paramsSerializer: KSerializer<P>,
         defaultParams: P?,

@@ -35,9 +35,9 @@ internal class NavigationTreeBuilder(
      * @param screenKey ключ соответствующий [Node] которую нужно создать.
      */
     private fun buildNode(
-        parent: ScreenKey<*>?,
+        parent: ScreenKey?,
         hostInParent: NavigationHost?,
-        screenKey: ScreenKey<*>,
+        screenKey: ScreenKey,
     ): LinkedTreeNodeImpl<ScreenInfo> {
         val screenRegistration = repository.screens[screenKey]
             ?: throw ScreenNotRegisteredException(parent, hostInParent, screenKey)
@@ -63,7 +63,7 @@ internal class NavigationTreeBuilder(
     /**
      * Ищет root screen, этим экраном является такой экран который невозможно открыть из другой точки графа.
      */
-    private fun findRootScreen(): ScreenKey<*> {
+    private fun findRootScreen(): ScreenKey {
         val nonRootScreens = repository.screens.values.map { registration ->
             registration.navigationHosts.values.flatten()
         }.flatten()

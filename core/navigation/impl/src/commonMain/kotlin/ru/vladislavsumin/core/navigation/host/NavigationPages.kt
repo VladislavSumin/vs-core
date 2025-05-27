@@ -11,7 +11,7 @@ import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
-import ru.vladislavsumin.core.navigation.screen.asErasedKey
+import ru.vladislavsumin.core.navigation.screen.asKey
 
 /**
  * Навигация типа "страницы", означает, что в ней одновременно может быть несколько экранов, но только один из них
@@ -68,15 +68,12 @@ private class PagesHostNavigator(
         )
     }
 
-    override fun open(
-        screenKey: ScreenKey<*>,
-        defaultParams: () -> ScreenParams,
-    ) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> ScreenParams) {
         // Если экрана с таким ключом определён в initialPages, то активируем его
         // иначе пытаемся активировать экран использую defaultParams
         pagesNavigation.navigate(
             transformer = { pages ->
-                val indexOfScreen = pages.items.map { it.asErasedKey() }.indexOf(screenKey)
+                val indexOfScreen = pages.items.map { it.asKey() }.indexOf(screenKey)
                 if (indexOfScreen >= 0) {
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
@@ -96,7 +93,7 @@ private class PagesHostNavigator(
         return false
     }
 
-    override fun close(screenKey: ScreenKey<ScreenParams>): Boolean {
+    override fun close(screenKey: ScreenKey): Boolean {
         return false
     }
 }

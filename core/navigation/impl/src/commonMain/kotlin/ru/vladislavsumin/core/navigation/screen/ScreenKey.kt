@@ -7,13 +7,10 @@ import kotlin.reflect.KClass
 
 /**
  * Ключ экрана.
- * @param P тип параметров экрана.
  * @param key сырой тип ключа.
  */
 @JvmInline
 @InternalNavigationApi
-public value class ScreenKey<P : ScreenParams>(public val key: KClass<P>)
+public value class ScreenKey(public val key: KClass<out ScreenParams>)
 
-internal fun <T : ScreenParams> T.asKey(): ScreenKey<T> = ScreenKey(this::class) as ScreenKey<T>
-
-internal fun ScreenParams.asErasedKey(): ScreenKey<ScreenParams> = ScreenKey(this::class) as ScreenKey<ScreenParams>
+internal fun <T : ScreenParams> T.asKey(): ScreenKey = ScreenKey(this::class)

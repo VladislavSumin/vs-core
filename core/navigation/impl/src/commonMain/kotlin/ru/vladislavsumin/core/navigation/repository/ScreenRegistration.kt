@@ -20,6 +20,6 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
 internal data class ScreenRegistration<P : ScreenParams, S : Screen>(
     val factory: ScreenFactory<P, S>?,
     val defaultParams: P?,
-    val navigationHosts: Map<NavigationHost, Set<ScreenKey<*>>>,
+    val navigationHosts: Map<NavigationHost, Set<ScreenKey>>,
     val description: String?,
 )

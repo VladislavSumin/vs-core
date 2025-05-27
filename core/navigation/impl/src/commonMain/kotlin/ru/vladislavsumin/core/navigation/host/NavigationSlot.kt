@@ -5,7 +5,9 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.navigate
 import com.arkivanov.decompose.value.Value
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
@@ -26,12 +28,12 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  */
 public fun ScreenContext.childNavigationSlot(
     navigationHost: NavigationHost,
-    initialConfiguration: () -> ScreenParams? = { null },
+    initialConfiguration: () -> IntentScreenParams<ScreenIntent>? = { null },
     key: String = "slot_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildSlot<ScreenParams, Screen>> {
-    val source = SlotNavigation<ScreenParams>()
+): Value<ChildSlot<IntentScreenParams<ScreenIntent>, Screen>> {
+    val source = SlotNavigation<IntentScreenParams<ScreenIntent>>()
 
     val hostNavigator = SlotHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
@@ -49,15 +51,15 @@ public fun ScreenContext.childNavigationSlot(
 }
 
 private class SlotHostNavigator(
-    private val slotNavigation: SlotNavigation<ScreenParams>,
+    private val slotNavigation: SlotNavigation<IntentScreenParams<ScreenIntent>>,
 ) : HostNavigator {
-    override fun open(params: ScreenParams) {
+    override fun open(params: IntentScreenParams<ScreenIntent>) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
         slotNavigation.navigate { params }
     }
 
-    override fun open(screenKey: ScreenKey, defaultParams: () -> ScreenParams) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
         // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
         slotNavigation.navigate { currentOpenedScreen ->
             if (currentOpenedScreen != null && currentOpenedScreen.asKey() == screenKey) {
@@ -68,7 +70,7 @@ private class SlotHostNavigator(
         }
     }
 
-    override fun close(params: ScreenParams): Boolean {
+    override fun close(params: IntentScreenParams<ScreenIntent>): Boolean {
         var isSuccess: Boolean? = null
         slotNavigation.navigate { currentOpenedScreen ->
             if (params == currentOpenedScreen) {

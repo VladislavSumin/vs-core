@@ -2,6 +2,8 @@ package ru.vladislavsumin.core.navigation.viewModel
 
 import kotlinx.coroutines.channels.Channel
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 
 /**
@@ -15,12 +17,14 @@ public abstract class NavigationViewModel : ViewModel() {
     /**
      * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.open].
      */
-    protected fun open(screenParams: ScreenParams): Unit = send(NavigationEvent.Open(screenParams))
+    protected fun open(screenParams: IntentScreenParams<ScreenIntent>): Unit =
+        send(NavigationEvent.Open(screenParams))
 
     /**
      * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.close].
      */
-    protected fun close(screenParams: ScreenParams): Unit = send(NavigationEvent.Close(screenParams))
+    protected fun close(screenParams: IntentScreenParams<ScreenIntent>): Unit =
+        send(NavigationEvent.Close(screenParams))
 
     /**
      * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.close].
@@ -32,8 +36,8 @@ public abstract class NavigationViewModel : ViewModel() {
     }
 
     internal sealed interface NavigationEvent {
-        data class Open(val screenParams: ScreenParams) : NavigationEvent
-        data class Close(val screenParams: ScreenParams) : NavigationEvent
+        data class Open(val screenParams: IntentScreenParams<ScreenIntent>) : NavigationEvent
+        data class Close(val screenParams: IntentScreenParams<ScreenIntent>) : NavigationEvent
         data object CloseSelf : NavigationEvent
     }
 }

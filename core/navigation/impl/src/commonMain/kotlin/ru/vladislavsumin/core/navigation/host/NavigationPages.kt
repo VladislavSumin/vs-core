@@ -5,8 +5,9 @@ import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.value.Value
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
@@ -25,12 +26,12 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  */
 public fun ScreenContext.childNavigationPages(
     navigationHost: NavigationHost,
-    initialPages: () -> Pages<ScreenParams>,
+    initialPages: () -> Pages<IntentScreenParams<ScreenIntent>>,
     key: String = "pages_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildPages<ScreenParams, Screen>> {
-    val source = PagesNavigation<ScreenParams>()
+): Value<ChildPages<IntentScreenParams<ScreenIntent>, Screen>> {
+    val source = PagesNavigation<IntentScreenParams<ScreenIntent>>()
 
     val hostNavigator = PagesHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
@@ -50,9 +51,9 @@ public fun ScreenContext.childNavigationPages(
 
 @Suppress("EmptyFunctionBlock")
 private class PagesHostNavigator(
-    private val pagesNavigation: PagesNavigation<ScreenParams>,
+    private val pagesNavigation: PagesNavigation<IntentScreenParams<ScreenIntent>>,
 ) : HostNavigator {
-    override fun open(params: ScreenParams) {
+    override fun open(params: IntentScreenParams<ScreenIntent>) {
         // Переключение между экранами, определёнными в initialPages
         // Если экран не найден, то активный экран не изменяется
         pagesNavigation.navigate(
@@ -68,7 +69,7 @@ private class PagesHostNavigator(
         )
     }
 
-    override fun open(screenKey: ScreenKey, defaultParams: () -> ScreenParams) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
         // Если экрана с таким ключом определён в initialPages, то активируем его
         // иначе пытаемся активировать экран использую defaultParams
         pagesNavigation.navigate(
@@ -89,7 +90,7 @@ private class PagesHostNavigator(
         )
     }
 
-    override fun close(params: ScreenParams): Boolean {
+    override fun close(params: IntentScreenParams<ScreenIntent>): Boolean {
         return false
     }
 

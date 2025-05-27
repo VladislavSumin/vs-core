@@ -4,6 +4,8 @@ import ru.vladislavsumin.core.navigation.InternalNavigationApi
 import ru.vladislavsumin.core.navigation.ScreenParams
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 
 /**
  * Ключ экрана.
@@ -11,6 +13,6 @@ import kotlin.reflect.KClass
  */
 @JvmInline
 @InternalNavigationApi
-public value class ScreenKey(public val key: KClass<out ScreenParams>)
+public value class ScreenKey(public val key: KClass<out IntentScreenParams<out ScreenIntent>>)
 
-internal fun <T : ScreenParams> T.asKey(): ScreenKey = ScreenKey(this::class)
+internal fun <T : IntentScreenParams<I>, I : ScreenIntent> T.asKey(): ScreenKey = ScreenKey(this::class)

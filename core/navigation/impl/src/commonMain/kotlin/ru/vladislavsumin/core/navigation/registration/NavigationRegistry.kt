@@ -9,6 +9,8 @@ import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import kotlin.reflect.KClass
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 
 /**
  * Позволяет регистрировать компоненты навигации. Использовать напрямую этот интерфейс нельзя, так как его состояние
@@ -28,8 +30,8 @@ public abstract class NavigationRegistry {
      * @param navigationHosts хосты навигации на этом экране, а также экраны, которые они могут открывать.
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
-    public inline fun <reified P : ScreenParams, S : Screen> registerScreen(
-        factory: ScreenFactory<P, S>?,
+    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : Screen> registerScreen(
+        factory: ScreenFactory<P, I, S>?,
         defaultParams: P? = null,
         description: String? = null,
         noinline navigationHosts: HostRegistry.() -> Unit = {},
@@ -43,9 +45,9 @@ public abstract class NavigationRegistry {
     )
 
     @PublishedApi
-    internal abstract fun <P : ScreenParams, S : Screen> registerScreen(
+    internal abstract fun <P : IntentScreenParams<I>, I : ScreenIntent, S : Screen> registerScreen(
         key: ScreenKey,
-        factory: ScreenFactory<P, S>?,
+        factory: ScreenFactory<P, I, S>?,
         paramsSerializer: KSerializer<P>,
         defaultParams: P?,
         description: String?,

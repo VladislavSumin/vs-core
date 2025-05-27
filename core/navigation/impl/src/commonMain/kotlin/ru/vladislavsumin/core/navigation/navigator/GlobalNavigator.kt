@@ -4,8 +4,10 @@ import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.collections.tree.asSequenceUp
 import ru.vladislavsumin.core.collections.tree.findByPath
 import ru.vladislavsumin.core.collections.tree.path
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NavigationLogger
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.asKey
@@ -24,13 +26,13 @@ internal class GlobalNavigator(
      * Открывает экран соответствующий переданным [screenParams], при этом поиск пути производится относительно
      * переданного [screenPath]. (подробнее про поиск пути до экрана можно прочитать в документации).
      */
-    fun open(screenPath: ScreenPath, screenParams: ScreenParams) {
+    fun open(screenPath: ScreenPath, screenParams: IntentScreenParams<ScreenIntent>) {
         NavigationLogger.i { "Open screen ${screenParams::class.simpleName}" }
         val path = createOpenPath(screenPath, screenParams)
         rootNavigator.openInsideThisScreen(path)
     }
 
-    internal fun createOpenPath(screenPath: ScreenPath, screenParams: ScreenParams): ScreenPath {
+    internal fun createOpenPath(screenPath: ScreenPath, screenParams: IntentScreenParams<ScreenIntent>): ScreenPath {
         val screenKey = screenParams.asKey()
 
         // Нода в графе навигации соответствующая переданному пути.
@@ -51,7 +53,7 @@ internal class GlobalNavigator(
         return ScreenPath(destinationKeysPath.drop(1).dropLast(1) + ScreenPath.PathElement.Params(screenParams))
     }
 
-    fun close(screenPath: ScreenPath, screenParams: ScreenParams) {
+    fun close(screenPath: ScreenPath, screenParams: IntentScreenParams<ScreenIntent>) {
         NavigationLogger.i { "Close screen ${screenParams::class.simpleName}" }
         val index = screenPath.indexOfLast { it == ScreenPath.PathElement.Params(screenParams) }
         if (index == -1) return

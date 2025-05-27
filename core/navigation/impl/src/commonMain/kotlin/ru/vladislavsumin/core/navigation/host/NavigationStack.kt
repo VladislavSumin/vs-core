@@ -4,7 +4,9 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
@@ -27,13 +29,13 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  */
 public fun ScreenContext.childNavigationStack(
     navigationHost: NavigationHost,
-    defaultStack: () -> List<ScreenParams> = { emptyList() },
-    initialStack: () -> List<ScreenParams> = defaultStack,
+    defaultStack: () -> List<IntentScreenParams<ScreenIntent>> = { emptyList() },
+    initialStack: () -> List<IntentScreenParams<ScreenIntent>> = defaultStack,
     key: String = "stack_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildStack<ScreenParams, Screen>> {
-    val source = StackNavigation<ScreenParams>()
+): Value<ChildStack<IntentScreenParams<ScreenIntent>, Screen>> {
+    val source = StackNavigation<IntentScreenParams<ScreenIntent>>()
 
     val hostNavigator = StackHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
@@ -60,9 +62,9 @@ public fun ScreenContext.childNavigationStack(
 }
 
 private class StackHostNavigator(
-    private val stackNavigation: StackNavigation<ScreenParams>,
+    private val stackNavigation: StackNavigation<IntentScreenParams<ScreenIntent>>,
 ) : HostNavigator {
-    override fun open(params: ScreenParams) {
+    override fun open(params: IntentScreenParams<ScreenIntent>) {
         // Если такого экрана еще нет в стеке, то открываем его.
         // Если же экран уже есть в стеке, то закрываем все экраны после него.
         stackNavigation.navigate(
@@ -78,7 +80,7 @@ private class StackHostNavigator(
         )
     }
 
-    override fun open(screenKey: ScreenKey, defaultParams: () -> ScreenParams) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
         // Если экрана с таким ключом еще нет в стеке, то открываем его используя defaultParams.
         // Если же экран с таким ключом уже есть в стеке, то закрываем все экраны после него.
         stackNavigation.navigate(
@@ -94,7 +96,7 @@ private class StackHostNavigator(
         )
     }
 
-    override fun close(params: ScreenParams): Boolean {
+    override fun close(params: IntentScreenParams<ScreenIntent>): Boolean {
         // Если закрываемый экран расположен первым, то закрываем все экраны КРОМЕ этого, так как в стеке должен быть
         // хотя бы один экран.
         // Если закрываемый экран расположен вторым или далее, то закрываем этот экран и все после него.

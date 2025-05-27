@@ -3,7 +3,9 @@ package ru.vladislavsumin.core.navigation.tree
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNodeImpl
 import ru.vladislavsumin.core.collections.tree.linkedNodeOf
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.repository.NavigationRepository
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
@@ -46,7 +48,7 @@ internal class NavigationTreeBuilder(
             screenKey = screenKey,
             hostInParent = hostInParent,
             factory = screenRegistration.factory,
-            defaultParams = screenRegistration.defaultParams,
+            defaultParams = screenRegistration.defaultParams as IntentScreenParams<ScreenIntent>,
             description = screenRegistration.description,
             navigationHosts = screenRegistration.navigationHosts.keys,
         )

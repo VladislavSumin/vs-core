@@ -1,6 +1,8 @@
 package ru.vladislavsumin.core.navigation.screen
 
 import com.arkivanov.decompose.ComponentContext
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 
@@ -37,7 +39,7 @@ internal class DefaultScreenContext(
  */
 internal fun ComponentContext.wrapWithScreenContext(
     parentNavigator: ScreenNavigator,
-    screenParams: ScreenParams,
+    screenParams: IntentScreenParams<ScreenIntent>,
 ): ScreenContext {
     val screenKey = ScreenKey(screenParams::class)
     val childNode = parentNavigator.node.children.find { it.value.screenKey == screenKey }

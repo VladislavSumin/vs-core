@@ -22,7 +22,7 @@ internal class NavigationSerializer(
      * восстановления состояния приложения.
      */
     @OptIn(ExperimentalSerializationApi::class, ExperimentalStateKeeperApi::class)
-    val serializer: KSerializer<IntentScreenParams<ScreenIntent>> = polymorphicSerializer(
+    val serializer: KSerializer<IntentScreenParams<*>> = polymorphicSerializer(
         IntentScreenParams::class,
         SerializersModule {
             polymorphic(IntentScreenParams::class) {
@@ -34,5 +34,5 @@ internal class NavigationSerializer(
                 }
             }
         },
-    ) as KSerializer<IntentScreenParams<ScreenIntent>> // TODO прочекать это
+    ) as KSerializer<IntentScreenParams<*>> // TODO прочекать это
 }

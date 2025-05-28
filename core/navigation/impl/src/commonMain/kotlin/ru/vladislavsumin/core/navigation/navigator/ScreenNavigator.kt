@@ -32,7 +32,7 @@ public class ScreenNavigator internal constructor(
     internal val parentNavigator: ScreenNavigator?,
     internal val screenPath: ScreenPath,
     internal val node: LinkedTreeNode<ScreenInfo>,
-    internal val serializer: KSerializer<IntentScreenParams<ScreenIntent>>,
+    internal val serializer: KSerializer<IntentScreenParams<*>>,
     private val lifecycle: Lifecycle,
     internal val initialPath: ScreenPath?,
 ) {
@@ -49,7 +49,7 @@ public class ScreenNavigator internal constructor(
     /**
      * Текущие активные навигаторы среди дочерних экранов.
      */
-    private val childScreenNavigators = mutableMapOf<IntentScreenParams<ScreenIntent>, ScreenNavigator>()
+    private val childScreenNavigators = mutableMapOf<IntentScreenParams<*>, ScreenNavigator>()
 
     internal val screenParams = (screenPath.last() as ScreenPath.PathElement.Params).screenParams
 
@@ -85,7 +85,7 @@ public class ScreenNavigator internal constructor(
     /**
      * Возвращает стартовые параметры для [navigationHost] если таковые есть.
      */
-    internal fun getInitialParamsFor(navigationHost: NavigationHost): IntentScreenParams<ScreenIntent>? {
+    internal fun getInitialParamsFor(navigationHost: NavigationHost): IntentScreenParams<*>? {
         val element = initialPath?.first() ?: return null
         val screenKey = element.asErasedKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }?.value
@@ -194,7 +194,7 @@ public class ScreenNavigator internal constructor(
         }
     }
 
-    private fun closeInsideThisScreen(screenParams: IntentScreenParams<ScreenIntent>) {
+    private fun closeInsideThisScreen(screenParams: IntentScreenParams<*>) {
         // TODO убрать дублирование кода.
         val screenKey = ScreenKey(screenParams::class)
         val childNode = node.children.find { it.value.screenKey == screenKey }
@@ -229,8 +229,8 @@ public class ScreenNavigator internal constructor(
      * Открывает экран соответствующий переданным [screenParams], при этом, при поиске места открытия экрана учитывается
      * текущее место. (подробнее про приоритет выбора места написано в документации).
      */
-    public fun open(screenParams: IntentScreenParams<ScreenIntent>): Unit = globalNavigator.open(screenPath, screenParams)
-    public fun close(screenParams: IntentScreenParams<ScreenIntent>): Unit = globalNavigator.close(screenPath, screenParams)
+    public fun open(screenParams: IntentScreenParams<*>): Unit = globalNavigator.open(screenPath, screenParams)
+    public fun close(screenParams: IntentScreenParams<*>): Unit = globalNavigator.close(screenPath, screenParams)
     public fun close(): Unit = globalNavigator.close(
         screenPath,
         (screenPath.last() as ScreenPath.PathElement.Params).screenParams,

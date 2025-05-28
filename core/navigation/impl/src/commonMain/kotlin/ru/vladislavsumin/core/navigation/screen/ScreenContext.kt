@@ -39,7 +39,7 @@ internal class DefaultScreenContext(
  */
 internal fun ComponentContext.wrapWithScreenContext(
     parentNavigator: ScreenNavigator,
-    screenParams: IntentScreenParams<ScreenIntent>,
+    screenParams: IntentScreenParams<*>,
 ): ScreenContext {
     val screenKey = ScreenKey(screenParams::class)
     val childNode = parentNavigator.node.children.find { it.value.screenKey == screenKey }

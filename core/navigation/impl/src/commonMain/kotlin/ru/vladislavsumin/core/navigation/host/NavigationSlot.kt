@@ -28,12 +28,12 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  */
 public fun ScreenContext.childNavigationSlot(
     navigationHost: NavigationHost,
-    initialConfiguration: () -> IntentScreenParams<ScreenIntent>? = { null },
+    initialConfiguration: () -> IntentScreenParams<*>? = { null },
     key: String = "slot_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildSlot<IntentScreenParams<ScreenIntent>, Screen>> {
-    val source = SlotNavigation<IntentScreenParams<ScreenIntent>>()
+): Value<ChildSlot<IntentScreenParams<*>, Screen>> {
+    val source = SlotNavigation<IntentScreenParams<*>>()
 
     val hostNavigator = SlotHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
@@ -51,9 +51,9 @@ public fun ScreenContext.childNavigationSlot(
 }
 
 private class SlotHostNavigator(
-    private val slotNavigation: SlotNavigation<IntentScreenParams<ScreenIntent>>,
+    private val slotNavigation: SlotNavigation<IntentScreenParams<*>>,
 ) : HostNavigator {
-    override fun open(params: IntentScreenParams<ScreenIntent>) {
+    override fun open(params: IntentScreenParams<*>) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
         slotNavigation.navigate { params }
@@ -70,7 +70,7 @@ private class SlotHostNavigator(
         }
     }
 
-    override fun close(params: IntentScreenParams<ScreenIntent>): Boolean {
+    override fun close(params: IntentScreenParams<*>): Boolean {
         var isSuccess: Boolean? = null
         slotNavigation.navigate { currentOpenedScreen ->
             if (params == currentOpenedScreen) {

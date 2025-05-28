@@ -15,7 +15,7 @@ internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> 
 
     constructor(screenParams: IntentScreenParams<ScreenIntent>) : this(listOf(screenParams))
 
-    operator fun plus(screenParams: IntentScreenParams<ScreenIntent>): ScreenPath {
+    operator fun plus(screenParams: IntentScreenParams<*>): ScreenPath {
         return ScreenPath(path + Params(screenParams))
     }
 
@@ -31,7 +31,7 @@ internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> 
             override fun asErasedKey(): ScreenKey = screenKey
         }
 
-        data class Params(val screenParams: IntentScreenParams<ScreenIntent>) : PathElement {
+        data class Params(val screenParams: IntentScreenParams<*>) : PathElement {
             override fun asErasedKey(): ScreenKey = screenParams.asKey()
         }
     }

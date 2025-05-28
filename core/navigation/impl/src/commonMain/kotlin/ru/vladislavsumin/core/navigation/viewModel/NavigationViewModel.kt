@@ -17,13 +17,13 @@ public abstract class NavigationViewModel : ViewModel() {
     /**
      * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.open].
      */
-    protected fun open(screenParams: IntentScreenParams<ScreenIntent>): Unit =
+    protected fun open(screenParams: IntentScreenParams<*>): Unit =
         send(NavigationEvent.Open(screenParams))
 
     /**
      * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.close].
      */
-    protected fun close(screenParams: IntentScreenParams<ScreenIntent>): Unit =
+    protected fun close(screenParams: IntentScreenParams<*>): Unit =
         send(NavigationEvent.Close(screenParams))
 
     /**
@@ -36,8 +36,8 @@ public abstract class NavigationViewModel : ViewModel() {
     }
 
     internal sealed interface NavigationEvent {
-        data class Open(val screenParams: IntentScreenParams<ScreenIntent>) : NavigationEvent
-        data class Close(val screenParams: IntentScreenParams<ScreenIntent>) : NavigationEvent
+        data class Open(val screenParams: IntentScreenParams<*>) : NavigationEvent
+        data class Close(val screenParams: IntentScreenParams<*>) : NavigationEvent
         data object CloseSelf : NavigationEvent
     }
 }

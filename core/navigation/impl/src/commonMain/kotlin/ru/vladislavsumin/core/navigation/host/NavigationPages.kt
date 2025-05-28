@@ -26,12 +26,12 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  */
 public fun ScreenContext.childNavigationPages(
     navigationHost: NavigationHost,
-    initialPages: () -> Pages<IntentScreenParams<ScreenIntent>>,
+    initialPages: () -> Pages<IntentScreenParams<*>>,
     key: String = "pages_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildPages<IntentScreenParams<ScreenIntent>, Screen>> {
-    val source = PagesNavigation<IntentScreenParams<ScreenIntent>>()
+): Value<ChildPages<IntentScreenParams<*>, Screen>> {
+    val source = PagesNavigation<IntentScreenParams<*>>()
 
     val hostNavigator = PagesHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
@@ -51,9 +51,9 @@ public fun ScreenContext.childNavigationPages(
 
 @Suppress("EmptyFunctionBlock")
 private class PagesHostNavigator(
-    private val pagesNavigation: PagesNavigation<IntentScreenParams<ScreenIntent>>,
+    private val pagesNavigation: PagesNavigation<IntentScreenParams<*>>,
 ) : HostNavigator {
-    override fun open(params: IntentScreenParams<ScreenIntent>) {
+    override fun open(params: IntentScreenParams<*>) {
         // Переключение между экранами, определёнными в initialPages
         // Если экран не найден, то активный экран не изменяется
         pagesNavigation.navigate(
@@ -90,7 +90,7 @@ private class PagesHostNavigator(
         )
     }
 
-    override fun close(params: IntentScreenParams<ScreenIntent>): Boolean {
+    override fun close(params: IntentScreenParams<*>): Boolean {
         return false
     }
 

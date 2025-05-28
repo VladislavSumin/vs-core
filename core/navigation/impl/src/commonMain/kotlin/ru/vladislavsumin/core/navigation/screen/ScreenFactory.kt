@@ -2,7 +2,6 @@ package ru.vladislavsumin.core.navigation.screen
 
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
-import ru.vladislavsumin.core.navigation.ScreenParams
 
 /**
  * Фабрика для создания компонента экрана.

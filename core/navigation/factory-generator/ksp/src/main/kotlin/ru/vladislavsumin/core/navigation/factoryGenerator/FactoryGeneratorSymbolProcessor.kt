@@ -3,7 +3,6 @@ package ru.vladislavsumin.core.navigation.factoryGenerator
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.CodeGenerator
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -25,12 +24,10 @@ import ru.vladislavsumin.core.ksp.utils.writeTo
 
 internal class FactoryGeneratorSymbolProcessor(
     private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger,
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> = resolver.processAnnotated<GenerateScreenFactory> {
         processGenerateFactoryAnnotation(it, resolver)
     }
-
 
     private fun processGenerateFactoryAnnotation(instance: KSAnnotated, resolver: Resolver) {
         check(instance is KSClassDeclaration) { "Only KSClassDeclaration supported, but $instance was received" }
@@ -135,6 +132,5 @@ internal class FactoryGeneratorSymbolProcessor(
         private val SCREEN_CONTEXT_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenContext")
         private val SCREEN_FACTORY_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenFactory")
         private val SCREEN_PARAMS_CLASS = ClassName("ru.vladislavsumin.core.navigation", "IntentScreenParams")
-        private val SCREEN_INTENT_CLASS = ClassName("ru.vladislavsumin.core.navigation", "ScreenIntent")
     }
 }

@@ -3,14 +3,14 @@ package ru.vladislavsumin.core.navigation.registration
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import kotlin.reflect.KClass
-import ru.vladislavsumin.core.navigation.IntentScreenParams
-import ru.vladislavsumin.core.navigation.ScreenIntent
 
 /**
  * Позволяет регистрировать компоненты навигации. Использовать напрямую этот интерфейс нельзя, так как его состояние

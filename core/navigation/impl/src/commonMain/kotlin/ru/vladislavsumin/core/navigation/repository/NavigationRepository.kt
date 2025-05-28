@@ -1,7 +1,9 @@
 package ru.vladislavsumin.core.navigation.repository
 
 import kotlinx.serialization.KSerializer
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
@@ -10,8 +12,6 @@ import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.tree.NavigationTree
 import kotlin.reflect.KClass
-import ru.vladislavsumin.core.navigation.IntentScreenParams
-import ru.vladislavsumin.core.navigation.ScreenIntent
 
 /**
  * Репозиторий навигации, используется для построения [NavigationTree].

@@ -1,11 +1,10 @@
 package ru.vladislavsumin.core.navigation.screen
 
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.InternalNavigationApi
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
-import ru.vladislavsumin.core.navigation.IntentScreenParams
-import ru.vladislavsumin.core.navigation.ScreenIntent
 
 /**
  * Ключ экрана.

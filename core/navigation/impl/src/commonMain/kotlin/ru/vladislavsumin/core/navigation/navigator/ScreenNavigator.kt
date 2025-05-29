@@ -228,7 +228,9 @@ public class ScreenNavigator internal constructor(
      * Открывает экран соответствующий переданным [screenParams], при этом, при поиске места открытия экрана учитывается
      * текущее место. (подробнее про приоритет выбора места написано в документации).
      */
-    public fun open(screenParams: IntentScreenParams<*>): Unit = globalNavigator.open(screenPath, screenParams)
+    public fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
+        globalNavigator.open(screenPath, screenParams, intent)
+
     public fun close(screenParams: IntentScreenParams<*>): Unit = globalNavigator.close(screenPath, screenParams)
     public fun close(): Unit = globalNavigator.close(
         screenPath,

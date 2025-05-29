@@ -7,6 +7,7 @@ import ru.vladislavsumin.core.collections.tree.path
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NavigationLogger
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
@@ -24,7 +25,7 @@ internal class GlobalNavigator(
      * Открывает экран соответствующий переданным [screenParams], при этом поиск пути производится относительно
      * переданного [screenPath]. (подробнее про поиск пути до экрана можно прочитать в документации).
      */
-    fun open(screenPath: ScreenPath, screenParams: IntentScreenParams<*>) {
+    fun open(screenPath: ScreenPath, screenParams: IntentScreenParams<*>, intent: ScreenIntent?) {
         NavigationLogger.i { "Open screen ${screenParams::class.simpleName}" }
         val path = createOpenPath(screenPath, screenParams)
         rootNavigator.openInsideThisScreen(path)

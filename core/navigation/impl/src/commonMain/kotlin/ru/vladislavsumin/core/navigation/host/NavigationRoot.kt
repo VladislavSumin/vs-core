@@ -118,8 +118,12 @@ private fun ComponentContext.handleNavigation(
         for (event in navigation.navigationChannel) {
             NavigationLogger.d { "Handle global navigation event $event" }
             when (event) {
+                is NavigationEvent.Open -> screenContext.navigator.open(
+                    event.screenParams as IntentScreenParams<ScreenIntent>,
+                    event.intent as ScreenIntent?
+                )
+
                 is NavigationEvent.Close -> screenContext.navigator.close(event.screenParams)
-                is NavigationEvent.Open -> screenContext.navigator.open(event.screenParams)
             }
         }
     }

@@ -18,7 +18,9 @@ public class Navigation internal constructor(
 ) {
     internal val navigationChannel = Channel<NavigationEvent>(Channel.BUFFERED)
 
-    public fun open(screenParams: IntentScreenParams<ScreenIntent>): Unit = send(NavigationEvent.Open(screenParams))
+    public fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
+        send(NavigationEvent.Open(screenParams, intent))
+
     public fun close(screenParams: IntentScreenParams<ScreenIntent>): Unit = send(NavigationEvent.Close(screenParams))
 
     private fun send(event: NavigationEvent) {
@@ -39,8 +41,8 @@ public class Navigation internal constructor(
     }
 
     internal sealed interface NavigationEvent {
-        data class Open(val screenParams: IntentScreenParams<ScreenIntent>) : NavigationEvent
-        data class Close(val screenParams: IntentScreenParams<ScreenIntent>) : NavigationEvent
+        data class Open(val screenParams: IntentScreenParams<*>, val intent: ScreenIntent?) : NavigationEvent
+        data class Close(val screenParams: IntentScreenParams<*>) : NavigationEvent
     }
 
     public companion object {

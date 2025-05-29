@@ -18,6 +18,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import com.squareup.kotlinpoet.ksp.toTypeName
+import ru.vladislavsumin.core.ksp.utils.Types
 import ru.vladislavsumin.core.ksp.utils.primaryConstructorWithPrivateFields
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
 import ru.vladislavsumin.core.ksp.utils.writeTo
@@ -94,6 +95,12 @@ internal class FactoryGeneratorSymbolProcessor(
             .addModifiers(KModifier.OVERRIDE)
             .addParameter(ParameterSpec.builder("context", SCREEN_CONTEXT_CLASS).build())
             .addParameter(ParameterSpec.builder("params", screenParamsClassName).build())
+            .addParameter(
+                ParameterSpec.builder(
+                    "intents",
+                    Types.Coroutines.ReceiveChannel.parameterizedBy(screenIntentType),
+                ).build()
+            )
             .addCode(returnCodeBlock)
             .returns(instance.toClassName())
             .build()

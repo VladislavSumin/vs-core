@@ -66,16 +66,16 @@ internal class FactoryGeneratorSymbolProcessor(
             )
 
         val screenIntentType = resolveScreenIntentType(screenParamsClassName, resolver)
+        val screenIntentReceiveChannelType = Types.Coroutines.ReceiveChannel.parameterizedBy(screenIntentType)
 
         // Список параметров для конструктора фабрики
         val factoryConstructorParams = constructorParams
             .filter { it.type.toTypeName() != SCREEN_CONTEXT_CLASS }
-            .filter {
-                (it.type.resolve().declaration as? KSClassDeclaration)
-                    ?.superTypes
-                    ?.any {
-                        it.toTypeName() == SCREEN_PARAMS_CLASS
-                    } != true
+            .filter { param -> param.type.toTypeName() != screenIntentReceiveChannelType }
+            .filter { param ->
+                (param.type.resolve().declaration as? KSClassDeclaration)
+                    ?.getAllSuperTypes()
+                    ?.any { it.toClassNameOrNull() == SCREEN_PARAMS_CLASS } != true
             }
 
         // Блок кода который будет помещен в тело функции crate
@@ -95,12 +95,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .addModifiers(KModifier.OVERRIDE)
             .addParameter(ParameterSpec.builder("context", SCREEN_CONTEXT_CLASS).build())
             .addParameter(ParameterSpec.builder("params", screenParamsClassName).build())
-            .addParameter(
-                ParameterSpec.builder(
-                    "intents",
-                    Types.Coroutines.ReceiveChannel.parameterizedBy(screenIntentType),
-                ).build()
-            )
+            .addParameter(ParameterSpec.builder("intents", screenIntentReceiveChannelType).build())
             .addCode(returnCodeBlock)
             .returns(instance.toClassName())
             .build()

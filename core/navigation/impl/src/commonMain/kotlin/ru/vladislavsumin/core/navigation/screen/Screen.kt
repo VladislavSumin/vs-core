@@ -51,7 +51,11 @@ public abstract class Screen(context: ScreenContext) :
     internal fun NavigationViewModel.handleNavigation() = launch {
         for (event in navigationChannel) {
             when (event) {
-                is NavigationViewModel.NavigationEvent.Open -> navigator.open(event.screenParams)
+                is NavigationViewModel.NavigationEvent.Open -> navigator.open(
+                    event.screenParams as IntentScreenParams<ScreenIntent>,
+                    event.intent as ScreenIntent,
+                )
+
                 is NavigationViewModel.NavigationEvent.Close -> navigator.close(event.screenParams)
                 NavigationViewModel.NavigationEvent.CloseSelf -> navigator.close()
             }

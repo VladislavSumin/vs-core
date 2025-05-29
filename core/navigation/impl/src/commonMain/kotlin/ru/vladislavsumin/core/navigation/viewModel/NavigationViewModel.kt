@@ -3,6 +3,7 @@ package ru.vladislavsumin.core.navigation.viewModel
 import kotlinx.coroutines.channels.Channel
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 
 /**
  * Расширение [ViewModel] с поддержкой навигации внутри вью модели без необходимости писать связку явно.
@@ -15,8 +16,8 @@ public abstract class NavigationViewModel : ViewModel() {
     /**
      * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.open].
      */
-    protected fun open(screenParams: IntentScreenParams<*>): Unit =
-        send(NavigationEvent.Open(screenParams))
+    protected fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
+        send(NavigationEvent.Open(screenParams, intent))
 
     /**
      * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.close].
@@ -34,7 +35,7 @@ public abstract class NavigationViewModel : ViewModel() {
     }
 
     internal sealed interface NavigationEvent {
-        data class Open(val screenParams: IntentScreenParams<*>) : NavigationEvent
+        data class Open(val screenParams: IntentScreenParams<*>, val intent: ScreenIntent?) : NavigationEvent
         data class Close(val screenParams: IntentScreenParams<*>) : NavigationEvent
         data object CloseSelf : NavigationEvent
     }

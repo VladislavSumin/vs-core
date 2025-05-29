@@ -53,7 +53,7 @@ public abstract class Screen(context: ScreenContext) :
             when (event) {
                 is NavigationViewModel.NavigationEvent.Open -> navigator.open(
                     event.screenParams as IntentScreenParams<ScreenIntent>,
-                    event.intent as ScreenIntent,
+                    event.intent as ScreenIntent?,
                 )
 
                 is NavigationViewModel.NavigationEvent.Close -> navigator.close(event.screenParams)

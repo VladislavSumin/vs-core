@@ -3,6 +3,7 @@ package ru.vladislavsumin.core.navigation.host
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.utils.createCoroutineScope
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
@@ -65,7 +66,8 @@ public fun ComponentContext.childNavigationRoot(
         childContext,
     )
 
-    val screen = rootScreenFactory.create(rootScreenContext, params)
+    // TODO поддержать события для root экрана.
+    val screen = rootScreenFactory.create(rootScreenContext, params, Channel())
     rootScreenNavigator.screen = screen
 
     handleNavigation(navigation, rootScreenContext)

@@ -30,18 +30,23 @@ public fun ScreenContext.childNavigationPages(
     key: String = "pages_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildPages<IntentScreenParams<*>, Screen>> {
-    val source = PagesNavigation<IntentScreenParams<*>>()
+): Value<ChildPages<*, Screen>> {
+    val source = PagesNavigation<ConfigurationHolder>()
 
     val hostNavigator = PagesHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val pages = childPages(
         source = source,
-        serializer = if (allowStateSave) navigator.serializer else null,
+        // serializer = if (allowStateSave) navigator.serializer else null,
+        savePages = { null }, // TODO написать сохранение / восстановление конфигурации
+        restorePages = { null },
         key = key,
         initialPages = {
-            navigator.getInitialParamsFor(navigationHost)?.let { Pages(listOf(it), 0) } ?: initialPages()
+            val pages = navigator.getInitialParamsFor(navigationHost)
+                ?.let { Pages(listOf(it), 0) }
+                ?: initialPages()
+            Pages(pages.items.map { ConfigurationHolder(it) }, pages.selectedIndex)
         },
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
@@ -51,14 +56,14 @@ public fun ScreenContext.childNavigationPages(
 
 @Suppress("EmptyFunctionBlock")
 private class PagesHostNavigator(
-    private val pagesNavigation: PagesNavigation<IntentScreenParams<*>>,
+    private val pagesNavigation: PagesNavigation<ConfigurationHolder>,
 ) : HostNavigator {
     override fun open(params: IntentScreenParams<*>) {
         // Переключение между экранами, определёнными в initialPages
         // Если экран не найден, то активный экран не изменяется
         pagesNavigation.navigate(
             transformer = { pages ->
-                val indexOfScreen = pages.items.indexOf(params)
+                val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }
                 if (indexOfScreen >= 0) {
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
@@ -74,11 +79,11 @@ private class PagesHostNavigator(
         // иначе пытаемся активировать экран использую defaultParams
         pagesNavigation.navigate(
             transformer = { pages ->
-                val indexOfScreen = pages.items.map { it.asKey() }.indexOf(screenKey)
+                val indexOfScreen = pages.items.map { it.screenParams.asKey() }.indexOf(screenKey)
                 if (indexOfScreen >= 0) {
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
-                    val indexOfDefaultScreen = pages.items.indexOf(defaultParams())
+                    val indexOfDefaultScreen = pages.items.indexOfFirst { it.screenParams == defaultParams() }
                     if (indexOfDefaultScreen >= 0) {
                         pages.copy(selectedIndex = indexOfDefaultScreen)
                     } else {

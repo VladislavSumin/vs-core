@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.screen
 
+import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
 
@@ -13,6 +14,7 @@ public fun interface ScreenFactory<P : IntentScreenParams<I>, I : ScreenIntent, 
      * Создает компонент экрана.
      * @param context контекст экрана.
      * @param params параметры экрана.
+     * @param intents события экрана.
      */
-    public fun create(context: ScreenContext, params: P): S
+    public fun create(context: ScreenContext, params: P, intents: ReceiveChannel<I>): S
 }

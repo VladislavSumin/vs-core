@@ -33,18 +33,20 @@ public fun ScreenContext.childNavigationStack(
     key: String = "stack_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildStack<IntentScreenParams<*>, Screen>> {
-    val source = StackNavigation<IntentScreenParams<*>>()
+): Value<ChildStack<*, Screen>> {
+    val source = StackNavigation<ConfigurationHolder>()
 
     val hostNavigator = StackHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val stack = childStack(
         source = source,
-        serializer = if (allowStateSave) navigator.serializer else null,
+//        serializer = if (allowStateSave) navigator.serializer else null,
+        saveStack = { null }, // TODO написать сохранение / восстановление конфигурации
+        restoreStack = { null },
         key = key,
         initialStack = {
-            navigator.getInitialParamsFor(navigationHost)?.let { params ->
+            val stack = navigator.getInitialParamsFor(navigationHost)?.let { params ->
                 val stack = defaultStack()
                 val index = stack.indexOf(params)
                 if (index >= 0) {
@@ -53,6 +55,8 @@ public fun ScreenContext.childNavigationStack(
                     stack + params
                 }
             } ?: initialStack()
+
+            stack.map { ConfigurationHolder(it) }
         },
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
@@ -61,18 +65,18 @@ public fun ScreenContext.childNavigationStack(
 }
 
 private class StackHostNavigator(
-    private val stackNavigation: StackNavigation<IntentScreenParams<*>>,
+    private val stackNavigation: StackNavigation<ConfigurationHolder>,
 ) : HostNavigator {
     override fun open(params: IntentScreenParams<*>) {
         // Если такого экрана еще нет в стеке, то открываем его.
         // Если же экран уже есть в стеке, то закрываем все экраны после него.
         stackNavigation.navigate(
             transformer = { stack ->
-                val indexOfScreen = stack.indexOf(params)
+                val indexOfScreen = stack.indexOfFirst { it.screenParams == params }
                 if (indexOfScreen >= 0) {
                     stack.subList(0, indexOfScreen + 1)
                 } else {
-                    stack + params
+                    stack + ConfigurationHolder(params)
                 }
             },
             onComplete = { _, _ -> },
@@ -84,11 +88,11 @@ private class StackHostNavigator(
         // Если же экран с таким ключом уже есть в стеке, то закрываем все экраны после него.
         stackNavigation.navigate(
             transformer = { stack ->
-                val indexOfScreen = stack.map { it.asKey() }.indexOf(screenKey)
+                val indexOfScreen = stack.map { it.screenParams.asKey() }.indexOf(screenKey)
                 if (indexOfScreen >= 0) {
                     stack.subList(0, indexOfScreen + 1)
                 } else {
-                    stack + defaultParams()
+                    stack + ConfigurationHolder(defaultParams())
                 }
             },
             onComplete = { _, _ -> },
@@ -103,14 +107,14 @@ private class StackHostNavigator(
         var isSuccess: Boolean? = null
         stackNavigation.navigate(
             transformer = { stack ->
-                val indexOfScreen = stack.indexOf(params)
+                val indexOfScreen = stack.indexOfFirst { it.screenParams == params }
                 if (indexOfScreen >= 0) {
                     isSuccess = false
                     stack.subList(0, indexOfScreen)
                 } else {
                     if (indexOfScreen == 0) {
                         isSuccess = false
-                        listOf(params)
+                        listOf(ConfigurationHolder(params))
                     } else {
                         isSuccess = true
                         stack.subList(0, indexOfScreen)
@@ -127,7 +131,7 @@ private class StackHostNavigator(
         var isSuccess: Boolean? = null
         stackNavigation.navigate(
             transformer = { stack ->
-                val keysStack = stack.map { it.asKey() }
+                val keysStack = stack.map { it.screenParams.asKey() }
                 val indexOfScreen = keysStack.indexOfLast { it == screenKey }
                 if (indexOfScreen >= 0) {
                     isSuccess = false

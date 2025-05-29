@@ -31,17 +31,22 @@ public fun ScreenContext.childNavigationSlot(
     key: String = "slot_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildSlot<IntentScreenParams<*>, Screen>> {
-    val source = SlotNavigation<IntentScreenParams<*>>()
+): Value<ChildSlot<*, Screen>> {
+    val source = SlotNavigation<ConfigurationHolder>()
 
     val hostNavigator = SlotHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val slot = childSlot(
         source = source,
-        serializer = if (allowStateSave) navigator.serializer else null,
+        // serializer = if (allowStateSave) navigator.serializer else null,
+        saveConfiguration = { null }, // TODO написать сохранение / восстановление конфигурации
+        restoreConfiguration = { null },
         key = key,
-        initialConfiguration = { navigator.getInitialParamsFor(navigationHost) ?: initialConfiguration() },
+        initialConfiguration = {
+            (navigator.getInitialParamsFor(navigationHost) ?: initialConfiguration())
+                ?.let { ConfigurationHolder(it) }
+        },
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
     )
@@ -50,21 +55,21 @@ public fun ScreenContext.childNavigationSlot(
 }
 
 private class SlotHostNavigator(
-    private val slotNavigation: SlotNavigation<IntentScreenParams<*>>,
+    private val slotNavigation: SlotNavigation<ConfigurationHolder>,
 ) : HostNavigator {
     override fun open(params: IntentScreenParams<*>) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
-        slotNavigation.navigate { params }
+        slotNavigation.navigate { ConfigurationHolder(params) }
     }
 
     override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
         // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
         slotNavigation.navigate { currentOpenedScreen ->
-            if (currentOpenedScreen != null && currentOpenedScreen.asKey() == screenKey) {
+            if (currentOpenedScreen != null && currentOpenedScreen.screenParams.asKey() == screenKey) {
                 currentOpenedScreen
             } else {
-                defaultParams()
+                ConfigurationHolder(defaultParams())
             }
         }
     }
@@ -94,7 +99,7 @@ private class SlotHostNavigator(
                 }
 
                 // Открыт нужный нам экран
-                screenKey == it.asKey() -> {
+                screenKey == it.screenParams.asKey() -> {
                     isSuccess = true
                     null
                 }

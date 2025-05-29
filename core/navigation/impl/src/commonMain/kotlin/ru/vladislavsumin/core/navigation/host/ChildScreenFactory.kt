@@ -12,12 +12,16 @@ import ru.vladislavsumin.core.navigation.screen.wrapWithScreenContext
  * Стандартная фабрика дочерних экранов для использования в compose навигации.
  */
 internal fun ScreenContext.childScreenFactory(
-    screenParams: IntentScreenParams<*>,
+    configuration: ConfigurationHolder,
     context: ComponentContext,
 ): Screen {
-    val screenContext = context.wrapWithScreenContext(navigator, screenParams)
-    val screenFactory = navigator.getChildScreenFactory(screenParams.asKey())
-    val screen = screenFactory.create(screenContext, screenParams as IntentScreenParams<ScreenIntent>)
+    val screenContext = context.wrapWithScreenContext(navigator, configuration.screenParams)
+    val screenFactory = navigator.getChildScreenFactory(configuration.screenParams.asKey())
+    val screen = screenFactory.create(
+        context = screenContext,
+        params = configuration.screenParams as IntentScreenParams<ScreenIntent>,
+        intents = configuration.intents,
+    )
     screenContext.navigator.screen = screen
     return screen
 }

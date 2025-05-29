@@ -28,7 +28,7 @@ internal class GlobalNavigator(
     fun open(screenPath: ScreenPath, screenParams: IntentScreenParams<*>, intent: ScreenIntent?) {
         NavigationLogger.i { "Open screen ${screenParams::class.simpleName}" }
         val path = createOpenPath(screenPath, screenParams)
-        rootNavigator.openInsideThisScreen(path)
+        rootNavigator.openInsideThisScreen(path, intent)
     }
 
     internal fun createOpenPath(screenPath: ScreenPath, screenParams: IntentScreenParams<*>): ScreenPath {

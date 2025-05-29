@@ -67,17 +67,21 @@ public fun ScreenContext.childNavigationStack(
 private class StackHostNavigator(
     private val stackNavigation: StackNavigation<ConfigurationHolder>,
 ) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>) {
+    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
         // Если такого экрана еще нет в стеке, то открываем его.
         // Если же экран уже есть в стеке, то закрываем все экраны после него.
         stackNavigation.navigate(
             transformer = { stack ->
                 val indexOfScreen = stack.indexOfFirst { it.screenParams == params }
-                if (indexOfScreen >= 0) {
+                val newStack = if (indexOfScreen >= 0) {
                     stack.subList(0, indexOfScreen + 1)
                 } else {
                     stack + ConfigurationHolder(params)
                 }
+                if (intent != null) {
+                    newStack.last().intents.trySend(intent).getOrThrow()
+                }
+                newStack
             },
             onComplete = { _, _ -> },
         )

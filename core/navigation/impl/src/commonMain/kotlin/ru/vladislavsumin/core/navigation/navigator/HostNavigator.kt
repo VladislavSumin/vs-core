@@ -14,7 +14,7 @@ internal interface HostNavigator {
      *
      * @param params параметры экрана.
      */
-    fun open(params: IntentScreenParams<*>)
+    fun open(params: IntentScreenParams<*>, intent: ScreenIntent?)
 
     fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>)
 

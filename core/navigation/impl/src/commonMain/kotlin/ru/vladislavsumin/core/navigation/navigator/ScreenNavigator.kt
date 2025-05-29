@@ -140,11 +140,11 @@ public class ScreenNavigator internal constructor(
         check(oldCustomFactory == null) { "Custom factory for $screenKey already registered" }
     }
 
-    internal fun openInsideThisScreen(screenPath: ScreenPath) {
+    internal fun openInsideThisScreen(screenPath: ScreenPath, intent: ScreenIntent?) {
         NavigationLogger.t {
             "ScreenNavigator(screenParams=$screenParams).openInsideThisScreen(screenPath=$screenPath)"
         }
-        openInsideThisScreen(screenPath.first())
+        openInsideThisScreen(screenPath.first(), intent?.takeIf { screenPath.size == 1 })
         val childPath = ScreenPath(screenPath.drop(1))
         if (childPath.isNotEmpty()) {
             val childElement = screenPath.first()
@@ -154,7 +154,7 @@ public class ScreenNavigator internal constructor(
 
                 is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
             }
-            childNavigator!!.openInsideThisScreen(childPath)
+            childNavigator!!.openInsideThisScreen(childPath, intent)
         }
     }
 
@@ -163,7 +163,7 @@ public class ScreenNavigator internal constructor(
      * После нахождения пути к экрану открываемому через вызов [open], навигатор последовательно вызывает эту
      * функцию на **каждом** экране в пути, тем самым переключая состояние на требуемое.
      */
-    private fun openInsideThisScreen(screen: ScreenPath.PathElement) {
+    private fun openInsideThisScreen(screen: ScreenPath.PathElement, intent: ScreenIntent?) {
         val screenKey = screen.asErasedKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }
             ?: error("Child node with screenKey=$screenKey not found")
@@ -171,7 +171,7 @@ public class ScreenNavigator internal constructor(
             ?: error("Host navigator for host=${childNode.value.hostInParent} not found")
         when (screen) {
             is ScreenPath.PathElement.Key -> hostNavigator.open(screen.screenKey) { childNode.value.defaultParams!! }
-            is ScreenPath.PathElement.Params -> hostNavigator.open(screen.screenParams)
+            is ScreenPath.PathElement.Params -> hostNavigator.open(screen.screenParams, intent)
         }
     }
 

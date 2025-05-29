@@ -58,13 +58,16 @@ public fun ScreenContext.childNavigationPages(
 private class PagesHostNavigator(
     private val pagesNavigation: PagesNavigation<ConfigurationHolder>,
 ) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>) {
+    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
         // Переключение между экранами, определёнными в initialPages
         // Если экран не найден, то активный экран не изменяется
         pagesNavigation.navigate(
             transformer = { pages ->
                 val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }
                 if (indexOfScreen >= 0) {
+                    if (intent != null) {
+                        pages.items[indexOfScreen].intents.trySend(intent).getOrThrow()
+                    }
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
                     pages

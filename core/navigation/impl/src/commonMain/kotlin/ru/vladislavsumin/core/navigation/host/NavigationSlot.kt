@@ -57,10 +57,20 @@ public fun ScreenContext.childNavigationSlot(
 private class SlotHostNavigator(
     private val slotNavigation: SlotNavigation<ConfigurationHolder>,
 ) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>) {
+    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
-        slotNavigation.navigate { ConfigurationHolder(params) }
+        slotNavigation.navigate { currentOpenedScreen ->
+            val newConfig = if (currentOpenedScreen != null && currentOpenedScreen.screenParams == params) {
+                currentOpenedScreen
+            } else {
+                ConfigurationHolder(params)
+            }
+            if (intent != null) {
+                newConfig.intents.trySend(intent).getOrThrow()
+            }
+            newConfig
+        }
     }
 
     override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {

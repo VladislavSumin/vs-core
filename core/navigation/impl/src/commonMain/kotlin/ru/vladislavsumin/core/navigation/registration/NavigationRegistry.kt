@@ -55,6 +55,6 @@ public abstract class NavigationRegistry {
     )
 
     public interface HostRegistry {
-        public infix fun NavigationHost.opens(screens: Set<KClass<out ScreenParams>>)
+        public infix fun NavigationHost.opens(screens: Set<KClass<out IntentScreenParams<*>>>)
     }
 }

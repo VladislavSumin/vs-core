@@ -48,7 +48,7 @@ public abstract class Screen(context: ScreenContext) :
     }
 
     @PublishedApi
-    internal fun NavigationViewModel.handleNavigation() = launch {
+    internal fun NavigationViewModel.handleNavigation(): Unit = launch {
         for (event in navigationChannel) {
             when (event) {
                 is NavigationViewModel.NavigationEvent.Open -> navigator.open(

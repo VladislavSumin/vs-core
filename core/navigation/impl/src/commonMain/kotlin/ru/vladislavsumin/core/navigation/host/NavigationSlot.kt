@@ -5,6 +5,9 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.navigate
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.statekeeper.SerializableContainer
+import com.arkivanov.essenty.statekeeper.consumeRequired
+import kotlinx.serialization.builtins.ListSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -39,9 +42,17 @@ public fun ScreenContext.childNavigationSlot(
 
     val slot = childSlot(
         source = source,
-        // serializer = if (allowStateSave) navigator.serializer else null,
-        saveConfiguration = { null }, // TODO написать сохранение / восстановление конфигурации
-        restoreConfiguration = { null },
+        saveConfiguration = { state ->
+            if (allowStateSave && state != null) {
+                SerializableContainer(value = state.screenParams, strategy = navigator.serializer)
+            } else {
+                null
+            }
+        },
+        restoreConfiguration = { container ->
+            val screenParams = container.consumeRequired(strategy = navigator.serializer)
+            ConfigurationHolder(screenParams)
+        },
         key = key,
         initialConfiguration = {
             (navigator.getInitialParamsFor(navigationHost) ?: initialConfiguration())

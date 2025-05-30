@@ -4,6 +4,9 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.statekeeper.SerializableContainer
+import com.arkivanov.essenty.statekeeper.consumeRequired
+import kotlinx.serialization.builtins.ListSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -41,9 +44,20 @@ public fun ScreenContext.childNavigationStack(
 
     val stack = childStack(
         source = source,
-//        serializer = if (allowStateSave) navigator.serializer else null,
-        saveStack = { null }, // TODO написать сохранение / восстановление конфигурации
-        restoreStack = { null },
+        saveStack = { state ->
+            if (allowStateSave) {
+                SerializableContainer(
+                    value = state.map { it.screenParams },
+                    strategy = ListSerializer(navigator.serializer)
+                )
+            } else {
+                null
+            }
+        },
+        restoreStack = { container ->
+            container.consumeRequired(strategy = ListSerializer(navigator.serializer))
+                .map { ConfigurationHolder(it) }
+        },
         key = key,
         initialStack = {
             val stack = navigator.getInitialParamsFor(navigationHost)?.let { params ->

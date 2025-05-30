@@ -5,6 +5,10 @@ import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.statekeeper.SerializableContainer
+import com.arkivanov.essenty.statekeeper.consumeRequired
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -38,9 +42,20 @@ public fun ScreenContext.childNavigationPages(
 
     val pages = childPages(
         source = source,
-        // serializer = if (allowStateSave) navigator.serializer else null,
-        savePages = { null }, // TODO написать сохранение / восстановление конфигурации
-        restorePages = { null },
+        savePages = { state ->
+            if (allowStateSave) {
+                SerializableContainer(
+                    value = SerializablePages(items = state.items.map { it.screenParams }, state.selectedIndex),
+                    strategy = SerializablePages.serializer(navigator.serializer)
+                )
+            } else {
+                null
+            }
+        },
+        restorePages = { container ->
+            val pages = container.consumeRequired(strategy = SerializablePages.serializer(navigator.serializer))
+            Pages(pages.items.map { ConfigurationHolder(it) }, pages.selectedIndex)
+        },
         key = key,
         initialPages = {
             val pages = navigator.getInitialParamsFor(navigationHost)
@@ -106,3 +121,9 @@ private class PagesHostNavigator(
         return false
     }
 }
+
+@Serializable
+private class SerializablePages<T : IntentScreenParams<*>>(
+    val items: List<T>,
+    val selectedIndex: Int,
+)

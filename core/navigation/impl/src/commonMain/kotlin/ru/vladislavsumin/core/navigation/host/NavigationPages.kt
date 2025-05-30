@@ -8,7 +8,6 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ListSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -46,7 +45,7 @@ public fun ScreenContext.childNavigationPages(
             if (allowStateSave) {
                 SerializableContainer(
                     value = SerializablePages(items = state.items.map { it.screenParams }, state.selectedIndex),
-                    strategy = SerializablePages.serializer(navigator.serializer)
+                    strategy = SerializablePages.serializer(navigator.serializer),
                 )
             } else {
                 null

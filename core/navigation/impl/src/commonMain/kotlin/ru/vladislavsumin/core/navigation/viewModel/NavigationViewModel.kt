@@ -15,7 +15,8 @@ public abstract class NavigationViewModel : ViewModel() {
 
     init {
         check(IsNavigationViewModelConstructing) {
-            "Wrong NavigationViewModel usage. This type of view models can be constructed only via Screen.viewModel function"
+            "Wrong NavigationViewModel usage. " +
+                "This type of view models can be constructed only via Screen.viewModel function"
         }
     }
 

@@ -37,7 +37,6 @@ internal class FactoryGeneratorSymbolProcessor(
     }
 
     private fun processGenerateFactoryAnnotation(instance: KSAnnotated, resolver: Resolver) {
-
         // Проверяем тип объекта к которому применена аннотация
         if (instance !is KSClassDeclaration) {
             logger.error(
@@ -115,7 +114,7 @@ internal class FactoryGeneratorSymbolProcessor(
                 }
             }
             ?.type?.resolve() as? KSClassDeclaration
-        // Если не смогли найти нужный экран, то идем по варианту 2.
+            // Если не смогли найти нужный экран, то идем по варианту 2.
             ?: generateScreenParamsFromScreenName(instance, resolver)
 
         // После определения параметров экрана нам необходимо определить параметры событий (intent), которыми
@@ -187,7 +186,7 @@ internal class FactoryGeneratorSymbolProcessor(
         if (classDeclaration == null) {
             logger.error(
                 message = "ScreenParams not found and automatically resolved as ${name.canonicalName}, but screenParams with current type not exist",
-                symbol = instance
+                symbol = instance,
             )
             error("${name.canonicalName} not exist")
         }

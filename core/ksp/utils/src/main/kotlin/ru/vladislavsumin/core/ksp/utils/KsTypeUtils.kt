@@ -7,7 +7,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 public fun KSType.toTypeNameOrNull(): TypeName? =
     try {
         toTypeName()
-    } catch (e: NoSuchElementException) {
+    } catch (_: NoSuchElementException) {
         // Эта ошибка выскакивает для типов вида
         // interface SomeInterface<out T : Any>
         // TODO Посмотреть issues на эту тему, кажется это баг.

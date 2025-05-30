@@ -120,7 +120,7 @@ private fun ComponentContext.handleNavigation(
             when (event) {
                 is NavigationEvent.Open -> screenContext.navigator.open(
                     event.screenParams as IntentScreenParams<ScreenIntent>,
-                    event.intent as ScreenIntent?
+                    event.intent as ScreenIntent?,
                 )
 
                 is NavigationEvent.Close -> screenContext.navigator.close(event.screenParams)

@@ -48,7 +48,7 @@ public fun ScreenContext.childNavigationStack(
             if (allowStateSave) {
                 SerializableContainer(
                     value = state.map { it.screenParams },
-                    strategy = ListSerializer(navigator.serializer)
+                    strategy = ListSerializer(navigator.serializer),
                 )
             } else {
                 null

@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.screen
 
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement
 import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement.Params
 
@@ -10,11 +11,11 @@ import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement.Params
  */
 internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> by path {
 
-    constructor(screenParams: Iterable<ScreenParams>) : this(screenParams.map { Params(it) })
+    constructor(screenParams: Iterable<IntentScreenParams<ScreenIntent>>) : this(screenParams.map { Params(it) })
 
-    constructor(screenParams: ScreenParams) : this(listOf(screenParams))
+    constructor(screenParams: IntentScreenParams<ScreenIntent>) : this(listOf(screenParams))
 
-    operator fun plus(screenParams: ScreenParams): ScreenPath {
+    operator fun plus(screenParams: IntentScreenParams<*>): ScreenPath {
         return ScreenPath(path + Params(screenParams))
     }
 
@@ -30,7 +31,7 @@ internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> 
             override fun asErasedKey(): ScreenKey = screenKey
         }
 
-        data class Params(val screenParams: ScreenParams) : PathElement {
+        data class Params(val screenParams: IntentScreenParams<*>) : PathElement {
             override fun asErasedKey(): ScreenKey = screenParams.asKey()
         }
     }

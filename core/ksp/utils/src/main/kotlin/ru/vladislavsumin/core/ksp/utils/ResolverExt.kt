@@ -18,9 +18,6 @@ public fun Resolver.processAnnotated(annotationName: String, block: (KSAnnotated
             // We have cases when one generated factory using inside another generated factory,
             // for these cases we need to processing sources with more than once iteration
             false
-        } catch (@Suppress("TooGenericExceptionCaught") _: Exception) {
-            // logger.exception(e)
-            false
         }
     }
 

@@ -104,6 +104,16 @@ internal class FactoryGeneratorSymbolProcessor(
                 }
             }
             .firstOrNull()
+            ?.also {
+                // Проверяем правила наименования параметров экрана.
+                if (it.name!!.asString() != "params") {
+                    logger.error(
+                        message = "Screen params variable must be named \"params\"",
+                        symbol = it,
+                    )
+                    error("Incorrect screen params name")
+                }
+            }
             ?.type?.resolve() as? KSClassDeclaration
         // Если не смогли найти нужный экран, то идем по варианту 2.
             ?: generateScreenParamsFromScreenName(instance, resolver)
@@ -185,15 +195,16 @@ internal class FactoryGeneratorSymbolProcessor(
         return classDeclaration
     }
 
-    // TODO обработать тут все !! нормально
     private fun resolveScreenIntentType(
         screenParamsClassDeclaration: KSClassDeclaration,
-    ): ClassName {
-        val intentType = screenParamsClassDeclaration.getAllSuperTypes().find {
-            (it.toTypeName() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS
-        }!!.arguments.first().toTypeName() as ClassName
-        return intentType
-    }
+    ): ClassName = screenParamsClassDeclaration.getAllSuperTypes()
+        .find {
+            // Ищем первый объявление наследования от IntentScreenParams, этот класс типизирован нужным нам
+            // параметром
+            (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS
+        }!! // Сюда могут попасть только наследники IntentScreenParams поэтому find гарантированно найдет элемент.
+        .arguments.first() // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
+        .toTypeName() as ClassName
 
     companion object {
         private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "Screen")

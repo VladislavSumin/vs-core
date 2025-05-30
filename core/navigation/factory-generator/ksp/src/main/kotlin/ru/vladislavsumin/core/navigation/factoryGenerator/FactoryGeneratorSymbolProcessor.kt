@@ -105,12 +105,11 @@ internal class FactoryGeneratorSymbolProcessor(
             }
             .firstOrNull()
             ?.type?.toTypeName() as ClassName?
-            // Если не смогли найти нужный экран, то идем по варианту 2.
-            ?: ClassName(
-                packageName = instance.packageName.asString(),
-                "${instance.simpleName.asString()}Params",
-            )
+        // Если не смогли найти нужный экран, то идем по варианту 2.
+            ?: generateScreenParamsFromScreenName(instance, resolver)
 
+        // После определения параметров экрана нам необходимо определить параметры событий (intent), которыми
+        // типизированны эти параметры.
         val screenIntentType = resolveScreenIntentType(screenParamsClassName, resolver)
         val screenIntentReceiveChannelType = Types.Coroutines.ReceiveChannel.parameterizedBy(screenIntentType)
 
@@ -162,6 +161,24 @@ internal class FactoryGeneratorSymbolProcessor(
             .addFunction(createFunction)
             .build()
             .writeTo(codeGenerator, instance.packageName.asString())
+    }
+
+    private fun generateScreenParamsFromScreenName(instance: KSClassDeclaration, resolver: Resolver): ClassName {
+        val name = ClassName(
+            packageName = instance.packageName.asString(),
+            "${instance.simpleName.asString()}Params",
+        )
+
+        // Проверяем что такой тип вообще существует.
+        if (resolver.getClassDeclarationByName(name.canonicalName) == null) {
+            logger.error(
+                message = "ScreenParams not found and automatically resolved as ${name.canonicalName}, but screenParams with current type not exist",
+                symbol = instance
+            )
+            error("${name.canonicalName} not exist")
+        }
+
+        return name
     }
 
     // TODO обработать тут все !! нормально

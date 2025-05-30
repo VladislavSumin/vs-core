@@ -3,6 +3,7 @@ package ru.vladislavsumin.core.navigation.factoryGenerator
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -21,19 +22,40 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.vladislavsumin.core.ksp.utils.Types
 import ru.vladislavsumin.core.ksp.utils.primaryConstructorWithPrivateFields
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
+import ru.vladislavsumin.core.ksp.utils.toTypeNameOrNull
 import ru.vladislavsumin.core.ksp.utils.writeTo
 
+/**
+ * Данный процессор обрабатывает аннотации [GenerateScreenFactory] и создает фабрики для анотированных экранов.
+ */
 internal class FactoryGeneratorSymbolProcessor(
     private val codeGenerator: CodeGenerator,
+    private val logger: KSPLogger,
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> = resolver.processAnnotated<GenerateScreenFactory> {
         processGenerateFactoryAnnotation(it, resolver)
     }
 
     private fun processGenerateFactoryAnnotation(instance: KSAnnotated, resolver: Resolver) {
-        check(instance is KSClassDeclaration) { "Only KSClassDeclaration supported, but $instance was received" }
-        val primaryConstructor = instance.primaryConstructor
-        checkNotNull(primaryConstructor) { "For generate factory class must have primary constructor" }
+
+        // Проверяем тип объекта к которому применена аннотация
+        if (instance !is KSClassDeclaration) {
+            logger.error(
+                message = "Is not a class. @GenerateScreenFactory applicable only to classes",
+                symbol = instance,
+            )
+            return
+        }
+
+        // Проверяем что экран наследуется от Screen
+        if (instance.getAllSuperTypes().find { type -> type.toClassNameOrNull() == SCREEN_CLASS } == null) {
+            logger.error(
+                message = "@GenerateScreenFactory only applicable to classes implementing Screen",
+                symbol = instance,
+            )
+            return
+        }
+
         generateFactory(instance, resolver)
     }
 
@@ -49,17 +71,41 @@ internal class FactoryGeneratorSymbolProcessor(
         // Имя будущей фабрики.
         val name = instance.simpleName.getShortName() + "Factory"
 
-        // Список параметров в основном конструкторе.
-        val constructorParams = instance.primaryConstructor!!.parameters
+        // Проверяем наличие основного конструктора
+        val primaryConstructor = instance.primaryConstructor
+        if (primaryConstructor == null) {
+            logger.error(
+                message = "To generate screen factory screen class must have primary constructor",
+                symbol = instance,
+            )
+            return
+        }
 
-        // Ищем среди аргументов конструктора что-либо наследующееся от SCREEN_PARAMS_CLASS
+        // Список параметров в основном конструкторе.
+        val constructorParams = primaryConstructor.parameters
+
+        // На этом этапе нам нужно определить класс ScreenParams для которых реализован этот экран. Так как Screen не
+        // является generic типом и не несет в себе информации о ScreenParams, то сделать это можно двумя способами:
+        // 1) Найти параметр конструктора наследующийся от ScreenParams, это и будут наши искомые параметры.
+        // 2) Предположить название ScreenParams и их пакет исходя из названия и пакета экрана.
         val screenParamsClassName: ClassName = constructorParams
-            .find { param ->
+            // Пробуем найти экран по варианту 1
+            .filter { param ->
+                // Пробуем найти любой класс наследующийся от ScreenParams
                 (param.type.resolve().declaration as? KSClassDeclaration)
                     ?.getAllSuperTypes()
-                    ?.any { it.toClassNameOrNull() == SCREEN_PARAMS_CLASS } == true
+                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } == true
             }
+            // Проверяем что таких экранов не более одного
+            .also {
+                if (it.size > 1) {
+                    logger.error("Screen contains more than once screen params", it[0])
+                    return
+                }
+            }
+            .firstOrNull()
             ?.type?.toTypeName() as ClassName?
+            // Если не смогли найти нужный экран, то идем по варианту 2.
             ?: ClassName(
                 packageName = instance.packageName.asString(),
                 "${instance.simpleName.asString()}Params",
@@ -75,7 +121,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .filter { param ->
                 (param.type.resolve().declaration as? KSClassDeclaration)
                     ?.getAllSuperTypes()
-                    ?.any { it.toClassNameOrNull() == SCREEN_PARAMS_CLASS } != true
+                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } != true
             }
 
         // Блок кода который будет помещен в тело функции crate
@@ -131,6 +177,7 @@ internal class FactoryGeneratorSymbolProcessor(
     }
 
     companion object {
+        private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "Screen")
         private val SCREEN_CONTEXT_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenContext")
         private val SCREEN_FACTORY_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenFactory")
         private val SCREEN_PARAMS_CLASS = ClassName("ru.vladislavsumin.core.navigation", "IntentScreenParams")

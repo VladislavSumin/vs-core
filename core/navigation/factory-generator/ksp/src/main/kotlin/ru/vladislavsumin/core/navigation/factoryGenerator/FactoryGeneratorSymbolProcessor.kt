@@ -88,7 +88,7 @@ internal class FactoryGeneratorSymbolProcessor(
         // является generic типом и не несет в себе информации о ScreenParams, то сделать это можно двумя способами:
         // 1) Найти параметр конструктора наследующийся от ScreenParams, это и будут наши искомые параметры.
         // 2) Предположить название ScreenParams и их пакет исходя из названия и пакета экрана.
-        val screenParamsClassName: ClassName = constructorParams
+        val screenParamsClassDeclaration: KSClassDeclaration = constructorParams
             // Пробуем найти экран по варианту 1
             .filter { param ->
                 // Пробуем найти любой класс наследующийся от ScreenParams
@@ -104,13 +104,13 @@ internal class FactoryGeneratorSymbolProcessor(
                 }
             }
             .firstOrNull()
-            ?.type?.toTypeName() as ClassName?
+            ?.type?.resolve() as? KSClassDeclaration
         // Если не смогли найти нужный экран, то идем по варианту 2.
             ?: generateScreenParamsFromScreenName(instance, resolver)
 
         // После определения параметров экрана нам необходимо определить параметры событий (intent), которыми
         // типизированны эти параметры.
-        val screenIntentType = resolveScreenIntentType(screenParamsClassName, resolver)
+        val screenIntentType = resolveScreenIntentType(screenParamsClassDeclaration)
         val screenIntentReceiveChannelType = Types.Coroutines.ReceiveChannel.parameterizedBy(screenIntentType)
 
         // Список параметров для конструктора фабрики
@@ -139,7 +139,7 @@ internal class FactoryGeneratorSymbolProcessor(
         val createFunction = FunSpec.builder("create")
             .addModifiers(KModifier.OVERRIDE)
             .addParameter(ParameterSpec.builder("context", SCREEN_CONTEXT_CLASS).build())
-            .addParameter(ParameterSpec.builder("params", screenParamsClassName).build())
+            .addParameter(ParameterSpec.builder("params", screenParamsClassDeclaration.toClassName()).build())
             .addParameter(ParameterSpec.builder("intents", screenIntentReceiveChannelType).build())
             .addCode(returnCodeBlock)
             .returns(instance.toClassName())
@@ -149,7 +149,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .addSuperinterface(
                 SCREEN_FACTORY_CLASS
                     .parameterizedBy(
-                        screenParamsClassName,
+                        screenParamsClassDeclaration.toClassName(),
                         screenIntentType,
                         instance.toClassName(),
                     ),
@@ -163,14 +163,18 @@ internal class FactoryGeneratorSymbolProcessor(
             .writeTo(codeGenerator, instance.packageName.asString())
     }
 
-    private fun generateScreenParamsFromScreenName(instance: KSClassDeclaration, resolver: Resolver): ClassName {
+    private fun generateScreenParamsFromScreenName(
+        instance: KSClassDeclaration,
+        resolver: Resolver,
+    ): KSClassDeclaration {
         val name = ClassName(
             packageName = instance.packageName.asString(),
             "${instance.simpleName.asString()}Params",
         )
 
         // Проверяем что такой тип вообще существует.
-        if (resolver.getClassDeclarationByName(name.canonicalName) == null) {
+        val classDeclaration = resolver.getClassDeclarationByName(name.canonicalName)
+        if (classDeclaration == null) {
             logger.error(
                 message = "ScreenParams not found and automatically resolved as ${name.canonicalName}, but screenParams with current type not exist",
                 symbol = instance
@@ -178,15 +182,13 @@ internal class FactoryGeneratorSymbolProcessor(
             error("${name.canonicalName} not exist")
         }
 
-        return name
+        return classDeclaration
     }
 
     // TODO обработать тут все !! нормально
     private fun resolveScreenIntentType(
-        screenParamsClassName: ClassName,
-        resolver: Resolver,
+        screenParamsClassDeclaration: KSClassDeclaration,
     ): ClassName {
-        val screenParamsClassDeclaration = resolver.getClassDeclarationByName(screenParamsClassName.canonicalName)!!
         val intentType = screenParamsClassDeclaration.getAllSuperTypes().find {
             (it.toTypeName() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS
         }!!.arguments.first().toTypeName() as ClassName

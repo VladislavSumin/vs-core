@@ -8,6 +8,7 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
@@ -87,33 +88,7 @@ internal class FactoryGeneratorSymbolProcessor(
         // является generic типом и не несет в себе информации о ScreenParams, то сделать это можно двумя способами:
         // 1) Найти параметр конструктора наследующийся от ScreenParams, это и будут наши искомые параметры.
         // 2) Предположить название ScreenParams и их пакет исходя из названия и пакета экрана.
-        val screenParamsClassDeclaration: KSClassDeclaration = constructorParams
-            // Пробуем найти экран по варианту 1
-            .filter { param ->
-                // Пробуем найти любой класс наследующийся от ScreenParams
-                (param.type.resolve().declaration as? KSClassDeclaration)
-                    ?.getAllSuperTypes()
-                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } == true
-            }
-            // Проверяем что таких экранов не более одного
-            .also {
-                if (it.size > 1) {
-                    logger.error("Screen contains more than once screen params", it[0])
-                    return
-                }
-            }
-            .firstOrNull()
-            ?.also {
-                // Проверяем правила наименования параметров экрана.
-                if (it.name!!.asString() != "params") {
-                    logger.error(
-                        message = "Screen params variable must be named \"params\"",
-                        symbol = it,
-                    )
-                    error("Incorrect screen params name")
-                }
-            }
-            ?.type?.resolve() as? KSClassDeclaration
+        val screenParamsClassDeclaration: KSClassDeclaration = findScreenParamsFromConstructor(constructorParams)
             // Если не смогли найти нужный экран, то идем по варианту 2.
             ?: generateScreenParamsFromScreenName(instance, resolver)
 
@@ -172,6 +147,35 @@ internal class FactoryGeneratorSymbolProcessor(
             .writeTo(codeGenerator, instance.packageName.asString())
     }
 
+    private fun findScreenParamsFromConstructor(constructorParams: List<KSValueParameter>): KSClassDeclaration? =
+        constructorParams
+            // Пробуем найти экран по варианту 1
+            .filter { param ->
+                // Пробуем найти любой класс наследующийся от ScreenParams
+                (param.type.resolve().declaration as? KSClassDeclaration)
+                    ?.getAllSuperTypes()
+                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } == true
+            }
+            // Проверяем что таких экранов не более одного
+            .also {
+                if (it.size > 1) {
+                    logger.error("Screen contains more than once screen params", it[0])
+                    error("More than one screen params detected")
+                }
+            }
+            .firstOrNull()
+            ?.also {
+                // Проверяем правила наименования параметров экрана.
+                if (it.name!!.asString() != "params") {
+                    logger.error(
+                        message = "Screen params variable must be named \"params\"",
+                        symbol = it,
+                    )
+                    error("Incorrect screen params name")
+                }
+            }
+            ?.type?.resolve() as? KSClassDeclaration
+
     private fun generateScreenParamsFromScreenName(
         instance: KSClassDeclaration,
         resolver: Resolver,
@@ -185,7 +189,8 @@ internal class FactoryGeneratorSymbolProcessor(
         val classDeclaration = resolver.getClassDeclarationByName(name.canonicalName)
         if (classDeclaration == null) {
             logger.error(
-                message = "ScreenParams not found and automatically resolved as ${name.canonicalName}, but screenParams with current type not exist",
+                message = "ScreenParams not found and automatically resolved as ${name.canonicalName}, " +
+                    "but screenParams with current type not exist",
                 symbol = instance,
             )
             error("${name.canonicalName} not exist")

@@ -7,26 +7,32 @@ import ru.vladislavsumin.core.navigation.ScreenIntent
 
 /**
  * Расширение [ViewModel] с поддержкой навигации внутри вью модели без необходимости писать связку явно.
- * Связывание происходит через [navigationChannel] и [ru.vs.core.navigation.screen.Screen.viewModel], поэтому создавать
- * такую вью модель имеет смысл только через эту специальную функцию.
+ * Связывание происходит через [navigationChannel] и [ru.vladislavsumin.core.navigation.screen.Screen.viewModel],
+ * поэтому создавать такую вью модель имеет смысл только через эту специальную функцию.
  */
 public abstract class NavigationViewModel : ViewModel() {
     internal val navigationChannel: Channel<NavigationEvent> = Channel(capacity = Channel.BUFFERED)
 
+    init {
+        check(IsNavigationViewModelConstructing) {
+            "Wrong NavigationViewModel usage. This type of view models can be constructed only via Screen.viewModel function"
+        }
+    }
+
     /**
-     * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.open].
+     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigator.open].
      */
     protected fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
         send(NavigationEvent.Open(screenParams, intent))
 
     /**
-     * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.close].
+     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigator.close].
      */
     protected fun close(screenParams: IntentScreenParams<*>): Unit =
         send(NavigationEvent.Close(screenParams))
 
     /**
-     * Работает аналогично [ru.vs.core.navigation.navigator.ScreenNavigator.close].
+     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigator.close].
      */
     protected fun close(): Unit = send(NavigationEvent.CloseSelf)
 

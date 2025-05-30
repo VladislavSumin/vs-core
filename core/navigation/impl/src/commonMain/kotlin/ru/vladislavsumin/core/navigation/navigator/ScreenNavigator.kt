@@ -227,11 +227,22 @@ public class ScreenNavigator internal constructor(
     /**
      * Открывает экран соответствующий переданным [screenParams], при этом, при поиске места открытия экрана учитывается
      * текущее место. (подробнее про приоритет выбора места написано в документации).
+     *
+     * @param intent - опциональное событие экрана. При передаче (впрочем без события поведение будет таким же) экран
+     * не открывается повторно если уже открыт, но получает новое событие. Если экран был закрыт, то он откроется и
+     * сразу получить новое событие.
      */
     public fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
         globalNavigator.open(screenPath, screenParams, intent)
 
+    /**
+     * Закрывает экран соответствующий переданным [screenParams].
+     */
     public fun close(screenParams: IntentScreenParams<*>): Unit = globalNavigator.close(screenPath, screenParams)
+
+    /**
+     * Закрывает этот экран.
+     */
     public fun close(): Unit = globalNavigator.close(
         screenPath,
         (screenPath.last() as ScreenPath.PathElement.Params).screenParams,

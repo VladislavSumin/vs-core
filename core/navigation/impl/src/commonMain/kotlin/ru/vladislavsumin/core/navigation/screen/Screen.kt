@@ -5,6 +5,7 @@ import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
+import ru.vladislavsumin.core.navigation.viewModel.IsNavigationViewModelConstructing
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
 /**
@@ -32,9 +33,14 @@ public abstract class Screen(context: ScreenContext) :
      * Если [T] является наследником [NavigationViewModel], то связывает навигацию экрана с навигацией ViewModel.
      */
     final override fun <T : ViewModel> viewModel(factory: () -> T): T {
-        val viewModel = super.viewModel(factory)
-        (viewModel as? NavigationViewModel)?.handleNavigation()
-        return viewModel
+        try {
+            IsNavigationViewModelConstructing = true
+            val viewModel = super.viewModel(factory)
+            (viewModel as? NavigationViewModel)?.handleNavigation()
+            return viewModel
+        } finally {
+            IsNavigationViewModelConstructing = false
+        }
     }
 
     /**

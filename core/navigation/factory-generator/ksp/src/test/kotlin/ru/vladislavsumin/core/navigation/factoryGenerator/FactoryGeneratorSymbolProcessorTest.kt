@@ -11,15 +11,23 @@ import kotlin.test.assertNotNull
 @OptIn(ExperimentalCompilerApi::class)
 class FactoryGeneratorSymbolProcessorTest {
     @Test
-    fun checkNoAdditionalArgsTestScreen() {
-        val compilationResult = prepareCompilation(
-            TestSources.testScreenParams,
-            TestSources.testScreenNoAdditionalArgs,
-        )
+    fun testScreenNoAdditionalArgs() = assertScreenFactorySuccess(
+        screen = TestSources.testScreenNoAdditionalArgs,
+        factory = NO_ADDITIONAL_ARGS_SCREEN_FACTORY,
+    )
+
+    @Test
+    fun testScreenWithScreenParams() = assertScreenFactorySuccess(
+        screen = TestSources.testScreenWithScreenParams,
+        factory = SCREEN_PARAMSL_ARGS_SCREEN_FACTORY,
+    )
+
+    fun assertScreenFactorySuccess(screen: SourceFile, factory: String) {
+        val compilationResult = prepareCompilation(TestSources.testScreenParams, screen)
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.OK)
         val screenFile = compilationResult.kspSourceFileDirectory.listFiles().find { it.name == "TestScreenFactory.kt" }
         assertNotNull(screenFile)
-        assertEquals(NO_ADDITIONAL_ARGS_SCREEN_FACTORY, screenFile.readText())
+        assertEquals(factory, screenFile.readText())
     }
 
     /**
@@ -50,6 +58,22 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, T
     params: TestScreenParams,
     intents: ReceiveChannel<NoIntent>,
   ): TestScreen = TestScreen(context, )
+}
+
+        """.trimIndent()
+
+        private val SCREEN_PARAMSL_ARGS_SCREEN_FACTORY = """
+import kotlinx.coroutines.channels.ReceiveChannel
+import ru.vladislavsumin.core.navigation.NoIntent
+import ru.vladislavsumin.core.navigation.screen.ScreenContext
+import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+
+internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, TestScreen> {
+  override fun create(
+    context: ScreenContext,
+    params: TestScreenParams,
+    intents: ReceiveChannel<NoIntent>,
+  ): TestScreen = TestScreen(params, context, )
 }
 
         """.trimIndent()

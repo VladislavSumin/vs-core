@@ -12,18 +12,38 @@ import kotlin.test.assertNotNull
 class FactoryGeneratorSymbolProcessorTest {
     @Test
     fun testScreenNoAdditionalArgs() = assertScreenFactorySuccess(
+        screenParams = TestSources.testScreenParams,
         screen = TestSources.testScreenNoAdditionalArgs,
         factory = NO_ADDITIONAL_ARGS_SCREEN_FACTORY,
     )
 
     @Test
     fun testScreenWithScreenParams() = assertScreenFactorySuccess(
+        screenParams = TestSources.testScreenParams,
         screen = TestSources.testScreenWithScreenParams,
-        factory = SCREEN_PARAMSL_ARGS_SCREEN_FACTORY,
+        factory = SCREEN_PARAMS_ARGS_SCREEN_FACTORY,
     )
 
-    fun assertScreenFactorySuccess(screen: SourceFile, factory: String) {
-        val compilationResult = prepareCompilation(TestSources.testScreenParams, screen)
+    @Test
+    fun testScreenWithScreenIntents() = assertScreenFactorySuccess(
+        screenParams = TestSources.testScreenParamsWithIntent,
+        screen = TestSources.testScreenWithScreenIntents,
+        factory = SCREEN_INTENTS_ARGS_SCREEN_FACTORY,
+    )
+
+    @Test
+    fun testScreenWithScreenParamsAndIntents() = assertScreenFactorySuccess(
+        screenParams = TestSources.testScreenParamsWithIntent,
+        screen = TestSources.testScreenWithScreenParamsAndIntents,
+        factory = SCREEN_PARAMS_AND_INTENTS_ARGS_SCREEN_FACTORY,
+    )
+
+    fun assertScreenFactorySuccess(
+        screenParams: SourceFile,
+        screen: SourceFile,
+        factory: String,
+    ) {
+        val compilationResult = prepareCompilation(screenParams, screen)
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.OK)
         val screenFile = compilationResult.kspSourceFileDirectory.listFiles().find { it.name == "TestScreenFactory.kt" }
         assertNotNull(screenFile)
@@ -62,7 +82,7 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, T
 
         """.trimIndent()
 
-        private val SCREEN_PARAMSL_ARGS_SCREEN_FACTORY = """
+        private val SCREEN_PARAMS_ARGS_SCREEN_FACTORY = """
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
@@ -74,6 +94,36 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, T
     params: TestScreenParams,
     intents: ReceiveChannel<NoIntent>,
   ): TestScreen = TestScreen(params, context, )
+}
+
+        """.trimIndent()
+
+        private val SCREEN_INTENTS_ARGS_SCREEN_FACTORY = """
+import kotlinx.coroutines.channels.ReceiveChannel
+import ru.vladislavsumin.core.navigation.screen.ScreenContext
+import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+
+internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+  override fun create(
+    context: ScreenContext,
+    params: TestScreenParams,
+    intents: ReceiveChannel<TestScreenIntent>,
+  ): TestScreen = TestScreen(intents, context, )
+}
+
+        """.trimIndent()
+
+        private val SCREEN_PARAMS_AND_INTENTS_ARGS_SCREEN_FACTORY = """
+import kotlinx.coroutines.channels.ReceiveChannel
+import ru.vladislavsumin.core.navigation.screen.ScreenContext
+import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+
+internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+  override fun create(
+    context: ScreenContext,
+    params: TestScreenParams,
+    intents: ReceiveChannel<TestScreenIntent>,
+  ): TestScreen = TestScreen(params, intents, context, )
 }
 
         """.trimIndent()

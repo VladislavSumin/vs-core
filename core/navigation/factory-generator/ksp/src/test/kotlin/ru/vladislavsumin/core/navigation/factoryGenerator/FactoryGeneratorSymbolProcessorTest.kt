@@ -38,6 +38,13 @@ class FactoryGeneratorSymbolProcessorTest {
         factory = SCREEN_PARAMS_AND_INTENTS_ARGS_SCREEN_FACTORY,
     )
 
+    @Test
+    fun testScreenWithAllData() = assertScreenFactorySuccess(
+        screenParams = TestSources.testScreenParamsWithIntent,
+        screen = TestSources.testScreenWithAllData,
+        factory = ALL_ARGS_SCREEN_FACTORY,
+    )
+
     fun assertScreenFactorySuccess(
         screenParams: SourceFile,
         screen: SourceFile,
@@ -124,6 +131,24 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenI
     params: TestScreenParams,
     intents: ReceiveChannel<TestScreenIntent>,
   ): TestScreen = TestScreen(params, intents, context, )
+}
+
+        """.trimIndent()
+
+        private val ALL_ARGS_SCREEN_FACTORY = """
+import kotlin.String
+import kotlinx.coroutines.channels.ReceiveChannel
+import ru.vladislavsumin.core.navigation.screen.ScreenContext
+import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+
+internal class TestScreenFactory(
+  private val extra: String,
+) : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+  override fun create(
+    context: ScreenContext,
+    params: TestScreenParams,
+    intents: ReceiveChannel<TestScreenIntent>,
+  ): TestScreen = TestScreen(extra, params, intents, context, )
 }
 
         """.trimIndent()

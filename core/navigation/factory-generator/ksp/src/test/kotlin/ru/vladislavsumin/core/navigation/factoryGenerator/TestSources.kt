@@ -12,7 +12,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.ScreenParams
             
             data object TestScreenParams: ScreenParams
-        """.trimIndent()
+        """.trimIndent(),
     )
 
     /**
@@ -26,7 +26,7 @@ object TestSources {
             
             data object TestScreenParams: IntentScreenParams<TestScreenIntent>
             data object TestScreenIntent: ScreenIntent
-        """.trimIndent()
+        """.trimIndent(),
     )
 
     /**
@@ -45,7 +45,7 @@ object TestSources {
                 @Composable
                 override fun Render(modifier: Modifier){}
             }
-        """.trimIndent()
+        """.trimIndent(),
     )
 
     /**
@@ -67,7 +67,7 @@ object TestSources {
                 @Composable
                 override fun Render(modifier: Modifier){}
             }
-        """.trimIndent()
+        """.trimIndent(),
     )
 
     /**
@@ -90,7 +90,7 @@ object TestSources {
                 @Composable
                 override fun Render(modifier: Modifier){}
             }
-        """.trimIndent()
+        """.trimIndent(),
     )
 
     /**
@@ -114,7 +114,7 @@ object TestSources {
                 @Composable
                 override fun Render(modifier: Modifier){}
             }
-        """.trimIndent()
+        """.trimIndent(),
     )
 
     /**
@@ -139,6 +139,6 @@ object TestSources {
                 @Composable
                 override fun Render(modifier: Modifier){}
             }
-        """.trimIndent()
+        """.trimIndent(),
     )
 }

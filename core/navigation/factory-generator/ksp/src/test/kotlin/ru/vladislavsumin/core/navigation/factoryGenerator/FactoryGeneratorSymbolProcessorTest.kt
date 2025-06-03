@@ -71,7 +71,6 @@ class FactoryGeneratorSymbolProcessorTest {
         }.compile()
     }
 
-
     companion object {
         private val NO_ADDITIONAL_ARGS_SCREEN_FACTORY = """
 import kotlinx.coroutines.channels.ReceiveChannel

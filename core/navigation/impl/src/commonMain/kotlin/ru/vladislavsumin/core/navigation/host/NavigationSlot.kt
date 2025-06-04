@@ -33,7 +33,7 @@ public fun ScreenContext.childNavigationSlot(
     key: String = "slot_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildSlot<*, Screen>> {
+): Value<ChildSlot<ConfigurationHolder, Screen>> {
     val source = SlotNavigation<ConfigurationHolder>()
 
     val hostNavigator = SlotHostNavigator(source)

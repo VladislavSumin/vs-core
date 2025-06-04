@@ -36,7 +36,7 @@ public fun ScreenContext.childNavigationStack(
     key: String = "stack_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildStack<*, Screen>> {
+): Value<ChildStack<ConfigurationHolder, Screen>> {
     val source = StackNavigation<ConfigurationHolder>()
 
     val hostNavigator = StackHostNavigator(source)

@@ -33,7 +33,7 @@ public fun ScreenContext.childNavigationPages(
     key: String = "pages_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildPages<*, Screen>> {
+): Value<ChildPages<ConfigurationHolder, Screen>> {
     val source = PagesNavigation<ConfigurationHolder>()
 
     val hostNavigator = PagesHostNavigator(source)

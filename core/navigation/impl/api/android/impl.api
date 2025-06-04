@@ -11,6 +11,13 @@ public final class ru/vladislavsumin/core/navigation/Navigation$Companion {
 	public final fun invoke (Ljava/util/Set;)Lru/vladislavsumin/core/navigation/Navigation;
 }
 
+public final class ru/vladislavsumin/core/navigation/host/ConfigurationHolder {
+	public static final field $stable I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getScreenParams ()Lru/vladislavsumin/core/navigation/IntentScreenParams;
+	public fun hashCode ()I
+}
+
 public final class ru/vladislavsumin/core/navigation/host/NavigationPagesKt {
 	public static final fun childNavigationPages (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
 	public static synthetic fun childNavigationPages$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;

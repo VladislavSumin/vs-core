@@ -97,7 +97,7 @@ private class SlotHostNavigator(
     override fun close(params: IntentScreenParams<*>): Boolean {
         var isSuccess: Boolean? = null
         slotNavigation.navigate { currentOpenedScreen ->
-            if (params == currentOpenedScreen) {
+            if (params == currentOpenedScreen?.screenParams) {
                 isSuccess = true
                 null
             } else {

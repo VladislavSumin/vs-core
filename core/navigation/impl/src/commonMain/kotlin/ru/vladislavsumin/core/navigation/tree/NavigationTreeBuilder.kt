@@ -48,7 +48,7 @@ internal class NavigationTreeBuilder(
             screenKey = screenKey,
             hostInParent = hostInParent,
             factory = screenRegistration.factory,
-            defaultParams = screenRegistration.defaultParams as IntentScreenParams<ScreenIntent>,
+            defaultParams = screenRegistration.defaultParams as IntentScreenParams<ScreenIntent>?,
             description = screenRegistration.description,
             navigationHosts = screenRegistration.navigationHosts.keys,
         )

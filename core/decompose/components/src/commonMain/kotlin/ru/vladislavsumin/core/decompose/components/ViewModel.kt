@@ -35,10 +35,6 @@ public abstract class ViewModel {
         keeper
     }
 
-    init {
-        ViewModelLogger.d("Creating ${this::class.simpleName}")
-    }
-
     /**
      * Укороченная версия [stateIn] с использованием [viewModelScope] и [SharingStarted.Eagerly] по умолчанию.
      */
@@ -98,7 +94,6 @@ public abstract class ViewModel {
      * уничтожении [ViewModel], то используйте для этой задачи факт отмены [viewModelScope].
      */
     internal fun onDestroy() {
-        ViewModelLogger.d("Destroying ${this::class.simpleName}")
         viewModelScope.cancel()
     }
 }

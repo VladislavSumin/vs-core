@@ -86,7 +86,7 @@ public class ScreenNavigator internal constructor(
      */
     internal fun getInitialParamsFor(navigationHost: NavigationHost): IntentScreenParams<*>? {
         val element = initialPath?.first() ?: return null
-        val screenKey = element.asErasedKey()
+        val screenKey = element.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }?.value
             ?: error("Child node with screenKey=$screenKey not found")
         return if (childNode.hostInParent == navigationHost) {
@@ -164,7 +164,7 @@ public class ScreenNavigator internal constructor(
      * функцию на **каждом** экране в пути, тем самым переключая состояние на требуемое.
      */
     private fun openInsideThisScreen(screen: ScreenPath.PathElement, intent: ScreenIntent?) {
-        val screenKey = screen.asErasedKey()
+        val screenKey = screen.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }
             ?: error("Child node with screenKey=$screenKey not found")
         val hostNavigator = navigationHosts[childNode.value.hostInParent]
@@ -175,32 +175,32 @@ public class ScreenNavigator internal constructor(
         }
     }
 
-    internal fun closeInsideThisScreen(screenPath: ScreenPath) {
+    internal fun closeInsideThisScreen(screenPath: ScreenPath): Boolean {
         NavigationLogger.t {
             "ScreenNavigator(screenParams=$screenParams).closeInsideThisScreen(screenPath=$screenPath)"
         }
-        if (screenPath.size == 1) {
+        return if (screenPath.size == 1) {
             closeInsideThisScreen((screenPath.first() as ScreenPath.PathElement.Params).screenParams)
         } else {
-            val childElement = screenPath.firstOrNull() ?: return
+            val childElement = screenPath.first()
             val childNavigator = when (childElement) {
                 is ScreenPath.PathElement.Key -> childScreenNavigators.asSequence()
                     .first { entry -> entry.key.asKey() == childElement.screenKey }.value
 
                 is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
             }
-            childNavigator?.closeInsideThisScreen(ScreenPath(screenPath.drop(1)))
+            childNavigator?.closeInsideThisScreen(ScreenPath(screenPath.drop(1))) ?: false
         }
     }
 
-    private fun closeInsideThisScreen(screenParams: IntentScreenParams<*>) {
+    private fun closeInsideThisScreen(screenParams: IntentScreenParams<*>): Boolean {
         // TODO убрать дублирование кода.
         val screenKey = ScreenKey(screenParams::class)
         val childNode = node.children.find { it.value.screenKey == screenKey }
             ?: error("Child node with screenKey=$screenKey not found")
         val hostNavigator = navigationHosts[childNode.value.hostInParent]
             ?: error("Host navigator for host=${childNode.value.hostInParent} not found")
-        hostNavigator.close(screenParams)
+        return hostNavigator.close(screenParams)
     }
 
     /**

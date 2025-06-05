@@ -1,9 +1,22 @@
+public abstract interface class ru/vladislavsumin/core/navigation/IntentScreenParams {
+}
+
 public abstract interface annotation class ru/vladislavsumin/core/navigation/InternalNavigationApi : java/lang/annotation/Annotation {
 }
 
 public abstract interface class ru/vladislavsumin/core/navigation/NavigationHost {
 }
 
-public abstract interface class ru/vladislavsumin/core/navigation/ScreenParams {
+public final class ru/vladislavsumin/core/navigation/NoIntent : ru/vladislavsumin/core/navigation/ScreenIntent {
+	public static final field INSTANCE Lru/vladislavsumin/core/navigation/NoIntent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class ru/vladislavsumin/core/navigation/ScreenIntent {
+}
+
+public abstract interface class ru/vladislavsumin/core/navigation/ScreenParams : ru/vladislavsumin/core/navigation/IntentScreenParams {
 }
 

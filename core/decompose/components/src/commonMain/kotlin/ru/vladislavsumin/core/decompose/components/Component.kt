@@ -57,9 +57,12 @@ public abstract class Component(context: ComponentContext) : ComponentContext by
             val state = stateKeeper.consume(key, SerializableContainer.serializer())
             val viewModelStateKeeperDispatcher = StateKeeperDispatcher(state)
 
-            WhileConstructedViewModelStateKeeper = viewModelStateKeeperDispatcher
-            val viewModel = factory()
-            WhileConstructedViewModelStateKeeper = null
+            val viewModel = try {
+                WhileConstructedViewModelStateKeeper = viewModelStateKeeperDispatcher
+                factory()
+            } finally {
+                WhileConstructedViewModelStateKeeper = null
+            }
 
             ViewModelHolder(viewModel, viewModelStateKeeperDispatcher)
         }

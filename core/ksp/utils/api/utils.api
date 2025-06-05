@@ -1,3 +1,7 @@
+public final class ru/vladislavsumin/core/ksp/utils/KsTypeUtilsKt {
+	public static final fun toTypeNameOrNull (Lcom/google/devtools/ksp/symbol/KSType;)Lcom/squareup/kotlinpoet/TypeName;
+}
+
 public final class ru/vladislavsumin/core/ksp/utils/ResolverExtKt {
 	public static final fun processAnnotated (Lcom/google/devtools/ksp/processing/Resolver;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
 }
@@ -17,6 +21,7 @@ public final class ru/vladislavsumin/core/ksp/utils/Types$Coroutines {
 	public final fun getCoroutineScope ()Lcom/squareup/kotlinpoet/ClassName;
 	public final fun getFlow ()Lcom/squareup/kotlinpoet/ClassName;
 	public final fun getGlobalScope ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getReceiveChannel ()Lcom/squareup/kotlinpoet/ClassName;
 }
 
 public final class ru/vladislavsumin/core/ksp/utils/Types$Serialization {

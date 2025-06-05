@@ -6,6 +6,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.repository.NavigationRepository
 import kotlin.collections.component1
@@ -20,14 +22,17 @@ internal class NavigationSerializer(
      * восстановления состояния приложения.
      */
     @OptIn(ExperimentalSerializationApi::class, ExperimentalStateKeeperApi::class)
-    val serializer = polymorphicSerializer(
-        ScreenParams::class,
+    val serializer: KSerializer<IntentScreenParams<*>> = polymorphicSerializer(
+        IntentScreenParams::class,
         SerializersModule {
-            polymorphic(ScreenParams::class) {
+            polymorphic(IntentScreenParams::class) {
                 repository.serializers.forEach { (clazz, serializer) ->
-                    subclass(clazz.key as KClass<ScreenParams>, serializer as KSerializer<ScreenParams>)
+                    subclass(
+                        subclass = clazz.key as KClass<IntentScreenParams<ScreenIntent>>,
+                        serializer = serializer as KSerializer<IntentScreenParams<ScreenIntent>>,
+                    )
                 }
             }
         },
-    )
+    ) as KSerializer<IntentScreenParams<*>> // TODO прочекать это
 }

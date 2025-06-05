@@ -5,8 +5,11 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.navigate
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.statekeeper.SerializableContainer
+import com.arkivanov.essenty.statekeeper.consumeRequired
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
@@ -26,21 +29,34 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  */
 public fun ScreenContext.childNavigationSlot(
     navigationHost: NavigationHost,
-    initialConfiguration: () -> ScreenParams? = { null },
+    initialConfiguration: () -> IntentScreenParams<*>? = { null },
     key: String = "slot_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildSlot<ScreenParams, Screen>> {
-    val source = SlotNavigation<ScreenParams>()
+): Value<ChildSlot<ConfigurationHolder, Screen>> {
+    val source = SlotNavigation<ConfigurationHolder>()
 
     val hostNavigator = SlotHostNavigator(source)
     navigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val slot = childSlot(
         source = source,
-        serializer = if (allowStateSave) navigator.serializer else null,
+        saveConfiguration = { state ->
+            if (allowStateSave && state != null) {
+                SerializableContainer(value = state.screenParams, strategy = navigator.serializer)
+            } else {
+                null
+            }
+        },
+        restoreConfiguration = { container ->
+            val screenParams = container.consumeRequired(strategy = navigator.serializer)
+            ConfigurationHolder(screenParams)
+        },
         key = key,
-        initialConfiguration = { navigator.getInitialParamsFor(navigationHost) ?: initialConfiguration() },
+        initialConfiguration = {
+            (navigator.getInitialParamsFor(navigationHost) ?: initialConfiguration())
+                ?.let { ConfigurationHolder(it) }
+        },
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
     )
@@ -49,29 +65,39 @@ public fun ScreenContext.childNavigationSlot(
 }
 
 private class SlotHostNavigator(
-    private val slotNavigation: SlotNavigation<ScreenParams>,
+    private val slotNavigation: SlotNavigation<ConfigurationHolder>,
 ) : HostNavigator {
-    override fun open(params: ScreenParams) {
+    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
-        slotNavigation.navigate { params }
-    }
-
-    override fun open(screenKey: ScreenKey, defaultParams: () -> ScreenParams) {
-        // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
         slotNavigation.navigate { currentOpenedScreen ->
-            if (currentOpenedScreen != null && currentOpenedScreen.asKey() == screenKey) {
+            val newConfig = if (currentOpenedScreen != null && currentOpenedScreen.screenParams == params) {
                 currentOpenedScreen
             } else {
-                defaultParams()
+                ConfigurationHolder(params)
+            }
+            if (intent != null) {
+                newConfig.intents.trySend(intent).getOrThrow()
+            }
+            newConfig
+        }
+    }
+
+    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
+        // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
+        slotNavigation.navigate { currentOpenedScreen ->
+            if (currentOpenedScreen != null && currentOpenedScreen.screenParams.asKey() == screenKey) {
+                currentOpenedScreen
+            } else {
+                ConfigurationHolder(defaultParams())
             }
         }
     }
 
-    override fun close(params: ScreenParams): Boolean {
+    override fun close(params: IntentScreenParams<*>): Boolean {
         var isSuccess: Boolean? = null
         slotNavigation.navigate { currentOpenedScreen ->
-            if (params == currentOpenedScreen) {
+            if (params == currentOpenedScreen?.screenParams) {
                 isSuccess = true
                 null
             } else {
@@ -93,7 +119,7 @@ private class SlotHostNavigator(
                 }
 
                 // Открыт нужный нам экран
-                screenKey == it.asKey() -> {
+                screenKey == it.screenParams.asKey() -> {
                     isSuccess = true
                     null
                 }

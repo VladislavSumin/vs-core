@@ -3,7 +3,9 @@ package ru.vladislavsumin.core.navigation.screen
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
+import ru.vladislavsumin.core.navigation.viewModel.IsNavigationViewModelConstructing
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
 /**
@@ -31,24 +33,35 @@ public abstract class Screen(context: ScreenContext) :
      * Если [T] является наследником [NavigationViewModel], то связывает навигацию экрана с навигацией ViewModel.
      */
     final override fun <T : ViewModel> viewModel(factory: () -> T): T {
-        val viewModel = super.viewModel(factory)
-        (viewModel as? NavigationViewModel)?.handleNavigation()
-        return viewModel
+        try {
+            IsNavigationViewModelConstructing = true
+            val viewModel = super.viewModel(factory)
+            (viewModel as? NavigationViewModel)?.handleNavigation()
+            return viewModel
+        } finally {
+            IsNavigationViewModelConstructing = false
+        }
     }
 
     /**
      * Регистрирует кастомную фабрику для экрана [T]. Данный экран должен открываться в хостах навигации этого экрана.
      * **Внимание** Регистрировать фабрики нужно ДО объявления хостов навигации. Это важно при восстановлении состояния.
      */
-    protected inline fun <reified T : ScreenParams> registerCustomFactory(factory: ScreenFactory<T, Screen>) {
+    protected inline fun <reified T : IntentScreenParams<I>, I : ScreenIntent> registerCustomFactory(
+        factory: ScreenFactory<T, I, Screen>,
+    ) {
         navigator.registerCustomFactory(ScreenKey(T::class), factory)
     }
 
     @PublishedApi
-    internal fun NavigationViewModel.handleNavigation() = launch {
+    internal fun NavigationViewModel.handleNavigation(): Unit = launch {
         for (event in navigationChannel) {
             when (event) {
-                is NavigationViewModel.NavigationEvent.Open -> navigator.open(event.screenParams)
+                is NavigationViewModel.NavigationEvent.Open -> navigator.open(
+                    event.screenParams as IntentScreenParams<ScreenIntent>,
+                    event.intent as ScreenIntent?,
+                )
+
                 is NavigationViewModel.NavigationEvent.Close -> navigator.close(event.screenParams)
                 NavigationViewModel.NavigationEvent.CloseSelf -> navigator.close()
             }

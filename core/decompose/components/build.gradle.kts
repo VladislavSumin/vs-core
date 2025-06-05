@@ -15,6 +15,8 @@ kotlin {
 
             implementation(vsCoreLibs.kotlin.serialization.core)
             implementation(vsCoreLibs.kotlin.serialization.json)
+
+            implementation(projects.core.logger.api)
         }
 
         commonTest.dependencies {

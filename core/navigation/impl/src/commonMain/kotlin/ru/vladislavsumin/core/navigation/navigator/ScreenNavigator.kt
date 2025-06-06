@@ -185,7 +185,7 @@ public class ScreenNavigator internal constructor(
             val childElement = screenPath.first()
             val childNavigator = when (childElement) {
                 is ScreenPath.PathElement.Key -> childScreenNavigators.asSequence()
-                    .first { entry -> entry.key.asKey() == childElement.screenKey }.value
+                    .firstOrNull { entry -> entry.key.asKey() == childElement.screenKey }?.value
 
                 is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
             }

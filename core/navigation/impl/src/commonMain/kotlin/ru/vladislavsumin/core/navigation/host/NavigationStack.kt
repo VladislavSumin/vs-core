@@ -126,16 +126,20 @@ private class StackHostNavigator(
         stackNavigation.navigate(
             transformer = { stack ->
                 val indexOfScreen = stack.indexOfFirst { it.screenParams == params }
-                if (indexOfScreen >= 0) {
-                    isSuccess = false
-                    stack.subList(0, indexOfScreen)
-                } else {
-                    if (indexOfScreen == 0) {
-                        isSuccess = false
-                        listOf(ConfigurationHolder(params))
-                    } else {
+                when {
+                    indexOfScreen > 0 -> {
                         isSuccess = true
                         stack.subList(0, indexOfScreen)
+                    }
+
+                    indexOfScreen == 0 -> {
+                        isSuccess = false
+                        stack.subList(0, 1)
+                    }
+
+                    else -> {
+                        isSuccess = false
+                        stack
                     }
                 }
             },
@@ -151,16 +155,20 @@ private class StackHostNavigator(
             transformer = { stack ->
                 val keysStack = stack.map { it.screenParams.asKey() }
                 val indexOfScreen = keysStack.indexOfLast { it == screenKey }
-                if (indexOfScreen >= 0) {
-                    isSuccess = false
-                    stack.subList(0, indexOfScreen)
-                } else {
-                    if (indexOfScreen == 0) {
-                        isSuccess = false
-                        stack.subList(0, 1)
-                    } else {
+                when {
+                    indexOfScreen > 0 -> {
                         isSuccess = true
                         stack.subList(0, indexOfScreen)
+                    }
+
+                    indexOfScreen == 0 -> {
+                        isSuccess = false
+                        stack.subList(0, 1)
+                    }
+
+                    else -> {
+                        isSuccess = false
+                        stack
                     }
                 }
             },

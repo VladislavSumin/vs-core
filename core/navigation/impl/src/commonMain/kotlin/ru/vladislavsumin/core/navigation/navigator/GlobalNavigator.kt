@@ -36,7 +36,7 @@ internal class GlobalNavigator(
 
         // Нода в графе навигации соответствующая переданному пути.
         val fromScreenNode: LinkedTreeNode<ScreenInfo> = navigation.navigationTree.findByPath(
-            path = screenPath.map { it.asErasedKey() },
+            path = screenPath.map { it.asScreenKey() },
             keySelector = { it.screenKey },
         )!!
 
@@ -54,9 +54,27 @@ internal class GlobalNavigator(
 
     fun close(screenPath: ScreenPath, screenParams: IntentScreenParams<*>) {
         NavigationLogger.i { "Close screen ${screenParams::class.simpleName}" }
-        val index = screenPath.indexOfLast { it == ScreenPath.PathElement.Params(screenParams) }
-        if (index == -1) return
-        val path = screenPath.subList(0, index)
-        rootNavigator.closeInsideThisScreen(ScreenPath(path.drop(1) + ScreenPath.PathElement.Params(screenParams)))
+
+        // Находим ноду соответствующую экрану из которого пришел запрос.
+        val currentNode = navigation.navigationTree.findByPath(
+            path = screenPath.map { it.asScreenKey() },
+            keySelector = { it.screenKey },
+        )!!
+
+        // Ищем экраны относительно текущего для определения порядка попыток закрытия.
+        val finalPaths = currentNode.asSequenceUp()
+            .filter { it.value.screenKey == screenParams.asKey() }
+            .map { node ->
+                val path = node.path()
+                    .dropLast(1) // убираем текущую ноду, так как ее параметры у нас в screenParams
+                    .map { it.value.screenKey }
+                    .map { ScreenPath.PathElement.Key(it) }
+                (ScreenPath(path) + screenParams).reachFrom(screenPath)
+            }
+        for (path in finalPaths) {
+            if (rootNavigator.closeInsideThisScreen(ScreenPath(path.drop(1)))) {
+                return
+            }
+        }
     }
 }

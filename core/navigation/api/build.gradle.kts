@@ -1,16 +1,4 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
-    id("ru.vladislavsumin.convention.publication.sonatype")
-    id("ru.vladislavsumin.convention.analyze.binary-validator")
-}
-
-kotlin {
-    explicitApi()
-}
-
-mavenPublishing {
-    pom {
-        name = "VS core navigation api"
-        description = "Part of VS core navigation framework"
-    }
+    id("ru.vladislavsumin.convention.preset.publish")
 }

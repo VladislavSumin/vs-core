@@ -1,11 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("ru.vladislavsumin.convention.publication.sonatype")
-    id("ru.vladislavsumin.convention.analyze.binary-validator")
-}
-
-kotlin {
-    explicitApi()
+    id("ru.vladislavsumin.convention.preset.publish")
 }
 
 dependencies {
@@ -20,11 +15,4 @@ dependencies {
 // TODO вынести в convention plugin
 tasks.test {
     useJUnitPlatform()
-}
-
-mavenPublishing {
-    pom {
-        name = "VS core navigation ksp impl"
-        description = "Part of VS core navigation framework"
-    }
 }

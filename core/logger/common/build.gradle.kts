@@ -1,23 +1,13 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
-    id("ru.vladislavsumin.convention.publication.sonatype")
-    id("ru.vladislavsumin.convention.analyze.binary-validator")
+    id("ru.vladislavsumin.convention.preset.publish")
 }
 
 kotlin {
-    explicitApi()
-
     sourceSets {
         jvmTest.dependencies {
             // TODO вынести библиотеки для тестирования в convention плагин
             implementation(vsCoreLibs.testing.mockk)
         }
-    }
-}
-
-mavenPublishing {
-    pom {
-        name = "VS core logger common"
-        description = "Part of VS core logger framework"
     }
 }

@@ -16,6 +16,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.asKey
+import ru.vladislavsumin.core.navigation.serializer.NavigationSerializer
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
 /**
@@ -28,10 +29,10 @@ import ru.vladislavsumin.core.navigation.tree.ScreenInfo
  */
 public class ScreenNavigator internal constructor(
     internal val globalNavigator: GlobalNavigator,
+    internal val navigationSerializer: NavigationSerializer,
     internal val parentNavigator: ScreenNavigator?,
     internal val screenPath: ScreenPath,
     internal val node: LinkedTreeNode<ScreenInfo>,
-    internal val serializer: KSerializer<IntentScreenParams<*>>,
     private val lifecycle: Lifecycle,
     internal val initialPath: ScreenPath?,
 ) {

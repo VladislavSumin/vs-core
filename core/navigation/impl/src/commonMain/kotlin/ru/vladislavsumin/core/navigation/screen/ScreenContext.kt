@@ -57,10 +57,10 @@ internal fun ComponentContext.wrapWithScreenContext(
     return DefaultScreenContext(
         ScreenNavigator(
             globalNavigator = parentNavigator.globalNavigator,
+            navigationSerializer = parentNavigator.navigationSerializer,
             parentNavigator = parentNavigator,
             screenPath = parentNavigator.screenPath + screenParams,
             node = childNode,
-            serializer = parentNavigator.serializer,
             lifecycle = lifecycle,
             initialPath = initialPath,
         ),

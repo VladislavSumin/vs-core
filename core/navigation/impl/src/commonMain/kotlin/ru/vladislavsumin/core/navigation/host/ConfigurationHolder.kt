@@ -8,7 +8,7 @@ import ru.vladislavsumin.core.navigation.ScreenIntent
  * Содержит конфигурацию экрана и дополнительную метаинформацию для организации взаимодействия.
  */
 public class ConfigurationHolder internal constructor(
-    public val screenParams: IntentScreenParams<*>,
+    public val screenParams: IntentScreenParams<out ScreenIntent>,
     internal val intents: Channel<ScreenIntent> = Channel(Channel.BUFFERED),
 ) {
 

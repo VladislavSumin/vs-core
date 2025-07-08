@@ -4,7 +4,6 @@ import kotlinx.serialization.KSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
-import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
 import ru.vladislavsumin.core.navigation.screen.Screen
@@ -23,9 +22,9 @@ internal interface NavigationRepository {
     val screens: Map<ScreenKey, ScreenRegistration<*, *, *>>
 
     /**
-     * Множество [KSerializer] для сериализации [ScreenParams].
+     * Множество [KSerializer] для сериализации всех зарегистрированных [IntentScreenParams].
      */
-    val serializers: Map<ScreenKey, KSerializer<out IntentScreenParams<ScreenIntent>>>
+    val serializers: Map<ScreenKey, KSerializer<out IntentScreenParams<out ScreenIntent>>>
 }
 
 /**
@@ -37,7 +36,7 @@ internal class NavigationRepositoryImpl(
     registrars: Set<NavigationRegistrar>,
 ) : NavigationRepository {
     override val screens = mutableMapOf<ScreenKey, ScreenRegistration<*, *, *>>()
-    override val serializers = mutableMapOf<ScreenKey, KSerializer<IntentScreenParams<ScreenIntent>>>()
+    override val serializers = mutableMapOf<ScreenKey, KSerializer<out IntentScreenParams<out ScreenIntent>>>()
 
     /**
      * Состояние финализации [NavigationRegistry]. После создания [NavigationRepositoryImpl] добавлять новые элементы
@@ -69,7 +68,7 @@ internal class NavigationRepositoryImpl(
                 throw ScreenRegistrationAfterFinalizeException(key)
             }
 
-            serializers[key] = paramsSerializer as KSerializer<IntentScreenParams<ScreenIntent>> // TODO проверить это
+            serializers[key] = paramsSerializer
 
             val hostRegistry = HostRegistryImpl(key)
             navigationHosts(hostRegistry)

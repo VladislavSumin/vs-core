@@ -51,10 +51,10 @@ public fun ComponentContext.childNavigationRoot(
 
     val rootScreenNavigator = ScreenNavigator(
         globalNavigator = globalNavigator,
+        navigationSerializer = navigation.navigationSerializer,
         parentNavigator = null,
         screenPath = ScreenPath(params),
         node = node,
-        serializer = navigation.navigationSerializer.serializer,
         lifecycle = childContext.lifecycle,
         initialPath = initialPath,
     )

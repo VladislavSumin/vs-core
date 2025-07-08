@@ -8,6 +8,7 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSTypeAlias
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -20,6 +21,7 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import com.squareup.kotlinpoet.ksp.toTypeName
+import kotlin.math.log
 import ru.vladislavsumin.core.ksp.utils.Types
 import ru.vladislavsumin.core.ksp.utils.primaryConstructorWithPrivateFields
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
@@ -89,7 +91,7 @@ internal class FactoryGeneratorSymbolProcessor(
         // 1) Найти параметр конструктора наследующийся от ScreenParams, это и будут наши искомые параметры.
         // 2) Предположить название ScreenParams и их пакет исходя из названия и пакета экрана.
         val screenParamsClassDeclaration: KSClassDeclaration = findScreenParamsFromConstructor(constructorParams)
-            // Если не смогли найти нужный экран, то идем по варианту 2.
+        // Если не смогли найти нужный экран, то идем по варианту 2.
             ?: generateScreenParamsFromScreenName(instance, resolver)
 
         // После определения параметров экрана нам необходимо определить параметры событий (intent), которыми
@@ -190,7 +192,7 @@ internal class FactoryGeneratorSymbolProcessor(
         if (classDeclaration == null) {
             logger.error(
                 message = "ScreenParams not found and automatically resolved as ${name.canonicalName}, " +
-                    "but screenParams with current type not exist",
+                        "but screenParams with current type not exist",
                 symbol = instance,
             )
             error("${name.canonicalName} not exist")
@@ -201,14 +203,27 @@ internal class FactoryGeneratorSymbolProcessor(
 
     private fun resolveScreenIntentType(
         screenParamsClassDeclaration: KSClassDeclaration,
-    ): ClassName = screenParamsClassDeclaration.getAllSuperTypes()
-        .find {
-            // Ищем первый объявление наследования от IntentScreenParams, этот класс типизирован нужным нам
-            // параметром
-            (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS
-        }!! // Сюда могут попасть только наследники IntentScreenParams поэтому find гарантированно найдет элемент.
-        .arguments.first() // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
-        .toTypeName() as ClassName
+    ): ClassName = screenParamsClassDeclaration
+        .getAllSuperTypes()
+        // Ищем первый объявление наследования от IntentScreenParams, этот класс типизирован нужным нам
+        // параметром
+        .mapNotNull {
+            val declaration = it.declaration
+            val typeName = if (declaration is KSTypeAlias) {
+                declaration.type.resolve().toTypeNameOrNull()
+            } else {
+                it.toTypeNameOrNull()
+            } as? ParameterizedTypeName
+
+            if (typeName?.rawType == SCREEN_PARAMS_CLASS) {
+                // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
+                typeName.typeArguments.first() as ClassName
+            } else {
+                null
+            }
+        }
+        // Сюда могут попасть только наследники IntentScreenParams поэтому first гарантированно найдет элемент.
+        .first()
 
     companion object {
         private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "Screen")

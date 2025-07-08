@@ -16,12 +16,10 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-internal class NavigationSerializer(
-    repository: NavigationRepository,
-) {
+internal class NavigationSerializer(repository: NavigationRepository) {
 
     private val json = Json {
-        this.serializersModule = SerializersModule {
+        serializersModule = SerializersModule {
             polymorphic(IntentScreenParams::class) {
                 repository.serializers.forEach { (clazz, serializer) ->
                     subclass(
@@ -29,19 +27,6 @@ internal class NavigationSerializer(
                         serializer = serializer as KSerializer<IntentScreenParams<ScreenIntent>>,
                     )
                 }
-            }
-            polymorphic(ScreenParams::class) {
-                repository.serializers
-                    .forEach { (clazz, serializer) ->
-                        // Тут как будто УСЛОВНО безопасно делать такое преобразование.
-                        // Дело в том что мы хотим зарегистрировать ScreenParams для удобства пользователя,
-                        // но без рефлексии мы не можем понять какие clazz.key реализуют ScreenParams
-                        // TODO разобраться!!!!! НЕ вливать мр пока.
-                        subclass(
-                            subclass = clazz.key as KClass<ScreenParams>,
-                            serializer = serializer as KSerializer<ScreenParams>,
-                        )
-                    }
             }
         }
     }

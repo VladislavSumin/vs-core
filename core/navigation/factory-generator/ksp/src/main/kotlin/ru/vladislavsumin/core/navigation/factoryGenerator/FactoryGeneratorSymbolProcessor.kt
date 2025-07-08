@@ -21,7 +21,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import com.squareup.kotlinpoet.ksp.toTypeName
-import kotlin.math.log
 import ru.vladislavsumin.core.ksp.utils.Types
 import ru.vladislavsumin.core.ksp.utils.primaryConstructorWithPrivateFields
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
@@ -91,7 +90,7 @@ internal class FactoryGeneratorSymbolProcessor(
         // 1) Найти параметр конструктора наследующийся от ScreenParams, это и будут наши искомые параметры.
         // 2) Предположить название ScreenParams и их пакет исходя из названия и пакета экрана.
         val screenParamsClassDeclaration: KSClassDeclaration = findScreenParamsFromConstructor(constructorParams)
-        // Если не смогли найти нужный экран, то идем по варианту 2.
+            // Если не смогли найти нужный экран, то идем по варианту 2.
             ?: generateScreenParamsFromScreenName(instance, resolver)
 
         // После определения параметров экрана нам необходимо определить параметры событий (intent), которыми
@@ -192,7 +191,7 @@ internal class FactoryGeneratorSymbolProcessor(
         if (classDeclaration == null) {
             logger.error(
                 message = "ScreenParams not found and automatically resolved as ${name.canonicalName}, " +
-                        "but screenParams with current type not exist",
+                    "but screenParams with current type not exist",
                 symbol = instance,
             )
             error("${name.canonicalName} not exist")

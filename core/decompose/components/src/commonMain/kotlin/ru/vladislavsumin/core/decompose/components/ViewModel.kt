@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import kotlin.coroutines.CoroutineContext
@@ -68,17 +69,21 @@ public abstract class ViewModel {
     /**
      * Создает [StateFlow], данные в котором могут переживать смерть процесса через механизм [stateKeeper] экрана.
      *
+     * Обратите внимание, при использовании нулабельных значений null будет честно сохранен и восстановлен,
+     * [initialValue] не будет вызван при восстановлении такого значения.
+     *
      * @param key уникальный в рамках [ViewModel] ключ, по которому будут сохраняться данные.
      * @param initialValue фабрика для создания инициирующего значения если нет сохраненного значения.
      */
-    protected inline fun <reified T : Any> saveableStateFlow(
+    protected inline fun <reified T : Any?> saveableStateFlow(
         key: String,
         initialValue: () -> T,
     ): MutableStateFlow<T> {
-        val serializer = Json.serializersModule.serializer<T>()
-        val savedState = stateKeeper.consume<T>(key, serializer)
-        val flow = MutableStateFlow(savedState ?: initialValue())
-        stateKeeper.register(key, serializer) { flow.value }
+        val serializer = Holder.serializer(Json.serializersModule.serializer<T>())
+        val savedState = stateKeeper.consume(key, serializer)
+        val value = if (savedState != null) savedState.data else initialValue()
+        val flow = MutableStateFlow(value)
+        stateKeeper.register(key, serializer) { Holder(flow.value) }
         return flow
     }
 
@@ -96,6 +101,13 @@ public abstract class ViewModel {
     internal fun onDestroy() {
         viewModelScope.cancel()
     }
+
+    /**
+     * Промежуточная заглушка, для возможности явно отличать null значения от чистого запуска экрана.
+     */
+    @Serializable
+    @PublishedApi
+    internal data class Holder<T : Any?>(val data: T)
 }
 
 internal class WrongViewModelUsageException : Exception(

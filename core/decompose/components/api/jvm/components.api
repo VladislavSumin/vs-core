@@ -22,6 +22,33 @@ public abstract class ru/vladislavsumin/core/decompose/components/ViewModel {
 	public static synthetic fun stateIn$default (Lru/vladislavsumin/core/decompose/components/ViewModel;Lkotlinx/coroutines/flow/Flow;Ljava/lang/Object;Lkotlinx/coroutines/flow/SharingStarted;ILjava/lang/Object;)Lkotlinx/coroutines/flow/StateFlow;
 }
 
+public final class ru/vladislavsumin/core/decompose/components/ViewModel$Holder {
+	public static final field Companion Lru/vladislavsumin/core/decompose/components/ViewModel$Holder$Companion;
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;
+	public static synthetic fun copy$default (Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;Ljava/lang/Object;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getData ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class ru/vladislavsumin/core/decompose/components/ViewModel$Holder$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public fun <init> (Lkotlinx/serialization/KSerializer;)V
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;)V
+	public final fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class ru/vladislavsumin/core/decompose/components/ViewModel$Holder$Companion {
+	public final fun serializer (Lkotlinx/serialization/KSerializer;)Lkotlinx/serialization/KSerializer;
+}
+
 public final class ru/vladislavsumin/core/decompose/components/utils/FlowUtilsKt {
 	public static final fun asValue (Lkotlinx/coroutines/flow/StateFlow;Lkotlinx/coroutines/CoroutineScope;)Lcom/arkivanov/decompose/value/Value;
 }

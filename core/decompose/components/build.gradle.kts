@@ -1,6 +1,7 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
     id("ru.vladislavsumin.convention.preset.publish")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 kotlin {

@@ -18,6 +18,7 @@ gradlePlugins-mavenPublish = "0.31.0"
 jb-compose = "1.7.1"
 decompose = "3.2.2"
 kotlinpoet = "2.0.0"
+kodein = "7.23.1"
 
 # Logging
 logging-log4j = "2.24.3"
@@ -54,6 +55,10 @@ decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "
 decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 decompose-extensions-composeExperimental = { module = "com.arkivanov.decompose:extensions-compose-experimental", version.ref = "decompose" }
 decompose-extensions-android = { module = "com.arkivanov.decompose:extensions-android", version.ref = "decompose" }
+
+# Kodein
+kodein-core = { module = "org.kodein.di:kodein-di", version.ref = "kodein" }
+kodein-android = { module = "org.kodein.di:kodein-di-framework-android-x", version.ref = "kodein" }
 
 # Code generation
 kotlin-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "kotlin-ksp" }

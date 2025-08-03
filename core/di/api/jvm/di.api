@@ -1,0 +1,4 @@
+public final class ru/vladislavsumin/core/di/Modules {
+	public static final field INSTANCE Lru/vladislavsumin/core/di/Modules;
+}
+

@@ -15,5 +15,8 @@ public interface IntentScreenParams<I : ScreenIntent>
 /**
  * Реализация [IntentScreenParams] без поддержки интентов. Нужна для упрощенного создания параметров экрана, если
  * события не нужны.
+ *
+ * Мы используем именно typealias вместо интерфейса. Это позволяет не плодить дополнительные базовые классы которые
+ * должна была бы уметь обрабатывать полиморфная сериализация.
  */
-public interface ScreenParams : IntentScreenParams<NoIntent>
+public typealias ScreenParams = IntentScreenParams<NoIntent>

@@ -8,6 +8,8 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeAlias
 import com.google.devtools.ksp.symbol.KSValueParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -104,7 +106,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .filter { param ->
                 (param.type.resolve().declaration as? KSClassDeclaration)
                     ?.getAllSuperTypes()
-                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } != true
+                    ?.any { it.toScreenParamsOrNull() != null } != true
             }
 
         // Блок кода который будет помещен в тело функции crate
@@ -154,7 +156,7 @@ internal class FactoryGeneratorSymbolProcessor(
                 // Пробуем найти любой класс наследующийся от ScreenParams
                 (param.type.resolve().declaration as? KSClassDeclaration)
                     ?.getAllSuperTypes()
-                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } == true
+                    ?.any { it.toScreenParamsOrNull() != null } == true
             }
             // Проверяем что таких экранов не более одного
             .also {
@@ -201,14 +203,29 @@ internal class FactoryGeneratorSymbolProcessor(
 
     private fun resolveScreenIntentType(
         screenParamsClassDeclaration: KSClassDeclaration,
-    ): ClassName = screenParamsClassDeclaration.getAllSuperTypes()
-        .find {
-            // Ищем первый объявление наследования от IntentScreenParams, этот класс типизирован нужным нам
-            // параметром
-            (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS
-        }!! // Сюда могут попасть только наследники IntentScreenParams поэтому find гарантированно найдет элемент.
-        .arguments.first() // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
-        .toTypeName() as ClassName
+    ): ClassName = screenParamsClassDeclaration
+        .getAllSuperTypes()
+        // Ищем первый объявление наследования от IntentScreenParams, этот класс типизирован нужным нам
+        // параметром
+        .mapNotNull { it.toScreenParamsOrNull() }
+        // Сюда могут попасть только наследники IntentScreenParams поэтому first гарантированно найдет элемент.
+        .first()
+
+    private fun KSType.toScreenParamsOrNull(): ClassName? {
+        val declaration = declaration
+        val typeName = if (declaration is KSTypeAlias) {
+            declaration.type.resolve().toTypeNameOrNull()
+        } else {
+            toTypeNameOrNull()
+        } as? ParameterizedTypeName
+
+        return if (typeName?.rawType == SCREEN_PARAMS_CLASS) {
+            // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
+            typeName.typeArguments.first() as ClassName
+        } else {
+            null
+        }
+    }
 
     companion object {
         private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "Screen")

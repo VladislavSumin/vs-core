@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,7 @@ public abstract class ViewModel {
     /**
      * [CoroutineScope] с viewmodel lifecycle.
      */
-    protected val viewModelScope: CoroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+    protected val viewModelScope: CoroutineScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
 
     @PublishedApi
     internal val stateKeeper: StateKeeper = let {

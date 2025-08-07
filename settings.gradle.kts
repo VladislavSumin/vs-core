@@ -27,6 +27,7 @@ include(":core:logger:platform")
 
 include(":core:navigation:api")
 include(":core:navigation:debug")
+include(":core:navigation:di")
 include(":core:navigation:impl")
 include(":core:navigation:factory-generator:api")
 include(":core:navigation:factory-generator:ksp")

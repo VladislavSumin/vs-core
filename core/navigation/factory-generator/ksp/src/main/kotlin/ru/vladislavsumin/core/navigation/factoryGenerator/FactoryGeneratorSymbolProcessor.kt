@@ -212,7 +212,7 @@ internal class FactoryGeneratorSymbolProcessor(
 
     companion object {
         private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "Screen")
-        private val SCREEN_CONTEXT_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenContext")
+        private val SCREEN_CONTEXT_CLASS = ClassName("com.arkivanov.decompose", "ComponentContext")
         private val SCREEN_FACTORY_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenFactory")
         private val SCREEN_PARAMS_CLASS = ClassName("ru.vladislavsumin.core.navigation", "IntentScreenParams")
     }

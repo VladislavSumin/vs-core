@@ -12,7 +12,6 @@ import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
 
@@ -27,7 +26,7 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
-public fun ScreenContext.childNavigationSlot(
+public fun Screen.childNavigationSlot(
     navigationHost: NavigationHost,
     initialConfiguration: () -> IntentScreenParams<*>? = { null },
     key: String = "slot_navigation",
@@ -37,24 +36,24 @@ public fun ScreenContext.childNavigationSlot(
     val source = SlotNavigation<ConfigurationHolder>()
 
     val hostNavigator = SlotHostNavigator(source)
-    navigator.registerHostNavigator(navigationHost, hostNavigator)
+    internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
-    val slot = childSlot(
+    val slot = internalContext.childSlot(
         source = source,
         saveConfiguration = { state ->
             if (allowStateSave && state != null) {
-                SerializableContainer(value = state.screenParams, strategy = navigator.serializer)
+                SerializableContainer(value = state.screenParams, strategy = internalNavigator.serializer)
             } else {
                 null
             }
         },
         restoreConfiguration = { container ->
-            val screenParams = container.consumeRequired(strategy = navigator.serializer)
+            val screenParams = container.consumeRequired(strategy = internalNavigator.serializer)
             ConfigurationHolder(screenParams)
         },
         key = key,
         initialConfiguration = {
-            (navigator.getInitialParamsFor(navigationHost) ?: initialConfiguration())
+            (internalNavigator.getInitialParamsFor(navigationHost) ?: initialConfiguration())
                 ?.let { ConfigurationHolder(it) }
         },
         handleBackButton = handleBackButton,

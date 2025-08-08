@@ -35,13 +35,13 @@ object TestSources {
     val testScreenNoAdditionalArgs = SourceFile.kotlin(
         name = "TestScreen.kt",
         contents = """
+            import com.arkivanov.decompose.ComponentContext
             import ru.vladislavsumin.core.navigation.screen.Screen
-            import ru.vladislavsumin.core.navigation.screen.ScreenContext
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
             
             @GenerateScreenFactory
-            class TestScreen(context: ScreenContext): Screen(context) {
+            class TestScreen(context: ComponentContext): Screen(context) {
                 @Composable
                 override fun Render(modifier: Modifier){}
             }
@@ -54,15 +54,15 @@ object TestSources {
     val testScreenWithScreenParams = SourceFile.kotlin(
         name = "TestScreen.kt",
         contents = """
+            import com.arkivanov.decompose.ComponentContext
             import ru.vladislavsumin.core.navigation.screen.Screen
-            import ru.vladislavsumin.core.navigation.screen.ScreenContext
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
             
             @GenerateScreenFactory
             class TestScreen(
                 params: TestScreenParams,
-                context: ScreenContext,
+                context: ComponentContext,
             ): Screen(context) {
                 @Composable
                 override fun Render(modifier: Modifier){}
@@ -76,8 +76,8 @@ object TestSources {
     val testScreenWithScreenIntents = SourceFile.kotlin(
         name = "TestScreen.kt",
         contents = """
+            import com.arkivanov.decompose.ComponentContext
             import ru.vladislavsumin.core.navigation.screen.Screen
-            import ru.vladislavsumin.core.navigation.screen.ScreenContext
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
             import kotlinx.coroutines.channels.ReceiveChannel
@@ -85,7 +85,7 @@ object TestSources {
             @GenerateScreenFactory
             class TestScreen(
                 intents: ReceiveChannel<TestScreenIntent>,
-                context: ScreenContext,
+                context: ComponentContext,
             ): Screen(context) {
                 @Composable
                 override fun Render(modifier: Modifier){}
@@ -99,8 +99,8 @@ object TestSources {
     val testScreenWithScreenParamsAndIntents = SourceFile.kotlin(
         name = "TestScreen.kt",
         contents = """
+            import com.arkivanov.decompose.ComponentContext
             import ru.vladislavsumin.core.navigation.screen.Screen
-            import ru.vladislavsumin.core.navigation.screen.ScreenContext
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
             import kotlinx.coroutines.channels.ReceiveChannel
@@ -109,7 +109,7 @@ object TestSources {
             class TestScreen(
                 params: TestScreenParams,
                 intents: ReceiveChannel<TestScreenIntent>,
-                context: ScreenContext,
+                context: ComponentContext,
             ): Screen(context) {
                 @Composable
                 override fun Render(modifier: Modifier){}
@@ -123,8 +123,8 @@ object TestSources {
     val testScreenWithAllData = SourceFile.kotlin(
         name = "TestScreen.kt",
         contents = """
+            import com.arkivanov.decompose.ComponentContext
             import ru.vladislavsumin.core.navigation.screen.Screen
-            import ru.vladislavsumin.core.navigation.screen.ScreenContext
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
             import kotlinx.coroutines.channels.ReceiveChannel
@@ -134,7 +134,7 @@ object TestSources {
                 extra: String,
                 params: TestScreenParams,
                 intents: ReceiveChannel<TestScreenIntent>,
-                context: ScreenContext,
+                context: ComponentContext,
             ): Screen(context) {
                 @Composable
                 override fun Render(modifier: Modifier){}

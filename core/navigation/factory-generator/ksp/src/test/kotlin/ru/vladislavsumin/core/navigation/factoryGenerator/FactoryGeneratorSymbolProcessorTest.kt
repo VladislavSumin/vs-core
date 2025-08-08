@@ -73,14 +73,14 @@ class FactoryGeneratorSymbolProcessorTest {
 
     companion object {
         private val NO_ADDITIONAL_ARGS_SCREEN_FACTORY = """
+import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, TestScreen> {
   override fun create(
-    context: ScreenContext,
+    context: ComponentContext,
     params: TestScreenParams,
     intents: ReceiveChannel<NoIntent>,
   ): TestScreen = TestScreen(context, )
@@ -89,14 +89,14 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, T
         """.trimIndent()
 
         private val SCREEN_PARAMS_ARGS_SCREEN_FACTORY = """
+import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, TestScreen> {
   override fun create(
-    context: ScreenContext,
+    context: ComponentContext,
     params: TestScreenParams,
     intents: ReceiveChannel<NoIntent>,
   ): TestScreen = TestScreen(params, context, )
@@ -105,13 +105,13 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, T
         """.trimIndent()
 
         private val SCREEN_INTENTS_ARGS_SCREEN_FACTORY = """
+import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
-    context: ScreenContext,
+    context: ComponentContext,
     params: TestScreenParams,
     intents: ReceiveChannel<TestScreenIntent>,
   ): TestScreen = TestScreen(intents, context, )
@@ -120,13 +120,13 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenI
         """.trimIndent()
 
         private val SCREEN_PARAMS_AND_INTENTS_ARGS_SCREEN_FACTORY = """
+import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
-    context: ScreenContext,
+    context: ComponentContext,
     params: TestScreenParams,
     intents: ReceiveChannel<TestScreenIntent>,
   ): TestScreen = TestScreen(params, intents, context, )
@@ -135,16 +135,16 @@ internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenI
         """.trimIndent()
 
         private val ALL_ARGS_SCREEN_FACTORY = """
+import com.arkivanov.decompose.ComponentContext
 import kotlin.String
 import kotlinx.coroutines.channels.ReceiveChannel
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory(
   private val extra: String,
 ) : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
-    context: ScreenContext,
+    context: ComponentContext,
     params: TestScreenParams,
     intents: ReceiveChannel<TestScreenIntent>,
   ): TestScreen = TestScreen(extra, params, intents, context, )

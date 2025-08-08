@@ -13,7 +13,6 @@ import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
 
@@ -27,7 +26,7 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
-public fun ScreenContext.childNavigationPages(
+public fun Screen.childNavigationPages(
     navigationHost: NavigationHost,
     initialPages: () -> Pages<IntentScreenParams<*>>,
     key: String = "pages_navigation",
@@ -37,27 +36,27 @@ public fun ScreenContext.childNavigationPages(
     val source = PagesNavigation<ConfigurationHolder>()
 
     val hostNavigator = PagesHostNavigator(source)
-    navigator.registerHostNavigator(navigationHost, hostNavigator)
+    internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
-    val pages = childPages(
+    val pages = internalContext.childPages(
         source = source,
         savePages = { state ->
             if (allowStateSave) {
                 SerializableContainer(
                     value = SerializablePages(items = state.items.map { it.screenParams }, state.selectedIndex),
-                    strategy = SerializablePages.serializer(navigator.serializer),
+                    strategy = SerializablePages.serializer(internalNavigator.serializer),
                 )
             } else {
                 null
             }
         },
         restorePages = { container ->
-            val pages = container.consumeRequired(strategy = SerializablePages.serializer(navigator.serializer))
+            val pages = container.consumeRequired(strategy = SerializablePages.serializer(internalNavigator.serializer))
             Pages(pages.items.map { ConfigurationHolder(it) }, pages.selectedIndex)
         },
         key = key,
         initialPages = {
-            val pages = navigator.getInitialParamsFor(navigationHost)
+            val pages = internalNavigator.getInitialParamsFor(navigationHost)
                 ?.let { Pages(listOf(it), 0) }
                 ?: initialPages()
             Pages(pages.items.map { ConfigurationHolder(it) }, pages.selectedIndex)

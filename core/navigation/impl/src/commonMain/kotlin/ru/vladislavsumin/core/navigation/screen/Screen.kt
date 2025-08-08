@@ -1,21 +1,37 @@
 package ru.vladislavsumin.core.navigation.screen
 
+import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
+import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 import ru.vladislavsumin.core.navigation.viewModel.IsNavigationViewModelConstructing
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
 /**
  * Базовая реализация экрана с набором полезных расширений.
  */
-public abstract class Screen(context: ScreenContext) :
-    Component(context),
-    ComposeComponent,
-    ScreenContext,
-    BaseScreenContext by context {
+public abstract class Screen(context: ComponentContext) :
+    Component(context), // TODO далее нужно наследоваться от GenericComponent
+    ComposeComponent {
+
+    /**
+     * Предоставляет доступ к навигации с учетом контекста этого экрана.
+     *
+     * Доступ к контексту означает что поиск ближайшего экрана будет происходить не от корня графа, а от текущего этого
+     * экрана.
+     */
+    protected val navigator: ScreenNavigator = let {
+        val navigator = ScreenNavigatorHolder
+        // TODO нормальную ошибку
+        check(navigator != null) { "Wrong screen usage" }
+        navigator
+    }
+
+    internal val internalNavigator: ScreenNavigator get() = navigator
+    internal val internalContext: ComponentContext get() = context
 
     /**
      * Предоставляет искусственно задержать splash экран на время загрузки контента вашего экрана.

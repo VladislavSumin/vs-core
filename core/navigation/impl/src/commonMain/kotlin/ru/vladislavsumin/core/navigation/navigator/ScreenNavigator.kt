@@ -11,7 +11,6 @@ import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
@@ -222,6 +221,36 @@ public class ScreenNavigator internal constructor(
     internal suspend fun delaySplashScreen() {
         screen.delaySplashScreenInternal()
         childScreenNavigators.values.forEach { it.delaySplashScreen() }
+    }
+
+    internal fun createChildNavigator(
+        childScreenParams: IntentScreenParams<*>,
+        childContext: ComponentContext,
+    ): ScreenNavigator {
+        val screenKey = ScreenKey(childScreenParams::class)
+        val childNode = node.children.find { it.value.screenKey == screenKey }
+        check(childNode != null) {
+            "Screen ${childScreenParams.asKey()} is not a child for screen ${childScreenParams.asKey()}"
+        }
+
+        val initialPath = initialPath?.let { path ->
+            val newPath = path.drop(1)
+            if (newPath.isNotEmpty()) {
+                ScreenPath(newPath)
+            } else {
+                null
+            }
+        }
+
+        return ScreenNavigator(
+            globalNavigator = globalNavigator,
+            parentNavigator = this,
+            screenPath = screenPath + childScreenParams,
+            node = childNode,
+            serializer = serializer,
+            lifecycle = childContext.lifecycle,
+            initialPath = initialPath,
+        )
     }
 
     /**

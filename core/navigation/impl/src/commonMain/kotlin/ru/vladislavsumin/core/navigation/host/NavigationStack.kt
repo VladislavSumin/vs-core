@@ -12,7 +12,6 @@ import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
 
@@ -29,7 +28,7 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
-public fun ScreenContext.childNavigationStack(
+public fun Screen.childNavigationStack(
     navigationHost: NavigationHost,
     defaultStack: () -> List<IntentScreenParams<*>> = { emptyList() },
     initialStack: () -> List<IntentScreenParams<*>> = defaultStack,
@@ -40,27 +39,27 @@ public fun ScreenContext.childNavigationStack(
     val source = StackNavigation<ConfigurationHolder>()
 
     val hostNavigator = StackHostNavigator(source)
-    navigator.registerHostNavigator(navigationHost, hostNavigator)
+    internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
-    val stack = childStack(
+    val stack = internalContext.childStack(
         source = source,
         saveStack = { state ->
             if (allowStateSave) {
                 SerializableContainer(
                     value = state.map { it.screenParams },
-                    strategy = ListSerializer(navigator.serializer),
+                    strategy = ListSerializer(internalNavigator.serializer),
                 )
             } else {
                 null
             }
         },
         restoreStack = { container ->
-            container.consumeRequired(strategy = ListSerializer(navigator.serializer))
+            container.consumeRequired(strategy = ListSerializer(internalNavigator.serializer))
                 .map { ConfigurationHolder(it) }
         },
         key = key,
         initialStack = {
-            val stack = navigator.getInitialParamsFor(navigationHost)?.let { params ->
+            val stack = internalNavigator.getInitialParamsFor(navigationHost)?.let { params ->
                 val stack = defaultStack()
                 val index = stack.indexOf(params)
                 if (index >= 0) {

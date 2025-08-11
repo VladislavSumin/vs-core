@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.decompose.components
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.essenty.statekeeper.SerializableContainer
@@ -15,11 +16,13 @@ import ru.vladislavsumin.core.decompose.components.utils.createCoroutineScope
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
+public typealias Component = GenericComponent<ComponentContext>
+
 /**
  * Базовая реализация компонента с набором полезных расширений.
  */
-public abstract class Component(context: ComponentContext) : ComponentContext by context {
-    protected val scope: CoroutineScope = lifecycle.createCoroutineScope()
+public abstract class GenericComponent<Ctx : GenericComponentContext<Ctx>>(protected val context: Ctx) {
+    protected val scope: CoroutineScope = context.lifecycle.createCoroutineScope()
 
     /**
      * Укороченная версия [CoroutineScope.launch] использующая в качестве скоупа [scope].
@@ -50,16 +53,19 @@ public abstract class Component(context: ComponentContext) : ComponentContext by
         // этой функции в наследниках, в таких условиях использования класса лямбды фабрики кажется адекватным решением.
         val key = factory::class.toString()
 
-        val viewModelHolder = instanceKeeper.getOrCreate(key) {
+        val viewModelHolder = context.instanceKeeper.getOrCreate(key) {
             // Создаем отдельный state keeper для вью модели, вспоминать сохраненные данные он будет только при создании
             // модели, но это ожидаемое поведение, при пересоздании экрана с сохранением модели перезагружать данные
             // не нужно.
-            val state = stateKeeper.consume(key, SerializableContainer.serializer())
+            val state = context.stateKeeper.consume(key, SerializableContainer.serializer())
             val viewModelStateKeeperDispatcher = StateKeeperDispatcher(state)
 
-            WhileConstructedViewModelStateKeeper = viewModelStateKeeperDispatcher
-            val viewModel = factory()
-            WhileConstructedViewModelStateKeeper = null
+            val viewModel = try {
+                WhileConstructedViewModelStateKeeper = viewModelStateKeeperDispatcher
+                factory()
+            } finally {
+                WhileConstructedViewModelStateKeeper = null
+            }
 
             ViewModelHolder(viewModel, viewModelStateKeeperDispatcher)
         }
@@ -67,7 +73,10 @@ public abstract class Component(context: ComponentContext) : ComponentContext by
         // В отличие от кейса восстановления данных, сохранять данные вью модели нужно при сохранении данных экрана,
         // так как мы никогда не можем быть уверены, что даже если экран сохраняется перед пересозданием он фактически
         // будет пересоздан. Поэтому во избежание, сохраняем всегда.
-        stateKeeper.register(key, SerializableContainer.serializer()) { viewModelHolder.viewModelStateKeeper.save() }
+        context.stateKeeper.register(
+            key = key,
+            strategy = SerializableContainer.serializer(),
+        ) { viewModelHolder.viewModelStateKeeper.save() }
         return viewModelHolder.viewModel
     }
 }

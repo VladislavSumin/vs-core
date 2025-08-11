@@ -2,7 +2,7 @@ package ru.vladislavsumin.core.navigation.repository
 
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
-import ru.vladislavsumin.core.navigation.screen.asErasedKey
+import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.testData.ScreenA
 import ru.vladislavsumin.core.navigation.testData.ScreenB
 import ru.vladislavsumin.core.navigation.utils.FailingScreenFactory
@@ -26,7 +26,7 @@ class NavigationRepositoryTest {
         val repository = NavigationRepositoryImpl(registrars)
         assertEquals(1, repository.screens.size)
         assertEquals(1, repository.serializers.size)
-        assertEquals(repository.screens.keys.first(), ScreenA.asErasedKey())
+        assertEquals(repository.screens.keys.first(), ScreenA.asKey())
     }
 
     @Test

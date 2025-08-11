@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.navigator
 
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
 /**
@@ -13,9 +14,9 @@ internal interface HostNavigator {
      *
      * @param params параметры экрана.
      */
-    fun open(params: ScreenParams)
+    fun open(params: IntentScreenParams<*>, intent: ScreenIntent?)
 
-    fun open(screenKey: ScreenKey<*>, defaultParams: () -> ScreenParams)
+    fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>)
 
     /**
      * Пытается закрыть экран с соответствующими параметрами. Если закрыть экран невозможно по какой-либо причине **не**
@@ -24,7 +25,7 @@ internal interface HostNavigator {
      * @param params параметры экрана.
      * @return true если экран был успешно закрыт, false в других случаях.
      */
-    fun close(params: ScreenParams): Boolean
+    fun close(params: IntentScreenParams<*>): Boolean
 
     /**
      * Пытается закрыть экран с соответствующим ключом согласно внутренним правилам навигации. Если навигация содержит
@@ -35,5 +36,5 @@ internal interface HostNavigator {
      * @param screenKey ключ экрана.
      * @return true если экран был успешно закрыт, false в других случаях.
      */
-    fun close(screenKey: ScreenKey<ScreenParams>): Boolean
+    fun close(screenKey: ScreenKey): Boolean
 }

@@ -1,0 +1,4 @@
+public final class ru/vladislavsumin/core/navigation/DiKt {
+	public static final fun coreNavigation (Lru/vladislavsumin/core/di/Modules;)Lorg/kodein/di/DI$Module;
+}
+

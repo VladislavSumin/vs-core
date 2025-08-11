@@ -1,18 +1,26 @@
 public final class ru/vladislavsumin/core/navigation/Navigation {
 	public static final field $stable I
 	public static final field Companion Lru/vladislavsumin/core/navigation/Navigation$Companion;
-	public final fun close (Lru/vladislavsumin/core/navigation/ScreenParams;)V
-	public final fun findDefaultScreenParamsByName (Ljava/lang/String;)Lru/vladislavsumin/core/navigation/ScreenParams;
-	public final fun open (Lru/vladislavsumin/core/navigation/ScreenParams;)V
+	public final fun close (Lru/vladislavsumin/core/navigation/IntentScreenParams;)V
+	public final fun findDefaultScreenParamsByName (Ljava/lang/String;)Lru/vladislavsumin/core/navigation/IntentScreenParams;
+	public final fun open (Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;)V
+	public static synthetic fun open$default (Lru/vladislavsumin/core/navigation/Navigation;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;ILjava/lang/Object;)V
 }
 
 public final class ru/vladislavsumin/core/navigation/Navigation$Companion {
 	public final fun invoke (Ljava/util/Set;)Lru/vladislavsumin/core/navigation/Navigation;
 }
 
+public final class ru/vladislavsumin/core/navigation/host/ConfigurationHolder {
+	public static final field $stable I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getScreenParams ()Lru/vladislavsumin/core/navigation/IntentScreenParams;
+	public fun hashCode ()I
+}
+
 public final class ru/vladislavsumin/core/navigation/host/NavigationPagesKt {
-	public static final fun childNavigationPages (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
-	public static synthetic fun childNavigationPages$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
+	public static final fun childNavigationPages (Lru/vladislavsumin/core/navigation/screen/Screen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
+	public static synthetic fun childNavigationPages$default (Lru/vladislavsumin/core/navigation/screen/Screen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationRootKt {
@@ -21,20 +29,21 @@ public final class ru/vladislavsumin/core/navigation/host/NavigationRootKt {
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationSlotKt {
-	public static final fun childNavigationSlot (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
-	public static synthetic fun childNavigationSlot$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
+	public static final fun childNavigationSlot (Lru/vladislavsumin/core/navigation/screen/Screen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
+	public static synthetic fun childNavigationSlot$default (Lru/vladislavsumin/core/navigation/screen/Screen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationStackKt {
-	public static final fun childNavigationStack (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
-	public static synthetic fun childNavigationStack$default (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
+	public static final fun childNavigationStack (Lru/vladislavsumin/core/navigation/screen/Screen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZ)Lcom/arkivanov/decompose/value/Value;
+	public static synthetic fun childNavigationStack$default (Lru/vladislavsumin/core/navigation/screen/Screen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
 }
 
 public final class ru/vladislavsumin/core/navigation/navigator/ScreenNavigator {
 	public static final field $stable I
 	public final fun close ()V
-	public final fun close (Lru/vladislavsumin/core/navigation/ScreenParams;)V
-	public final fun open (Lru/vladislavsumin/core/navigation/ScreenParams;)V
+	public final fun close (Lru/vladislavsumin/core/navigation/IntentScreenParams;)V
+	public final fun open (Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;)V
+	public static synthetic fun open$default (Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;ILjava/lang/Object;)V
 	public final fun registerCustomFactory-5BVeKMU (Lkotlin/reflect/KClass;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;)V
 }
 
@@ -45,7 +54,7 @@ public abstract interface class ru/vladislavsumin/core/navigation/registration/N
 public abstract class ru/vladislavsumin/core/navigation/registration/NavigationRegistry {
 	public static final field $stable I
 	public fun <init> ()V
-	public abstract fun registerScreen-eVoNSH0 (Lkotlin/reflect/KClass;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;Lkotlinx/serialization/KSerializer;Lru/vladislavsumin/core/navigation/ScreenParams;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public abstract fun registerScreen-eVoNSH0 (Lkotlin/reflect/KClass;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;Lkotlinx/serialization/KSerializer;Lru/vladislavsumin/core/navigation/IntentScreenParams;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 }
 
 public abstract interface class ru/vladislavsumin/core/navigation/registration/NavigationRegistry$HostRegistry {
@@ -68,24 +77,17 @@ public final class ru/vladislavsumin/core/navigation/repository/ScreenRegistrati
 	public static final field $stable I
 }
 
-public abstract interface class ru/vladislavsumin/core/navigation/screen/BaseScreenContext {
-	public abstract fun getNavigator ()Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;
-}
-
-public abstract class ru/vladislavsumin/core/navigation/screen/Screen : ru/vladislavsumin/core/decompose/components/Component, ru/vladislavsumin/core/decompose/compose/ComposeComponent, ru/vladislavsumin/core/navigation/screen/BaseScreenContext, ru/vladislavsumin/core/navigation/screen/ScreenContext {
+public abstract class ru/vladislavsumin/core/navigation/screen/Screen : ru/vladislavsumin/core/decompose/components/GenericComponent, ru/vladislavsumin/core/decompose/compose/ComposeComponent {
 	public static final field $stable I
-	public fun <init> (Lru/vladislavsumin/core/navigation/screen/ScreenContext;)V
+	public fun <init> (Lcom/arkivanov/decompose/ComponentContext;)V
 	protected fun delaySplashScreen (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun getNavigator ()Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;
+	protected final fun getNavigator ()Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;
 	public final fun handleNavigation (Lru/vladislavsumin/core/navigation/viewModel/NavigationViewModel;)V
 	protected final fun viewModel (Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/decompose/components/ViewModel;
 }
 
-public abstract interface class ru/vladislavsumin/core/navigation/screen/ScreenContext : com/arkivanov/decompose/ComponentContext, ru/vladislavsumin/core/navigation/screen/BaseScreenContext {
-}
-
 public abstract interface class ru/vladislavsumin/core/navigation/screen/ScreenFactory {
-	public abstract fun create (Lru/vladislavsumin/core/navigation/screen/ScreenContext;Lru/vladislavsumin/core/navigation/ScreenParams;)Lru/vladislavsumin/core/navigation/screen/Screen;
+	public abstract fun create (Lcom/arkivanov/decompose/ComponentContext;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lkotlinx/coroutines/channels/ReceiveChannel;)Lru/vladislavsumin/core/navigation/screen/Screen;
 }
 
 public final class ru/vladislavsumin/core/navigation/tree/ScreenNotRegisteredException : java/lang/Exception {
@@ -96,7 +98,8 @@ public abstract class ru/vladislavsumin/core/navigation/viewModel/NavigationView
 	public static final field $stable I
 	public fun <init> ()V
 	protected final fun close ()V
-	protected final fun close (Lru/vladislavsumin/core/navigation/ScreenParams;)V
-	protected final fun open (Lru/vladislavsumin/core/navigation/ScreenParams;)V
+	protected final fun close (Lru/vladislavsumin/core/navigation/IntentScreenParams;)V
+	protected final fun open (Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;)V
+	public static synthetic fun open$default (Lru/vladislavsumin/core/navigation/viewModel/NavigationViewModel;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;ILjava/lang/Object;)V
 }
 

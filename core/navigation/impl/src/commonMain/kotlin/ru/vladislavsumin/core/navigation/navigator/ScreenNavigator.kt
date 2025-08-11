@@ -6,15 +6,15 @@ import com.arkivanov.essenty.lifecycle.doOnCreate
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.serialization.KSerializer
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.NavigationLogger
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
-import ru.vladislavsumin.core.navigation.screen.asErasedKey
+import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
 /**
@@ -30,7 +30,7 @@ public class ScreenNavigator internal constructor(
     internal val parentNavigator: ScreenNavigator?,
     internal val screenPath: ScreenPath,
     internal val node: LinkedTreeNode<ScreenInfo>,
-    internal val serializer: KSerializer<ScreenParams>,
+    internal val serializer: KSerializer<IntentScreenParams<*>>,
     private val lifecycle: Lifecycle,
     internal val initialPath: ScreenPath?,
 ) {
@@ -42,12 +42,12 @@ public class ScreenNavigator internal constructor(
     /**
      * Зарегистрированные кастомные фабрики экранов открываемых из хостов этого экрана.
      */
-    private val customFactories = mutableMapOf<ScreenKey<out ScreenParams>, ScreenFactory<*, *>>()
+    private val customFactories = mutableMapOf<ScreenKey, ScreenFactory<*, *, *>>()
 
     /**
      * Текущие активные навигаторы среди дочерних экранов.
      */
-    private val childScreenNavigators = mutableMapOf<ScreenParams, ScreenNavigator>()
+    private val childScreenNavigators = mutableMapOf<IntentScreenParams<*>, ScreenNavigator>()
 
     internal val screenParams = (screenPath.last() as ScreenPath.PathElement.Params).screenParams
 
@@ -83,9 +83,9 @@ public class ScreenNavigator internal constructor(
     /**
      * Возвращает стартовые параметры для [navigationHost] если таковые есть.
      */
-    internal fun getInitialParamsFor(navigationHost: NavigationHost): ScreenParams? {
+    internal fun getInitialParamsFor(navigationHost: NavigationHost): IntentScreenParams<*>? {
         val element = initialPath?.first() ?: return null
-        val screenKey = element.asErasedKey()
+        val screenKey = element.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }?.value
             ?: error("Child node with screenKey=$screenKey not found")
         return if (childNode.hostInParent == navigationHost) {
@@ -124,8 +124,11 @@ public class ScreenNavigator internal constructor(
      * Регистрирует [ScreenFactory] для [screenKey] навигации. Учитывает lifecycle [ScreenContext].
      */
     @PublishedApi
-    internal fun <S : ScreenParams> registerCustomFactory(screenKey: ScreenKey<S>, screenFactory: ScreenFactory<*, *>) {
-        // Важно что бы фабрики регистрировались до инициализации навигационных хостов. Иначе при восстановлении
+    internal fun <S : IntentScreenParams<I>, I : ScreenIntent> registerCustomFactory(
+        screenKey: ScreenKey,
+        screenFactory: ScreenFactory<S, I, *>,
+    ) {
+        // Важно, чтобы фабрики регистрировались до инициализации навигационных хостов. Иначе при восстановлении
         // состояния навигационные хосты будут восстановлены до регистрации фабрик, а следовательно не смогут создать
         // экран.
         check(navigationHosts.isEmpty()) {
@@ -136,21 +139,21 @@ public class ScreenNavigator internal constructor(
         check(oldCustomFactory == null) { "Custom factory for $screenKey already registered" }
     }
 
-    internal fun openInsideThisScreen(screenPath: ScreenPath) {
+    internal fun openInsideThisScreen(screenPath: ScreenPath, intent: ScreenIntent?) {
         NavigationLogger.t {
             "ScreenNavigator(screenParams=$screenParams).openInsideThisScreen(screenPath=$screenPath)"
         }
-        openInsideThisScreen(screenPath.first())
+        openInsideThisScreen(screenPath.first(), intent?.takeIf { screenPath.size == 1 })
         val childPath = ScreenPath(screenPath.drop(1))
         if (childPath.isNotEmpty()) {
             val childElement = screenPath.first()
             val childNavigator = when (childElement) {
                 is ScreenPath.PathElement.Key -> childScreenNavigators.asSequence()
-                    .first { entry -> entry.key.asErasedKey() == childElement.screenKey }.value
+                    .first { entry -> entry.key.asKey() == childElement.screenKey }.value
 
                 is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
             }
-            childNavigator!!.openInsideThisScreen(childPath)
+            childNavigator!!.openInsideThisScreen(childPath, intent)
         }
     }
 
@@ -159,54 +162,57 @@ public class ScreenNavigator internal constructor(
      * После нахождения пути к экрану открываемому через вызов [open], навигатор последовательно вызывает эту
      * функцию на **каждом** экране в пути, тем самым переключая состояние на требуемое.
      */
-    private fun openInsideThisScreen(screen: ScreenPath.PathElement) {
-        val screenKey = screen.asErasedKey()
+    private fun openInsideThisScreen(screen: ScreenPath.PathElement, intent: ScreenIntent?) {
+        val screenKey = screen.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }
             ?: error("Child node with screenKey=$screenKey not found")
         val hostNavigator = navigationHosts[childNode.value.hostInParent]
             ?: error("Host navigator for host=${childNode.value.hostInParent} not found")
         when (screen) {
             is ScreenPath.PathElement.Key -> hostNavigator.open(screen.screenKey) { childNode.value.defaultParams!! }
-            is ScreenPath.PathElement.Params -> hostNavigator.open(screen.screenParams)
+            is ScreenPath.PathElement.Params -> hostNavigator.open(screen.screenParams, intent)
         }
     }
 
-    internal fun closeInsideThisScreen(screenPath: ScreenPath) {
+    internal fun closeInsideThisScreen(screenPath: ScreenPath): Boolean {
         NavigationLogger.t {
             "ScreenNavigator(screenParams=$screenParams).closeInsideThisScreen(screenPath=$screenPath)"
         }
-        if (screenPath.size == 1) {
+        return if (screenPath.size == 1) {
             closeInsideThisScreen((screenPath.first() as ScreenPath.PathElement.Params).screenParams)
         } else {
-            val childElement = screenPath.firstOrNull() ?: return
+            val childElement = screenPath.first()
             val childNavigator = when (childElement) {
                 is ScreenPath.PathElement.Key -> childScreenNavigators.asSequence()
-                    .first { entry -> entry.key.asErasedKey() == childElement.screenKey }.value
+                    .firstOrNull { entry -> entry.key.asKey() == childElement.screenKey }?.value
 
                 is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
             }
-            childNavigator?.closeInsideThisScreen(ScreenPath(screenPath.drop(1)))
+            childNavigator?.closeInsideThisScreen(ScreenPath(screenPath.drop(1))) ?: false
         }
     }
 
-    private fun closeInsideThisScreen(screenParams: ScreenParams) {
+    private fun closeInsideThisScreen(screenParams: IntentScreenParams<*>): Boolean {
         // TODO убрать дублирование кода.
         val screenKey = ScreenKey(screenParams::class)
         val childNode = node.children.find { it.value.screenKey == screenKey }
             ?: error("Child node with screenKey=$screenKey not found")
         val hostNavigator = navigationHosts[childNode.value.hostInParent]
             ?: error("Host navigator for host=${childNode.value.hostInParent} not found")
-        hostNavigator.close(screenParams)
+        return hostNavigator.close(screenParams)
     }
 
     /**
      * Возвращает фабрику для создания дочернего экрана.
      */
     @Suppress("UNCHECKED_CAST")
-    internal fun getChildScreenFactory(screenKey: ScreenKey<ScreenParams>): ScreenFactory<ScreenParams, *> {
+    internal fun getChildScreenFactory(
+        screenKey: ScreenKey,
+    ): ScreenFactory<IntentScreenParams<ScreenIntent>, ScreenIntent, *> {
         // Ищем среди локальных фабрик, потом, если не нашли, смотрим в глобальных фабриках.
-        return customFactories[screenKey] as? ScreenFactory<ScreenParams, *>
-            ?: node.children.find { it.value.screenKey == screenKey }!!.value.factory as ScreenFactory<ScreenParams, *>
+        val factory = customFactories[screenKey]
+            ?: node.children.find { it.value.screenKey == screenKey }!!.value.factory
+        return factory as ScreenFactory<IntentScreenParams<ScreenIntent>, ScreenIntent, *>
     }
 
     /**
@@ -217,12 +223,55 @@ public class ScreenNavigator internal constructor(
         childScreenNavigators.values.forEach { it.delaySplashScreen() }
     }
 
+    internal fun createChildNavigator(
+        childScreenParams: IntentScreenParams<*>,
+        childContext: ComponentContext,
+    ): ScreenNavigator {
+        val screenKey = ScreenKey(childScreenParams::class)
+        val childNode = node.children.find { it.value.screenKey == screenKey }
+        check(childNode != null) {
+            "Screen ${childScreenParams.asKey()} is not a child for screen ${childScreenParams.asKey()}"
+        }
+
+        val initialPath = initialPath?.let { path ->
+            val newPath = path.drop(1)
+            if (newPath.isNotEmpty()) {
+                ScreenPath(newPath)
+            } else {
+                null
+            }
+        }
+
+        return ScreenNavigator(
+            globalNavigator = globalNavigator,
+            parentNavigator = this,
+            screenPath = screenPath + childScreenParams,
+            node = childNode,
+            serializer = serializer,
+            lifecycle = childContext.lifecycle,
+            initialPath = initialPath,
+        )
+    }
+
     /**
      * Открывает экран соответствующий переданным [screenParams], при этом, при поиске места открытия экрана учитывается
      * текущее место. (подробнее про приоритет выбора места написано в документации).
+     *
+     * @param intent - опциональное событие экрана. При передаче (впрочем без события поведение будет таким же) экран
+     * не открывается повторно если уже открыт, но получает новое событие. Если экран был закрыт, то он откроется и
+     * сразу получить новое событие.
      */
-    public fun open(screenParams: ScreenParams): Unit = globalNavigator.open(screenPath, screenParams)
-    public fun close(screenParams: ScreenParams): Unit = globalNavigator.close(screenPath, screenParams)
+    public fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
+        globalNavigator.open(screenPath, screenParams, intent)
+
+    /**
+     * Закрывает экран соответствующий переданным [screenParams].
+     */
+    public fun close(screenParams: IntentScreenParams<*>): Unit = globalNavigator.close(screenPath, screenParams)
+
+    /**
+     * Закрывает этот экран.
+     */
     public fun close(): Unit = globalNavigator.close(
         screenPath,
         (screenPath.last() as ScreenPath.PathElement.Params).screenParams,

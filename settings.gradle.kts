@@ -12,6 +12,8 @@ include(":core:decompose:components")
 include(":core:decompose:compose")
 include(":core:decompose:test")
 
+include(":core:di")
+
 include(":core:factory-generator:api")
 include(":core:factory-generator:ksp")
 
@@ -25,6 +27,7 @@ include(":core:logger:platform")
 
 include(":core:navigation:api")
 include(":core:navigation:debug")
+include(":core:navigation:di")
 include(":core:navigation:impl")
 include(":core:navigation:factory-generator:api")
 include(":core:navigation:factory-generator:ksp")

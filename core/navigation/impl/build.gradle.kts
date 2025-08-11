@@ -1,14 +1,12 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
     id("ru.vladislavsumin.convention.compose")
-    id("ru.vladislavsumin.convention.publication.sonatype")
-    id("ru.vladislavsumin.convention.analyze.binary-validator")
+    id("ru.vladislavsumin.convention.preset.publish")
 
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 kotlin {
-    explicitApi()
 
     sourceSets {
         all {
@@ -31,11 +29,4 @@ kotlin {
 
 apiValidation {
     nonPublicMarkers.add("ru.vladislavsumin.core.navigation.InternalNavigationApi")
-}
-
-mavenPublishing {
-    pom {
-        name = "VS core navigation impl"
-        description = "Part of VS core navigation framework"
-    }
 }

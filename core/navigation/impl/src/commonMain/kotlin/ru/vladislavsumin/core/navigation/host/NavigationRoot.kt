@@ -3,18 +3,19 @@ package ru.vladislavsumin.core.navigation.host
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.utils.createCoroutineScope
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.Navigation.NavigationEvent
 import ru.vladislavsumin.core.navigation.NavigationLogger
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.GlobalNavigator
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
-import ru.vladislavsumin.core.navigation.screen.DefaultScreenContext
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 
 /**
@@ -35,7 +36,7 @@ public fun ComponentContext.childNavigationRoot(
 ): ComposeComponent {
     val node = navigation.navigationTree
     val params = node.value.defaultParams ?: error("Root screen must have default params")
-    val rootScreenFactory = node.value.factory as ScreenFactory<ScreenParams, *>?
+    val rootScreenFactory = node.value.factory as ScreenFactory<IntentScreenParams<ScreenIntent>, ScreenIntent, *>?
     check(rootScreenFactory != null) { "Factory for $params not found" }
 
     // Создаем рутовый навигатор.
@@ -59,15 +60,16 @@ public fun ComponentContext.childNavigationRoot(
 
     globalNavigator.rootNavigator = rootScreenNavigator
 
-    val rootScreenContext = DefaultScreenContext(
-        rootScreenNavigator,
-        childContext,
-    )
-
-    val screen = rootScreenFactory.create(rootScreenContext, params)
+    val screen = try {
+        ScreenNavigatorHolder = rootScreenNavigator
+        // TODO поддержать события для root экрана.
+        rootScreenFactory.create(childContext, params, Channel())
+    } finally {
+        ScreenNavigatorHolder = null
+    }
     rootScreenNavigator.screen = screen
 
-    handleNavigation(navigation, rootScreenContext)
+    handleNavigation(navigation, rootScreenNavigator)
 
     // Обрабатываем задержку splash экрана.
     if (onContentReady != null) {
@@ -81,7 +83,7 @@ public fun ComponentContext.childNavigationRoot(
 }
 
 private fun handleInitialNavigationEvent(
-    rootScreenParams: ScreenParams,
+    rootScreenParams: IntentScreenParams<ScreenIntent>,
     navigation: Navigation,
     globalNavigator: GlobalNavigator,
 ): ScreenPath? {
@@ -108,15 +110,19 @@ private fun handleInitialNavigationEvent(
  */
 private fun ComponentContext.handleNavigation(
     navigation: Navigation,
-    screenContext: ScreenContext,
+    rootScreenNavigator: ScreenNavigator,
 ) {
     val scope = lifecycle.createCoroutineScope()
     scope.launch {
         for (event in navigation.navigationChannel) {
             NavigationLogger.d { "Handle global navigation event $event" }
             when (event) {
-                is NavigationEvent.Close -> screenContext.navigator.close(event.screenParams)
-                is NavigationEvent.Open -> screenContext.navigator.open(event.screenParams)
+                is NavigationEvent.Open -> rootScreenNavigator.open(
+                    event.screenParams as IntentScreenParams<ScreenIntent>,
+                    event.intent as ScreenIntent?,
+                )
+
+                is NavigationEvent.Close -> rootScreenNavigator.close(event.screenParams)
             }
         }
     }

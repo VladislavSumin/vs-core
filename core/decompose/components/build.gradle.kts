@@ -1,13 +1,10 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
-    id("ru.vladislavsumin.convention.publication.sonatype")
-    id("ru.vladislavsumin.convention.analyze.binary-validator")
-    `maven-publish`
+    id("ru.vladislavsumin.convention.preset.publish")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 kotlin {
-    explicitApi()
-
     sourceSets {
         commonMain.dependencies {
             api(vsCoreLibs.kotlin.coroutines.core)
@@ -20,12 +17,5 @@ kotlin {
         commonTest.dependencies {
             implementation(projects.core.decompose.test)
         }
-    }
-}
-
-mavenPublishing {
-    pom {
-        name = "VS core decompose components"
-        description = "Core decompose components framework"
     }
 }

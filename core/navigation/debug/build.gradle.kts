@@ -1,12 +1,10 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
     id("ru.vladislavsumin.convention.compose")
-    id("ru.vladislavsumin.convention.publication.sonatype")
-    id("ru.vladislavsumin.convention.analyze.binary-validator")
+    id("ru.vladislavsumin.convention.preset.publish")
 }
 
 kotlin {
-    explicitApi()
 
     sourceSets {
         all {
@@ -22,12 +20,5 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.material3)
         }
-    }
-}
-
-mavenPublishing {
-    pom {
-        name = "VS core navigation debug"
-        description = "Part of VS core navigation framework"
     }
 }

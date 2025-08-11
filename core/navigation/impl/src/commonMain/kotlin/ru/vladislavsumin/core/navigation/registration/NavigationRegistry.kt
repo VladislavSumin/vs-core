@@ -3,8 +3,9 @@ package ru.vladislavsumin.core.navigation.registration
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
-import ru.vladislavsumin.core.navigation.ScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
@@ -28,8 +29,8 @@ public abstract class NavigationRegistry {
      * @param navigationHosts хосты навигации на этом экране, а также экраны, которые они могут открывать.
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
-    public inline fun <reified P : ScreenParams, S : Screen> registerScreen(
-        factory: ScreenFactory<P, S>?,
+    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : Screen> registerScreen(
+        factory: ScreenFactory<P, I, S>?,
         defaultParams: P? = null,
         description: String? = null,
         noinline navigationHosts: HostRegistry.() -> Unit = {},
@@ -43,9 +44,9 @@ public abstract class NavigationRegistry {
     )
 
     @PublishedApi
-    internal abstract fun <P : ScreenParams, S : Screen> registerScreen(
-        key: ScreenKey<P>,
-        factory: ScreenFactory<P, S>?,
+    internal abstract fun <P : IntentScreenParams<I>, I : ScreenIntent, S : Screen> registerScreen(
+        key: ScreenKey,
+        factory: ScreenFactory<P, I, S>?,
         paramsSerializer: KSerializer<P>,
         defaultParams: P?,
         description: String?,
@@ -53,6 +54,6 @@ public abstract class NavigationRegistry {
     )
 
     public interface HostRegistry {
-        public infix fun NavigationHost.opens(screens: Set<KClass<out ScreenParams>>)
+        public infix fun NavigationHost.opens(screens: Set<KClass<out IntentScreenParams<*>>>)
     }
 }

@@ -18,8 +18,10 @@ public class Navigation internal constructor(
 ) {
     internal val navigationChannel = Channel<NavigationEvent>(Channel.BUFFERED)
 
-    public fun open(screenParams: ScreenParams): Unit = send(NavigationEvent.Open(screenParams))
-    public fun close(screenParams: ScreenParams): Unit = send(NavigationEvent.Close(screenParams))
+    public fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
+        send(NavigationEvent.Open(screenParams, intent))
+
+    public fun close(screenParams: IntentScreenParams<ScreenIntent>): Unit = send(NavigationEvent.Close(screenParams))
 
     private fun send(event: NavigationEvent) {
         navigationChannel.trySend(event).getOrThrow()
@@ -30,7 +32,7 @@ public class Navigation internal constructor(
      * **Внимание** Названия параметров могут быть изменены при минимизации приложения, поэтому данный метод не будет
      * работать в релизе.
      */
-    public fun findDefaultScreenParamsByName(name: String): ScreenParams? {
+    public fun findDefaultScreenParamsByName(name: String): IntentScreenParams<ScreenIntent>? {
         return navigationTree
             .asSequence()
             .find { it.value.screenKey.key.simpleName == name }
@@ -39,8 +41,8 @@ public class Navigation internal constructor(
     }
 
     internal sealed interface NavigationEvent {
-        data class Open(val screenParams: ScreenParams) : NavigationEvent
-        data class Close(val screenParams: ScreenParams) : NavigationEvent
+        data class Open(val screenParams: IntentScreenParams<*>, val intent: ScreenIntent?) : NavigationEvent
+        data class Close(val screenParams: IntentScreenParams<*>) : NavigationEvent
     }
 
     public companion object {

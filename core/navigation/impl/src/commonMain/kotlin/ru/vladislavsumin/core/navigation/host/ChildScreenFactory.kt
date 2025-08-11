@@ -4,24 +4,31 @@ import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
+import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.asKey
-import ru.vladislavsumin.core.navigation.screen.wrapWithScreenContext
 
 /**
  * Стандартная фабрика дочерних экранов для использования в compose навигации.
  */
-internal fun ScreenContext.childScreenFactory(
+internal fun Screen.childScreenFactory(
     configuration: ConfigurationHolder,
-    context: ComponentContext,
+    childScreenContext: ComponentContext,
 ): Screen {
-    val screenContext = context.wrapWithScreenContext(navigator, configuration.screenParams)
-    val screenFactory = navigator.getChildScreenFactory(configuration.screenParams.asKey())
-    val screen = screenFactory.create(
-        context = screenContext,
-        params = configuration.screenParams as IntentScreenParams<ScreenIntent>,
-        intents = configuration.intents,
+    val childScreenNavigator = internalNavigator.createChildNavigator(
+        childScreenParams = configuration.screenParams,
+        childContext = childScreenContext,
     )
-    screenContext.navigator.screen = screen
+    val screenFactory = internalNavigator.getChildScreenFactory(configuration.screenParams.asKey())
+    val screen = try {
+        ScreenNavigatorHolder = childScreenNavigator
+        screenFactory.create(
+            context = childScreenContext,
+            params = configuration.screenParams as IntentScreenParams<ScreenIntent>,
+            intents = configuration.intents,
+        )
+    } finally {
+        ScreenNavigatorHolder = null
+    }
+    childScreenNavigator.screen = screen
     return screen
 }

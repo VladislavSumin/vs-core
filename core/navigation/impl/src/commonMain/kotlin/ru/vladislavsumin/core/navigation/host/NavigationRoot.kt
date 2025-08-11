@@ -14,9 +14,8 @@ import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.GlobalNavigator
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
-import ru.vladislavsumin.core.navigation.screen.DefaultScreenContext
-import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 
 /**
@@ -61,16 +60,16 @@ public fun ComponentContext.childNavigationRoot(
 
     globalNavigator.rootNavigator = rootScreenNavigator
 
-    val rootScreenContext = DefaultScreenContext(
-        rootScreenNavigator,
-        childContext,
-    )
-
-    // TODO поддержать события для root экрана.
-    val screen = rootScreenFactory.create(rootScreenContext, params, Channel())
+    val screen = try {
+        ScreenNavigatorHolder = rootScreenNavigator
+        // TODO поддержать события для root экрана.
+        rootScreenFactory.create(childContext, params, Channel())
+    } finally {
+        ScreenNavigatorHolder = null
+    }
     rootScreenNavigator.screen = screen
 
-    handleNavigation(navigation, rootScreenContext)
+    handleNavigation(navigation, rootScreenNavigator)
 
     // Обрабатываем задержку splash экрана.
     if (onContentReady != null) {
@@ -111,19 +110,19 @@ private fun handleInitialNavigationEvent(
  */
 private fun ComponentContext.handleNavigation(
     navigation: Navigation,
-    screenContext: ScreenContext,
+    rootScreenNavigator: ScreenNavigator,
 ) {
     val scope = lifecycle.createCoroutineScope()
     scope.launch {
         for (event in navigation.navigationChannel) {
             NavigationLogger.d { "Handle global navigation event $event" }
             when (event) {
-                is NavigationEvent.Open -> screenContext.navigator.open(
+                is NavigationEvent.Open -> rootScreenNavigator.open(
                     event.screenParams as IntentScreenParams<ScreenIntent>,
                     event.intent as ScreenIntent?,
                 )
 
-                is NavigationEvent.Close -> screenContext.navigator.close(event.screenParams)
+                is NavigationEvent.Close -> rootScreenNavigator.close(event.screenParams)
             }
         }
     }

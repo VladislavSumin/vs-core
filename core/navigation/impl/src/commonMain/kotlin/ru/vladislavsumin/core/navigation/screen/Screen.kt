@@ -25,8 +25,7 @@ public abstract class Screen(context: ComponentContext) :
      */
     protected val navigator: ScreenNavigator = let {
         val navigator = ScreenNavigatorHolder
-        // TODO нормальную ошибку
-        check(navigator != null) { "Wrong screen usage" }
+        check(navigator != null) { "Wrong screen usage, only navigation framework may create screen instances" }
         navigator
     }
 

@@ -1,6 +1,8 @@
 package ru.vladislavsumin.core.navigation.repository
 
+import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
+import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
 import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.testData.ScreenA
@@ -13,7 +15,7 @@ import kotlin.test.assertFailsWith
 class NavigationRepositoryTest {
     @Test
     fun checkNoneScreenRegistration() {
-        val repository = NavigationRepositoryImpl(emptySet())
+        val repository = NavigationRepositoryImpl<ComponentContext>(emptySet())
         assertEquals(0, repository.screens.size)
         assertEquals(0, repository.serializers.size)
     }
@@ -21,7 +23,7 @@ class NavigationRepositoryTest {
     @Test
     fun checkSingleScreenRegistration() {
         val registrars = setOf(
-            GenericNavigationRegistrar { registerScreen(factory = FailingScreenFactory<ScreenA>()) },
+            NavigationRegistrar { registerScreen(factory = FailingScreenFactory<ScreenA>()) },
         )
         val repository = NavigationRepositoryImpl(registrars)
         assertEquals(1, repository.screens.size)
@@ -53,7 +55,7 @@ class NavigationRepositoryTest {
 
     @Test
     fun checkScreenRegistrationAfterFinalize() {
-        var screenRegistry: NavigationRegistry? = null
+        var screenRegistry: NavigationRegistry<ComponentContext>? = null
         val registrars = setOf(
             GenericNavigationRegistrar { screenRegistry = this },
         )

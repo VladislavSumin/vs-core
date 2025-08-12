@@ -7,7 +7,7 @@ import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-class FailingScreenFactory<P : ScreenParams> : ScreenFactory<P, NoIntent, Screen> {
+class FailingScreenFactory<P : ScreenParams> : ScreenFactory<ComponentContext, P, NoIntent, Screen> {
     override fun create(context: ComponentContext, params: P, intents: ReceiveChannel<NoIntent>): Screen {
         error("Fail")
     }

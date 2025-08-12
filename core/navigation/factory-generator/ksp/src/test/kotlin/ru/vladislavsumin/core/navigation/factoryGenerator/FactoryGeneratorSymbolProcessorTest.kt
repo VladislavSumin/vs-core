@@ -78,7 +78,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -94,7 +94,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -109,7 +109,7 @@ import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -124,7 +124,7 @@ import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -142,7 +142,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory(
   private val extra: String,
-) : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+) : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,

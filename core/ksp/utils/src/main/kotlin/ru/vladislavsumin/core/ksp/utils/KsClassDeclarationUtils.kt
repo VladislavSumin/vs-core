@@ -7,12 +7,16 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ksp.toTypeName
 
+/**
+ * Ищет среди всех супертипов [this] тип по классу соответствующий переданному [className] и возвращает его вместе
+ * с его параметрами
+ */
 public fun KSClassDeclaration.findParametrizedSuperTypeOrNull(className: ClassName): ParameterizedTypeName? {
     return getAllSuperTypes()
         .mapNotNull { type ->
 
             // Пробуем зарезолвить класс
-            var parametrized: ParameterizedTypeName? = type.toTypeName() as? ParameterizedTypeName
+            var parametrized: ParameterizedTypeName? = type.toTypeNameOrNull() as? ParameterizedTypeName
 
             // Пробуем зарезолвить TypeAlias
             if (parametrized == null) {

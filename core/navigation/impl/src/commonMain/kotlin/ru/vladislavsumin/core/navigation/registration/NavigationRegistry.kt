@@ -1,12 +1,13 @@
 package ru.vladislavsumin.core.navigation.registration
 
+import com.arkivanov.decompose.GenericComponentContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
-import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import kotlin.reflect.KClass
@@ -14,11 +15,11 @@ import kotlin.reflect.KClass
 /**
  * Позволяет регистрировать компоненты навигации. Использовать напрямую этот интерфейс нельзя, так как его состояние
  * финализируется в процессе инициализации приложения. Для доступа к [NavigationRegistry]
- * воспользуйтесь [NavigationRegistrar].
+ * воспользуйтесь [GenericNavigationRegistrar].
  *
  * Абстрактный класс вместо интерфейса для возможности использовать internal && inline для создания удобного апи.
  */
-public abstract class NavigationRegistry {
+public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>> {
     /**
      * Регистрирует экран.
      *
@@ -29,8 +30,8 @@ public abstract class NavigationRegistry {
      * @param navigationHosts хосты навигации на этом экране, а также экраны, которые они могут открывать.
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
-    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : Screen> registerScreen(
-        factory: ScreenFactory<P, I, S>?,
+    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx>> registerScreen(
+        factory: ScreenFactory<Ctx, P, I, S>?,
         defaultParams: P? = null,
         description: String? = null,
         noinline navigationHosts: HostRegistry.() -> Unit = {},
@@ -44,9 +45,9 @@ public abstract class NavigationRegistry {
     )
 
     @PublishedApi
-    internal abstract fun <P : IntentScreenParams<I>, I : ScreenIntent, S : Screen> registerScreen(
+    internal abstract fun <P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx>> registerScreen(
         key: ScreenKey,
-        factory: ScreenFactory<P, I, S>?,
+        factory: ScreenFactory<Ctx, P, I, S>?,
         paramsSerializer: KSerializer<P>,
         defaultParams: P?,
         description: String?,

@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.tree
 
+import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNodeImpl
 import ru.vladislavsumin.core.collections.tree.linkedNodeOf
@@ -9,17 +10,17 @@ import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.repository.NavigationRepository
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
-internal class NavigationTreeBuilder(
-    private val repository: NavigationRepository,
+internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
+    private val repository: NavigationRepository<Ctx>,
 ) {
-    fun build() = NavigationTree(buildNavGraph())
+    fun build() = NavigationTree<Ctx>(buildNavGraph())
 
     /**
      * Строит навигационное дерево.
      *
      * @return возвращает корень полученного дерева.
      */
-    private fun buildNavGraph(): LinkedTreeNode<ScreenInfo> {
+    private fun buildNavGraph(): LinkedTreeNode<ScreenInfo<Ctx>> {
         val rootScreen = findRootScreen()
         return buildNode(
             parent = null,
@@ -40,7 +41,7 @@ internal class NavigationTreeBuilder(
         parent: ScreenKey?,
         hostInParent: NavigationHost?,
         screenKey: ScreenKey,
-    ): LinkedTreeNodeImpl<ScreenInfo> {
+    ): LinkedTreeNodeImpl<ScreenInfo<Ctx>> {
         val screenRegistration = repository.screens[screenKey]
             ?: throw ScreenNotRegisteredException(parent, hostInParent, screenKey)
 
@@ -54,7 +55,7 @@ internal class NavigationTreeBuilder(
         )
 
         // Пробегаемся по всем навигационным хостам, объявленным для данной ноды.
-        val child: List<LinkedTreeNodeImpl<ScreenInfo>> = screenRegistration.navigationHosts
+        val child: List<LinkedTreeNodeImpl<ScreenInfo<Ctx>>> = screenRegistration.navigationHosts
             .flatMap { (host, screens) ->
                 screens.map { screen -> buildNode(screenKey, host, screen) }
             }

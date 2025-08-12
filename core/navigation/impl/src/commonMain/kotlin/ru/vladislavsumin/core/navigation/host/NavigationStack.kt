@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.host
 
+import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
@@ -11,7 +12,7 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
-import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
 
@@ -28,14 +29,14 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
-public fun Screen.childNavigationStack(
+public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigationStack(
     navigationHost: NavigationHost,
     defaultStack: () -> List<IntentScreenParams<*>> = { emptyList() },
     initialStack: () -> List<IntentScreenParams<*>> = defaultStack,
     key: String = "stack_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildStack<ConfigurationHolder, Screen>> {
+): Value<ChildStack<ConfigurationHolder, GenericScreen<Ctx>>> {
     val source = StackNavigation<ConfigurationHolder>()
 
     val hostNavigator = StackHostNavigator(source)

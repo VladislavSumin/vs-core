@@ -18,9 +18,9 @@ import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
-import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.vladislavsumin.core.ksp.utils.Types
+import ru.vladislavsumin.core.ksp.utils.findParametrizedSuperTypeOrNull
 import ru.vladislavsumin.core.ksp.utils.primaryConstructorWithPrivateFields
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
 import ru.vladislavsumin.core.ksp.utils.toTypeNameOrNull
@@ -47,15 +47,6 @@ internal class FactoryGeneratorSymbolProcessor(
             return
         }
 
-        // Проверяем что экран наследуется от Screen
-        if (instance.getAllSuperTypes().find { type -> type.toClassNameOrNull() == SCREEN_CLASS } == null) {
-            logger.error(
-                message = "@GenerateScreenFactory only applicable to classes implementing Screen",
-                symbol = instance,
-            )
-            return
-        }
-
         generateFactory(instance, resolver)
     }
 
@@ -64,12 +55,27 @@ internal class FactoryGeneratorSymbolProcessor(
      *
      * @param instance инстанс который должна создавать фабрика
      */
+    @Suppress("LongMethod")
     private fun generateFactory(
         instance: KSClassDeclaration,
         resolver: Resolver,
     ) {
         // Имя будущей фабрики.
         val name = instance.simpleName.getShortName() + "Factory"
+
+        // Ищем среди родителей GenericScreen
+        val genericScreenResolvedType = instance.findParametrizedSuperTypeOrNull(SCREEN_CLASS)
+
+        // Проверяем что экран наследуется от Screen
+        if (genericScreenResolvedType == null) {
+            logger.error(
+                message = "@GenerateScreenFactory only applicable to classes implementing Screen",
+                symbol = instance,
+            )
+            return
+        }
+
+        val contextType = genericScreenResolvedType.typeArguments[0]
 
         // Проверяем наличие основного конструктора
         val primaryConstructor = instance.primaryConstructor
@@ -99,7 +105,7 @@ internal class FactoryGeneratorSymbolProcessor(
 
         // Список параметров для конструктора фабрики
         val factoryConstructorParams = constructorParams
-            .filter { it.type.toTypeName() != SCREEN_CONTEXT_CLASS }
+            .filter { it.type.toTypeName() != contextType }
             .filter { param -> param.type.toTypeName() != screenIntentReceiveChannelType }
             .filter { param ->
                 (param.type.resolve().declaration as? KSClassDeclaration)
@@ -122,7 +128,7 @@ internal class FactoryGeneratorSymbolProcessor(
         // Декларация функции create
         val createFunction = FunSpec.builder("create")
             .addModifiers(KModifier.OVERRIDE)
-            .addParameter(ParameterSpec.builder("context", SCREEN_CONTEXT_CLASS).build())
+            .addParameter(ParameterSpec.builder("context", contextType).build())
             .addParameter(ParameterSpec.builder("params", screenParamsClassDeclaration.toClassName()).build())
             .addParameter(ParameterSpec.builder("intents", screenIntentReceiveChannelType).build())
             .addCode(returnCodeBlock)
@@ -133,6 +139,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .addSuperinterface(
                 SCREEN_FACTORY_CLASS
                     .parameterizedBy(
+                        contextType,
                         screenParamsClassDeclaration.toClassName(),
                         screenIntentType,
                         instance.toClassName(),
@@ -211,8 +218,7 @@ internal class FactoryGeneratorSymbolProcessor(
         .toTypeName() as ClassName
 
     companion object {
-        private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "Screen")
-        private val SCREEN_CONTEXT_CLASS = ClassName("com.arkivanov.decompose", "ComponentContext")
+        private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "GenericScreen")
         private val SCREEN_FACTORY_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenFactory")
         private val SCREEN_PARAMS_CLASS = ClassName("ru.vladislavsumin.core.navigation", "IntentScreenParams")
     }

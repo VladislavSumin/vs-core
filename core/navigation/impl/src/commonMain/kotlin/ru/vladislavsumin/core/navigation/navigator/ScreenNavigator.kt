@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.navigator
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnCreate
 import com.arkivanov.essenty.lifecycle.doOnDestroy
@@ -10,7 +11,7 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
-import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
@@ -25,11 +26,11 @@ import ru.vladislavsumin.core.navigation.tree.ScreenInfo
  * @param node нода соответствующая этому экрану в графе навигации.
  * @param lifecycle жизненный цикл компонента к которому привязан этот навигатор.
  */
-public class ScreenNavigator internal constructor(
-    internal val globalNavigator: GlobalNavigator,
-    internal val parentNavigator: ScreenNavigator?,
+public class ScreenNavigator<Ctx : GenericComponentContext<Ctx>> internal constructor(
+    internal val globalNavigator: GlobalNavigator<Ctx>,
+    internal val parentNavigator: ScreenNavigator<Ctx>?,
     internal val screenPath: ScreenPath,
-    internal val node: LinkedTreeNode<ScreenInfo>,
+    internal val node: LinkedTreeNode<ScreenInfo<Ctx>>,
     internal val serializer: KSerializer<IntentScreenParams<*>>,
     private val lifecycle: Lifecycle,
     internal val initialPath: ScreenPath?,
@@ -42,19 +43,19 @@ public class ScreenNavigator internal constructor(
     /**
      * Зарегистрированные кастомные фабрики экранов открываемых из хостов этого экрана.
      */
-    private val customFactories = mutableMapOf<ScreenKey, ScreenFactory<*, *, *>>()
+    private val customFactories = mutableMapOf<ScreenKey, ScreenFactory<Ctx, *, *, *>>()
 
     /**
      * Текущие активные навигаторы среди дочерних экранов.
      */
-    private val childScreenNavigators = mutableMapOf<IntentScreenParams<*>, ScreenNavigator>()
+    private val childScreenNavigators = mutableMapOf<IntentScreenParams<*>, ScreenNavigator<Ctx>>()
 
     internal val screenParams = (screenPath.last() as ScreenPath.PathElement.Params).screenParams
 
     /**
      * Экран в контексте которого существует данный навигатор.
      */
-    internal lateinit var screen: Screen
+    internal lateinit var screen: GenericScreen<Ctx>
 
     init {
         // Регистрируем этот навигатор в родительском.
@@ -101,7 +102,7 @@ public class ScreenNavigator internal constructor(
     /**
      * Регистрирует [screenNavigator] с учетом жизненного цикла [ComponentContext].
      */
-    internal fun registerScreenNavigator(screenNavigator: ScreenNavigator, lifecycle: Lifecycle) {
+    internal fun registerScreenNavigator(screenNavigator: ScreenNavigator<Ctx>, lifecycle: Lifecycle) {
         val oldScreenNavigator = childScreenNavigators.put(screenNavigator.screenParams, screenNavigator)
         check(oldScreenNavigator == null) {
             "Screen navigator for ${screenNavigator.screenPath} already registered"
@@ -126,7 +127,7 @@ public class ScreenNavigator internal constructor(
     @PublishedApi
     internal fun <S : IntentScreenParams<I>, I : ScreenIntent> registerCustomFactory(
         screenKey: ScreenKey,
-        screenFactory: ScreenFactory<S, I, *>,
+        screenFactory: ScreenFactory<Ctx, S, I, *>,
     ) {
         // Важно, чтобы фабрики регистрировались до инициализации навигационных хостов. Иначе при восстановлении
         // состояния навигационные хосты будут восстановлены до регистрации фабрик, а следовательно не смогут создать
@@ -208,11 +209,11 @@ public class ScreenNavigator internal constructor(
     @Suppress("UNCHECKED_CAST")
     internal fun getChildScreenFactory(
         screenKey: ScreenKey,
-    ): ScreenFactory<IntentScreenParams<ScreenIntent>, ScreenIntent, *> {
+    ): ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *> {
         // Ищем среди локальных фабрик, потом, если не нашли, смотрим в глобальных фабриках.
         val factory = customFactories[screenKey]
             ?: node.children.find { it.value.screenKey == screenKey }!!.value.factory
-        return factory as ScreenFactory<IntentScreenParams<ScreenIntent>, ScreenIntent, *>
+        return factory as ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *>
     }
 
     /**
@@ -225,8 +226,8 @@ public class ScreenNavigator internal constructor(
 
     internal fun createChildNavigator(
         childScreenParams: IntentScreenParams<*>,
-        childContext: ComponentContext,
-    ): ScreenNavigator {
+        childContext: Ctx,
+    ): ScreenNavigator<Ctx> {
         val screenKey = ScreenKey(childScreenParams::class)
         val childNode = node.children.find { it.value.screenKey == screenKey }
         check(childNode != null) {

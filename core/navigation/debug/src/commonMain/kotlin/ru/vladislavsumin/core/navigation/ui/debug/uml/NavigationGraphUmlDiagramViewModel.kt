@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.ui.debug.uml
 
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
+import ru.vladislavsumin.core.collections.tree.map
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
@@ -36,15 +37,14 @@ internal class NavigationGraphUmlDiagramViewModel(
      * Переводит все [NavigationTree.Node] исходного графа навигации в граф [NavigationGraphUmlDiagramViewState.Node].
      */
     private fun mapNodesRecursively(node: LinkedTreeNode<ScreenInfo<*>>): NavigationGraphUmlNode {
-        return NavigationGraphUmlNode(
-            value = NavigationGraphUmlNode.Info(
-                name = node.value.screenKey.key.simpleName!!,
-                hasDefaultParams = node.value.defaultParams != null,
+        return node.map {
+            NavigationGraphUmlNodeInfo(
+                name = it.screenKey.key.simpleName!!,
+                hasDefaultParams = it.defaultParams != null,
                 isPartOfMainGraph = true,
-                description = node.value.description,
-                navigationHosts = node.value.navigationHosts,
-            ),
-            children = node.children.map { mapNodesRecursively(it) },
-        )
+                description = it.description,
+                navigationHosts = it.navigationHosts,
+            )
+        }
     }
 }

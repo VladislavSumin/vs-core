@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -31,7 +30,7 @@ import ru.vladislavsumin.core.navigation.NavigationHost
  */
 @Composable
 internal fun NavigationGraphUmlDiagramElementContent(
-    info: NavigationGraphUmlNode.Info,
+    info: NavigationGraphUmlNodeInfo,
     modifier: Modifier = Modifier,
 ) {
     val finalModifier = if (!info.isPartOfMainGraph) {
@@ -56,31 +55,27 @@ internal fun NavigationGraphUmlDiagramElementContent(
                 ),
         ) {
             Text(
-                info.name,
+                text = info.name,
                 style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
             )
-            if (info.isPartOfMainGraph) {
+            if (info.isPartOfMainGraph && !info.hasDefaultParams) {
                 Text(
                     "hasDefaultParams=${info.hasDefaultParams}",
-                    style = if (info.hasDefaultParams) {
-                        MaterialTheme.typography.bodyMedium
-                    } else {
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (info.description != null) {
                 Text(
                     info.description,
-                    Modifier.fillMaxWidth(),
                     style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary,
                 )
             }
             if (info.navigationHosts.isNotEmpty()) {
                 Row(
-                    modifier = Modifier.padding(top = 16.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     info.navigationHosts.forEach { navigationHost ->

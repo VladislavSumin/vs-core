@@ -31,6 +31,7 @@ public final class ru/vladislavsumin/core/collections/tree/TreeNodeKt {
 	public static final fun asSequence (Lru/vladislavsumin/core/collections/tree/TreeNode;Lkotlin/jvm/functions/Function1;)Lkotlin/sequences/Sequence;
 	public static synthetic fun asSequence$default (Lru/vladislavsumin/core/collections/tree/TreeNode;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlin/sequences/Sequence;
 	public static final fun findByPath (Lru/vladislavsumin/core/collections/tree/TreeNode;Ljava/util/List;Lkotlin/jvm/functions/Function1;)Lru/vladislavsumin/core/collections/tree/TreeNode;
+	public static final fun map (Lru/vladislavsumin/core/collections/tree/TreeNode;Lkotlin/jvm/functions/Function1;)Lru/vladislavsumin/core/collections/tree/TreeNodeImpl;
 	public static final fun nodeOf (Ljava/lang/Object;[Lru/vladislavsumin/core/collections/tree/TreeNodeImpl;)Lru/vladislavsumin/core/collections/tree/TreeNodeImpl;
 }
 

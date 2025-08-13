@@ -1,27 +1,21 @@
 package ru.vladislavsumin.core.navigation.ui.debug.uml
 
-import androidx.compose.runtime.Stable
-import ru.vladislavsumin.core.collections.tree.TreeNode
+import ru.vladislavsumin.core.collections.tree.TreeNodeImpl
 import ru.vladislavsumin.core.navigation.NavigationHost
 
-@Stable
-public data class NavigationGraphUmlNode(
-    override val value: Info,
-    override val children: Collection<NavigationGraphUmlNode>,
-) : TreeNode<NavigationGraphUmlNode.Info, NavigationGraphUmlNode> {
+public typealias NavigationGraphUmlNode = TreeNodeImpl<NavigationGraphUmlNodeInfo>
 
-    /**
-     * @param name название параметров экрана.
-     * @param hasDefaultParams есть ли у экрана параметры по умолчанию.
-     * @param isPartOfMainGraph является ли эта нода частью навигационного графа.
-     * @param description любое дополнительное описание на ваше усмотрение.
-     * @param navigationHosts хосты навигации, обрабатываемые данным экраном
-     */
-    public data class Info(
-        val name: String,
-        val hasDefaultParams: Boolean,
-        val isPartOfMainGraph: Boolean,
-        val description: String? = null,
-        val navigationHosts: Set<NavigationHost> = emptySet(),
-    )
-}
+/**
+ * @param name название параметров экрана.
+ * @param hasDefaultParams есть ли у экрана параметры по умолчанию.
+ * @param isPartOfMainGraph является ли эта нода частью навигационного графа.
+ * @param description любое дополнительное описание на ваше усмотрение.
+ * @param navigationHosts хосты навигации, обрабатываемые данным экраном
+ */
+public data class NavigationGraphUmlNodeInfo(
+    val name: String,
+    val hasDefaultParams: Boolean,
+    val isPartOfMainGraph: Boolean,
+    val description: String? = null,
+    val navigationHosts: Set<NavigationHost> = emptySet(),
+)

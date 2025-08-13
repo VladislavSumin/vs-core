@@ -12,22 +12,7 @@ public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGrap
 	public static synthetic fun create$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlDiagramComponentFactory;Lcom/arkivanov/decompose/GenericComponentContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
 }
 
-public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode : ru/vladislavsumin/core/collections/tree/TreeNode {
-	public static final field $stable I
-	public fun <init> (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;Ljava/util/Collection;)V
-	public final fun component1 ()Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
-	public final fun component2 ()Ljava/util/Collection;
-	public final fun copy (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;Ljava/util/Collection;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode;
-	public static synthetic fun copy$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode;Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;Ljava/util/Collection;ILjava/lang/Object;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getChildren ()Ljava/util/Collection;
-	public synthetic fun getValue ()Ljava/lang/Object;
-	public fun getValue ()Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info {
+public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNodeInfo {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;)V
 	public synthetic fun <init> (Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -36,8 +21,8 @@ public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGrap
 	public final fun component3 ()Z
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/util/Set;
-	public final fun copy (Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
-	public static synthetic fun copy$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;ILjava/lang/Object;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode$Info;
+	public final fun copy (Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNodeInfo;
+	public static synthetic fun copy$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNodeInfo;Ljava/lang/String;ZZLjava/lang/String;Ljava/util/Set;ILjava/lang/Object;)Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNodeInfo;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDescription ()Ljava/lang/String;
 	public final fun getHasDefaultParams ()Z

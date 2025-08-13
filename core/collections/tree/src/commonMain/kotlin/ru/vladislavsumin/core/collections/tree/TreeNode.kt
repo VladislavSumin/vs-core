@@ -72,3 +72,10 @@ public fun <T, K, N : TreeNode<T, N>> N.findByPath(path: List<K>, keySelector: (
 
     return node
 }
+
+public fun <T, V, N : TreeNode<T, N>> N.map(mapper: (T) -> V): TreeNodeImpl<V> {
+    return TreeNodeImpl(
+        value = mapper(value),
+        children = children.map { it.map(mapper) },
+    )
+}

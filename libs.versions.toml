@@ -61,7 +61,7 @@ kodein-core = { module = "org.kodein.di:kodein-di", version.ref = "kodein" }
 kodein-android = { module = "org.kodein.di:kodein-di-framework-android-x", version.ref = "kodein" }
 
 # Code generation
-kotlin-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "kotlin-ksp" }
+kotlin-ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "kotlin-ksp" }
 kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
 

@@ -8,8 +8,8 @@ public final class ru/vladislavsumin/core/navigation/ui/debug/uml/ComposableSing
 public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlDiagramComponentFactory {
 	public static final field $stable I
 	public fun <init> (Lkotlin/jvm/functions/Function0;)V
-	public final fun create (Lcom/arkivanov/decompose/ComponentContext;Lkotlin/jvm/functions/Function1;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
-	public static synthetic fun create$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlDiagramComponentFactory;Lcom/arkivanov/decompose/ComponentContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
+	public final fun create (Lcom/arkivanov/decompose/GenericComponentContext;Lkotlin/jvm/functions/Function1;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
+	public static synthetic fun create$default (Lru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlDiagramComponentFactory;Lcom/arkivanov/decompose/GenericComponentContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
 }
 
 public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlNode : ru/vladislavsumin/core/collections/tree/TreeNode {

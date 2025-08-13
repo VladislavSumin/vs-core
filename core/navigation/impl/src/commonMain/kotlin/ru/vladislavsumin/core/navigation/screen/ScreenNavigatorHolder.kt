@@ -8,4 +8,4 @@ import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
  * При этом хак является безопасным, так как [Screen] может создаваться только на главном потоке, следовательно, мы
  * исключаем вероятность гонки потоков.
  */
-internal var ScreenNavigatorHolder: ScreenNavigator? = null
+internal var ScreenNavigatorHolder: ScreenNavigator<*>? = null

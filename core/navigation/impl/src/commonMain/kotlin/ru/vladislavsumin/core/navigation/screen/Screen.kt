@@ -1,7 +1,9 @@
 package ru.vladislavsumin.core.navigation.screen
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
+import ru.vladislavsumin.core.decompose.components.GenericComponent
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.IntentScreenParams
@@ -10,11 +12,13 @@ import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 import ru.vladislavsumin.core.navigation.viewModel.IsNavigationViewModelConstructing
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
+public typealias Screen = GenericScreen<ComponentContext>
+
 /**
  * Базовая реализация экрана с набором полезных расширений.
  */
-public abstract class Screen(context: ComponentContext) :
-    Component(context), // TODO далее нужно наследоваться от GenericComponent
+public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context: Ctx) :
+    GenericComponent<Ctx>(context),
     ComposeComponent {
 
     /**
@@ -23,14 +27,14 @@ public abstract class Screen(context: ComponentContext) :
      * Доступ к контексту означает что поиск ближайшего экрана будет происходить не от корня графа, а от текущего этого
      * экрана.
      */
-    protected val navigator: ScreenNavigator = let {
+    protected val navigator: ScreenNavigator<Ctx> = let {
         val navigator = ScreenNavigatorHolder
         check(navigator != null) { "Wrong screen usage, only navigation framework may create screen instances" }
-        navigator
+        navigator as ScreenNavigator<Ctx>
     }
 
-    internal val internalNavigator: ScreenNavigator get() = navigator
-    internal val internalContext: ComponentContext get() = context
+    internal val internalNavigator: ScreenNavigator<Ctx> get() = navigator
+    internal val internalContext: Ctx get() = context
 
     /**
      * Предоставляет искусственно задержать splash экран на время загрузки контента вашего экрана.
@@ -62,8 +66,12 @@ public abstract class Screen(context: ComponentContext) :
      * Регистрирует кастомную фабрику для экрана [T]. Данный экран должен открываться в хостах навигации этого экрана.
      * **Внимание** Регистрировать фабрики нужно ДО объявления хостов навигации. Это важно при восстановлении состояния.
      */
-    protected inline fun <reified T : IntentScreenParams<I>, I : ScreenIntent> registerCustomFactory(
-        factory: ScreenFactory<T, I, Screen>,
+    protected inline fun <
+        reified T : IntentScreenParams<I>,
+        I : ScreenIntent,
+        S : GenericScreen<Ctx>,
+        > registerCustomFactory(
+        factory: ScreenFactory<Ctx, T, I, S>,
     ) {
         navigator.registerCustomFactory(ScreenKey(T::class), factory)
     }

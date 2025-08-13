@@ -49,6 +49,50 @@ object TestSources {
     )
 
     /**
+     * Тестовый экран с кастомным контекстом
+     */
+    val testScreenWithCustomContext = SourceFile.kotlin(
+        name = "TestScreen.kt",
+        contents = """
+            import com.arkivanov.decompose.GenericComponentContext
+            import ru.vladislavsumin.core.navigation.screen.GenericScreen
+            import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import androidx.compose.runtime.Composable
+            
+            interface TestComponentContext: GenericComponentContext<TestComponentContext>
+            
+            @GenerateScreenFactory
+            class TestScreen(context: TestComponentContext): GenericScreen<TestComponentContext>(context) {
+                @Composable
+                override fun Render(modifier: Modifier){}
+            }
+        """.trimIndent(),
+    )
+
+    /**
+     * Тестовый экран реализованный через typealias
+     */
+    val testAliasScreenWithCustomContext = SourceFile.kotlin(
+        name = "TestScreen.kt",
+        contents = """
+            import com.arkivanov.decompose.GenericComponentContext
+            import ru.vladislavsumin.core.navigation.screen.GenericScreen
+            import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import androidx.compose.runtime.Composable
+            
+            interface TestComponentContext: GenericComponentContext<TestComponentContext>
+            
+            typealias TestGenericScreen = GenericScreen<TestComponentContext>
+            
+            @GenerateScreenFactory
+            class TestScreen(context: TestComponentContext): TestGenericScreen(context) {
+                @Composable
+                override fun Render(modifier: Modifier){}
+            }
+        """.trimIndent(),
+    )
+
+    /**
      * Тестовый экран с одним дополнительным параметром аргументов экрана
      */
     val testScreenWithScreenParams = SourceFile.kotlin(

@@ -1,11 +1,12 @@
 package ru.vladislavsumin.core.navigation.navigator
 
+import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.collections.tree.asSequenceUp
 import ru.vladislavsumin.core.collections.tree.findByPath
 import ru.vladislavsumin.core.collections.tree.path
+import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.IntentScreenParams
-import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
@@ -15,11 +16,11 @@ import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 /**
  * Глобальный навигатор.
  */
-internal class GlobalNavigator(
-    private val navigation: Navigation,
+internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
+    private val navigation: GenericNavigation<Ctx>,
 ) {
 
-    internal lateinit var rootNavigator: ScreenNavigator
+    internal lateinit var rootNavigator: ScreenNavigator<Ctx>
 
     /**
      * Открывает экран соответствующий переданным [screenParams], при этом поиск пути производится относительно
@@ -35,13 +36,13 @@ internal class GlobalNavigator(
         val screenKey = screenParams.asKey()
 
         // Нода в графе навигации соответствующая переданному пути.
-        val fromScreenNode: LinkedTreeNode<ScreenInfo> = navigation.navigationTree.findByPath(
+        val fromScreenNode: LinkedTreeNode<ScreenInfo<Ctx>> = navigation.navigationTree.findByPath(
             path = screenPath.map { it.asScreenKey() },
             keySelector = { it.screenKey },
         )!!
 
         // Нода в графе навигации куда мы хотим перейти.
-        val destinationNode: LinkedTreeNode<ScreenInfo> = fromScreenNode
+        val destinationNode: LinkedTreeNode<ScreenInfo<Ctx>> = fromScreenNode
             .asSequenceUp()
             .first { node -> node.value.screenKey == screenKey }
 

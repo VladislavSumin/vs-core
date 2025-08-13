@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.host
 
+import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
@@ -12,7 +13,7 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.HostNavigator
-import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
 
@@ -26,13 +27,13 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
-public fun Screen.childNavigationPages(
+public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigationPages(
     navigationHost: NavigationHost,
     initialPages: () -> Pages<IntentScreenParams<*>>,
     key: String = "pages_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildPages<ConfigurationHolder, Screen>> {
+): Value<ChildPages<ConfigurationHolder, GenericScreen<Ctx>>> {
     val source = PagesNavigation<ConfigurationHolder>()
 
     val hostNavigator = PagesHostNavigator(source)

@@ -45,7 +45,21 @@ class FactoryGeneratorSymbolProcessorTest {
         factory = ALL_ARGS_SCREEN_FACTORY,
     )
 
-    fun assertScreenFactorySuccess(
+    @Test
+    fun testScreenWithGenericContext() = assertScreenFactorySuccess(
+        screenParams = TestSources.testScreenParams,
+        screen = TestSources.testScreenWithCustomContext,
+        factory = CUSTOM_CONTEXT_SCREEN_FACTORY,
+    )
+
+    @Test
+    fun testAliasScreenWithGenericContext() = assertScreenFactorySuccess(
+        screenParams = TestSources.testScreenParams,
+        screen = TestSources.testAliasScreenWithCustomContext,
+        factory = CUSTOM_CONTEXT_SCREEN_FACTORY,
+    )
+
+    private fun assertScreenFactorySuccess(
         screenParams: SourceFile,
         screen: SourceFile,
         factory: String,
@@ -61,7 +75,7 @@ class FactoryGeneratorSymbolProcessorTest {
      * Компилирует переданные файлы, применяя [FactoryGeneratorSymbolProcessorProvider].
      * Не проверяет результат компиляции.
      */
-    fun prepareCompilation(
+    private fun prepareCompilation(
         vararg sourceFiles: SourceFile,
     ): KotlinCompilation.Result {
         return KotlinCompilation().apply {
@@ -78,9 +92,24 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
+    params: TestScreenParams,
+    intents: ReceiveChannel<NoIntent>,
+  ): TestScreen = TestScreen(context, )
+}
+
+        """.trimIndent()
+
+        private val CUSTOM_CONTEXT_SCREEN_FACTORY = """
+import kotlinx.coroutines.channels.ReceiveChannel
+import ru.vladislavsumin.core.navigation.NoIntent
+import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+
+internal class TestScreenFactory() : ScreenFactory<TestComponentContext, TestScreenParams, NoIntent, TestScreen> {
+  override fun create(
+    context: TestComponentContext,
     params: TestScreenParams,
     intents: ReceiveChannel<NoIntent>,
   ): TestScreen = TestScreen(context, )
@@ -94,7 +123,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, NoIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -109,7 +138,7 @@ import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -124,7 +153,7 @@ import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -142,7 +171,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory(
   private val extra: String,
-) : ScreenFactory<TestScreenParams, TestScreenIntent, TestScreen> {
+) : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,

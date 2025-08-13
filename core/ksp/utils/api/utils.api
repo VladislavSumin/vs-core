@@ -1,3 +1,7 @@
+public final class ru/vladislavsumin/core/ksp/utils/KsClassDeclarationUtilsKt {
+	public static final fun findParametrizedSuperTypeOrNull (Lcom/google/devtools/ksp/symbol/KSClassDeclaration;Lcom/squareup/kotlinpoet/ClassName;)Lcom/squareup/kotlinpoet/ParameterizedTypeName;
+}
+
 public final class ru/vladislavsumin/core/ksp/utils/KsTypeUtilsKt {
 	public static final fun toTypeNameOrNull (Lcom/google/devtools/ksp/symbol/KSType;)Lcom/squareup/kotlinpoet/TypeName;
 }

@@ -1,6 +1,5 @@
 package ru.vladislavsumin.core.navigation.factoryGenerator
 
-import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
@@ -14,16 +13,15 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
-import com.squareup.kotlinpoet.ksp.toClassNameOrNull
 import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.vladislavsumin.core.ksp.utils.Types
+import ru.vladislavsumin.core.ksp.utils.findParametrizedSuperTypeOrNull
 import ru.vladislavsumin.core.ksp.utils.primaryConstructorWithPrivateFields
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
-import ru.vladislavsumin.core.ksp.utils.toTypeNameOrNull
 import ru.vladislavsumin.core.ksp.utils.writeTo
 
 /**
@@ -47,15 +45,6 @@ internal class FactoryGeneratorSymbolProcessor(
             return
         }
 
-        // Проверяем что экран наследуется от Screen
-        if (instance.getAllSuperTypes().find { type -> type.toClassNameOrNull() == SCREEN_CLASS } == null) {
-            logger.error(
-                message = "@GenerateScreenFactory only applicable to classes implementing Screen",
-                symbol = instance,
-            )
-            return
-        }
-
         generateFactory(instance, resolver)
     }
 
@@ -64,6 +53,7 @@ internal class FactoryGeneratorSymbolProcessor(
      *
      * @param instance инстанс который должна создавать фабрика
      */
+    @Suppress("LongMethod")
     private fun generateFactory(
         instance: KSClassDeclaration,
         resolver: Resolver,
@@ -71,9 +61,20 @@ internal class FactoryGeneratorSymbolProcessor(
         // Имя будущей фабрики.
         val name = instance.simpleName.getShortName() + "Factory"
 
+        // Ищем среди родителей GenericScreen
+        val genericScreenResolvedType = instance.findParametrizedSuperTypeOrNull(SCREEN_CLASS) ?: let {
+            logger.error(
+                message = "@GenerateScreenFactory only applicable to classes implementing Screen",
+                symbol = instance,
+            )
+            return
+        }
+
+        // Тип GenericComponentContext
+        val componentContextType = genericScreenResolvedType.typeArguments.single()
+
         // Проверяем наличие основного конструктора
-        val primaryConstructor = instance.primaryConstructor
-        if (primaryConstructor == null) {
+        val primaryConstructor = instance.primaryConstructor ?: let {
             logger.error(
                 message = "To generate screen factory screen class must have primary constructor",
                 symbol = instance,
@@ -99,12 +100,11 @@ internal class FactoryGeneratorSymbolProcessor(
 
         // Список параметров для конструктора фабрики
         val factoryConstructorParams = constructorParams
-            .filter { it.type.toTypeName() != SCREEN_CONTEXT_CLASS }
+            .filter { it.type.toTypeName() != componentContextType }
             .filter { param -> param.type.toTypeName() != screenIntentReceiveChannelType }
             .filter { param ->
                 (param.type.resolve().declaration as? KSClassDeclaration)
-                    ?.getAllSuperTypes()
-                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } != true
+                    ?.findParametrizedSuperTypeOrNull(SCREEN_PARAMS_CLASS) == null
             }
 
         // Блок кода который будет помещен в тело функции crate
@@ -122,7 +122,7 @@ internal class FactoryGeneratorSymbolProcessor(
         // Декларация функции create
         val createFunction = FunSpec.builder("create")
             .addModifiers(KModifier.OVERRIDE)
-            .addParameter(ParameterSpec.builder("context", SCREEN_CONTEXT_CLASS).build())
+            .addParameter(ParameterSpec.builder("context", componentContextType).build())
             .addParameter(ParameterSpec.builder("params", screenParamsClassDeclaration.toClassName()).build())
             .addParameter(ParameterSpec.builder("intents", screenIntentReceiveChannelType).build())
             .addCode(returnCodeBlock)
@@ -133,6 +133,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .addSuperinterface(
                 SCREEN_FACTORY_CLASS
                     .parameterizedBy(
+                        componentContextType,
                         screenParamsClassDeclaration.toClassName(),
                         screenIntentType,
                         instance.toClassName(),
@@ -153,8 +154,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .filter { param ->
                 // Пробуем найти любой класс наследующийся от ScreenParams
                 (param.type.resolve().declaration as? KSClassDeclaration)
-                    ?.getAllSuperTypes()
-                    ?.any { (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS } == true
+                    ?.findParametrizedSuperTypeOrNull(SCREEN_PARAMS_CLASS) != null
             }
             // Проверяем что таких экранов не более одного
             .also {
@@ -201,18 +201,13 @@ internal class FactoryGeneratorSymbolProcessor(
 
     private fun resolveScreenIntentType(
         screenParamsClassDeclaration: KSClassDeclaration,
-    ): ClassName = screenParamsClassDeclaration.getAllSuperTypes()
-        .find {
-            // Ищем первый объявление наследования от IntentScreenParams, этот класс типизирован нужным нам
-            // параметром
-            (it.toTypeNameOrNull() as? ParameterizedTypeName)?.rawType == SCREEN_PARAMS_CLASS
-        }!! // Сюда могут попасть только наследники IntentScreenParams поэтому find гарантированно найдет элемент.
-        .arguments.first() // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
-        .toTypeName() as ClassName
+    ): TypeName = screenParamsClassDeclaration
+        // Сюда могут попасть только наследники IntentScreenParams поэтому find гарантированно найдет элемент.
+        .findParametrizedSuperTypeOrNull(SCREEN_PARAMS_CLASS)!!
+        .typeArguments.single() // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
 
     companion object {
-        private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "Screen")
-        private val SCREEN_CONTEXT_CLASS = ClassName("com.arkivanov.decompose", "ComponentContext")
+        private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "GenericScreen")
         private val SCREEN_FACTORY_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "ScreenFactory")
         private val SCREEN_PARAMS_CLASS = ClassName("ru.vladislavsumin.core.navigation", "IntentScreenParams")
     }

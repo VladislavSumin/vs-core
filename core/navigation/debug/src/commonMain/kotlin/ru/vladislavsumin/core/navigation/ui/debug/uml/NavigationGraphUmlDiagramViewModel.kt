@@ -2,11 +2,11 @@ package ru.vladislavsumin.core.navigation.ui.debug.uml
 
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.decompose.components.ViewModel
-import ru.vladislavsumin.core.navigation.Navigation
+import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
 internal class NavigationGraphUmlDiagramViewModelFactory(
-    private val navigationProvider: () -> Navigation,
+    private val navigationProvider: () -> GenericNavigation<*>,
 ) {
     fun create(
         navigationTreeInterceptor: (NavigationGraphUmlNode) -> NavigationGraphUmlNode,
@@ -16,7 +16,7 @@ internal class NavigationGraphUmlDiagramViewModelFactory(
 }
 
 internal class NavigationGraphUmlDiagramViewModel(
-    private val navigation: Navigation,
+    private val navigation: GenericNavigation<*>,
     private val navigationTreeInterceptor: (NavigationGraphUmlNode) -> NavigationGraphUmlNode,
 ) : ViewModel() {
 
@@ -24,14 +24,18 @@ internal class NavigationGraphUmlDiagramViewModel(
 
     private fun createDebugGraph(): NavigationGraphUmlDiagramViewState {
         return NavigationGraphUmlDiagramViewState(
-            root = navigationTreeInterceptor(mapNodesRecursively(navigation.navigationTree)),
+            root = navigationTreeInterceptor(
+                mapNodesRecursively(
+                    navigation.navigationTree as LinkedTreeNode<ScreenInfo<*>>,
+                ),
+            ),
         )
     }
 
     /**
      * Переводит все [NavigationTree.Node] исходного графа навигации в граф [NavigationGraphUmlDiagramViewState.Node].
      */
-    private fun mapNodesRecursively(node: LinkedTreeNode<ScreenInfo>): NavigationGraphUmlNode {
+    private fun mapNodesRecursively(node: LinkedTreeNode<ScreenInfo<*>>): NavigationGraphUmlNode {
         return NavigationGraphUmlNode(
             value = NavigationGraphUmlNode.Info(
                 name = node.value.screenKey.key.simpleName!!,

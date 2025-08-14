@@ -1,15 +1,15 @@
 [versions]
 
 # Kotlin
-kotlin-core = "2.0.21"
-kotlin-ksp = "2.0.21-1.0.27"
+kotlin-core = "2.2.0"
+kotlin-ksp = "2.2.0-2.0.2"
 kotlin-coroutines = "1.9.0"
 kotlin-serialization = "1.7.3"
 kotlin-binaryValidator = "0.17.0"
 kotlin-compileTesting = "1.6.0"
 
 # Gradle
-gradlePlugins-android = "8.7.3"
+gradlePlugins-android = "8.11.0"
 gradlePlugins-detekt = "1.23.7"
 gradlePlugins-checkUpdates = "0.51.0"
 gradlePlugins-mavenPublish = "0.31.0"
@@ -17,7 +17,7 @@ gradlePlugins-mavenPublish = "0.31.0"
 # Other
 jb-compose = "1.7.1"
 decompose = "3.2.2"
-kotlinpoet = "2.0.0"
+kotlinpoet = "2.2.0"
 kodein = "7.23.1"
 
 # Logging

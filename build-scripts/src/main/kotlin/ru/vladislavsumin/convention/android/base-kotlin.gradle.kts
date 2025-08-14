@@ -1,8 +1,7 @@
 package ru.vladislavsumin.convention.android
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import ru.vladislavsumin.configuration.projectConfiguration
-import ru.vladislavsumin.utils.android
-import ru.vladislavsumin.utils.kotlinOptions
 
 /**
  * Расширение базовой android настройки, включает в себя настройку kotlin.
@@ -13,8 +12,8 @@ plugins {
     kotlin("android")
 }
 
-android {
-    kotlinOptions {
-        jvmTarget = project.projectConfiguration.core.jvmVersion
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget(project.projectConfiguration.core.jvmVersion))
     }
 }

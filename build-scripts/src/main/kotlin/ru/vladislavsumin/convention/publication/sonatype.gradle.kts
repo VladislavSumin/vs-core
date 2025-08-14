@@ -1,6 +1,5 @@
 package ru.vladislavsumin.convention.publication
 
-import com.vanniktech.maven.publish.SonatypeHost
 import ru.vladislavsumin.configuration.projectConfiguration
 
 /**
@@ -22,7 +21,7 @@ ext["mavenCentralPassword"] = projectConfiguration.sonatype.password
 
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
+    publishToMavenCentral(automaticRelease = false)
     signAllPublications()
 
     pom {

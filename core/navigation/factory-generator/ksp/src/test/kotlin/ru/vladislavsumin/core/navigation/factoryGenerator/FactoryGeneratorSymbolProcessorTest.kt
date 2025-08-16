@@ -1,8 +1,10 @@
 package ru.vladislavsumin.core.navigation.factoryGenerator
 
+import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import com.tschuchort.compiletesting.useKsp2
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -77,8 +79,9 @@ class FactoryGeneratorSymbolProcessorTest {
      */
     private fun prepareCompilation(
         vararg sourceFiles: SourceFile,
-    ): KotlinCompilation.Result {
+    ): JvmCompilationResult {
         return KotlinCompilation().apply {
+            useKsp2()
             sources += sourceFiles
             symbolProcessorProviders += FactoryGeneratorSymbolProcessorProvider()
             inheritClassPath = true

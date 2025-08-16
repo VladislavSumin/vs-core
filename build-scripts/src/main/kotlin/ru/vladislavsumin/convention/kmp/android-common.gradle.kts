@@ -1,5 +1,6 @@
 package ru.vladislavsumin.convention.kmp
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import ru.vladislavsumin.configuration.projectConfiguration
 import ru.vladislavsumin.utils.android
 
@@ -19,10 +20,8 @@ plugins {
 kotlin {
     androidTarget {
         // Настраиваем версию jvm для сборки андроид модулей.
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = project.projectConfiguration.core.jvmVersion
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(project.projectConfiguration.core.jvmVersion))
         }
     }
 }

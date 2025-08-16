@@ -1,31 +1,31 @@
 [versions]
 
 # Kotlin
-kotlin-core = "2.0.21"
-kotlin-ksp = "2.0.21-1.0.27"
-kotlin-coroutines = "1.9.0"
-kotlin-serialization = "1.7.3"
-kotlin-binaryValidator = "0.17.0"
-kotlin-compileTesting = "1.6.0"
+kotlin-core = "2.2.0"
+kotlin-ksp = "2.2.0-2.0.2"
+kotlin-coroutines = "1.10.2"
+kotlin-serialization = "1.9.0"
+kotlin-binaryValidator = "0.18.1"
+kotlin-compileTesting = "0.8.0"
 
 # Gradle
-gradlePlugins-android = "8.7.3"
-gradlePlugins-detekt = "1.23.7"
+gradlePlugins-android = "8.11.0"
+gradlePlugins-detekt = "1.23.8"
 gradlePlugins-checkUpdates = "0.51.0"
-gradlePlugins-mavenPublish = "0.31.0"
+gradlePlugins-mavenPublish = "0.34.0"
 
 # Other
-jb-compose = "1.7.1"
-decompose = "3.2.2"
-kotlinpoet = "2.0.0"
-kodein = "7.23.1"
+jb-compose = "1.8.2"
+decompose = "3.3.0"
+kotlinpoet = "2.2.0"
+kodein = "7.26.1"
 
 # Logging
-logging-log4j = "2.24.3"
-logging-slf4j = "2.0.16"
+logging-log4j = "2.25.1"
+logging-slf4j = "2.0.17"
 
 # Testing
-testing-mockk = "1.13.14"
+testing-mockk = "1.14.5"
 
 [libraries]
 
@@ -48,7 +48,7 @@ kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-te
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-serialization" }
-kotlin-compileTesting-ksp = { module = "com.github.tschuchortdev:kotlin-compile-testing-ksp", version.ref = "kotlin-compileTesting" }
+kotlin-compileTesting-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kotlin-compileTesting" }
 
 # Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }

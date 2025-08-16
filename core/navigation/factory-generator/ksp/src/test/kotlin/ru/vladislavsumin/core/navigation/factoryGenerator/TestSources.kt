@@ -39,6 +39,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.screen.Screen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             
             @GenerateScreenFactory
             class TestScreen(context: ComponentContext): Screen(context) {
@@ -58,6 +59,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.screen.GenericScreen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             
             interface TestComponentContext: GenericComponentContext<TestComponentContext>
             
@@ -79,6 +81,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.screen.GenericScreen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             
             interface TestComponentContext: GenericComponentContext<TestComponentContext>
             
@@ -102,6 +105,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.screen.Screen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             
             @GenerateScreenFactory
             class TestScreen(
@@ -124,6 +128,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.screen.Screen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             import kotlinx.coroutines.channels.ReceiveChannel
             
             @GenerateScreenFactory
@@ -147,6 +152,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.screen.Screen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             import kotlinx.coroutines.channels.ReceiveChannel
             
             @GenerateScreenFactory
@@ -171,6 +177,7 @@ object TestSources {
             import ru.vladislavsumin.core.navigation.screen.Screen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
             import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             import kotlinx.coroutines.channels.ReceiveChannel
             
             @GenerateScreenFactory

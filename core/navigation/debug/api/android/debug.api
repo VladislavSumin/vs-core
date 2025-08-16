@@ -1,8 +1,7 @@
 public final class ru/vladislavsumin/core/navigation/ui/debug/uml/ComposableSingletons$NavigationGraphUmlDiagramContentKt {
 	public static final field INSTANCE Lru/vladislavsumin/core/navigation/ui/debug/uml/ComposableSingletons$NavigationGraphUmlDiagramContentKt;
-	public static field lambda-1 Lkotlin/jvm/functions/Function3;
 	public fun <init> ()V
-	public final fun getLambda-1$debug_release ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$-273381946$debug_release ()Lkotlin/jvm/functions/Function3;
 }
 
 public final class ru/vladislavsumin/core/navigation/ui/debug/uml/NavigationGraphUmlDiagramComponentFactory {

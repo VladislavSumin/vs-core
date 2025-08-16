@@ -10,6 +10,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
@@ -83,6 +84,7 @@ internal class FactoryGeneratorSymbolProcessor(
             )
             .addModifiers(KModifier.INTERNAL)
             .addFunction(createFunction)
+            .addOriginatingKSFile(instance.containingFile!!)
             .build()
             .writeTo(codeGenerator, instance.packageName.asString())
     }

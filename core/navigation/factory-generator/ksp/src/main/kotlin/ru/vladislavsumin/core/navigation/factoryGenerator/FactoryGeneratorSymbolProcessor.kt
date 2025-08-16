@@ -16,6 +16,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import ru.vladislavsumin.core.ksp.utils.Types
@@ -144,6 +145,7 @@ internal class FactoryGeneratorSymbolProcessor(
             )
             .addModifiers(KModifier.INTERNAL)
             .addFunction(createFunction)
+            .addOriginatingKSFile(instance.containingFile!!)
             .build()
             .writeTo(codeGenerator, instance.packageName.asString())
     }

@@ -14,7 +14,7 @@ plugins {
 
 ext["signing.keyId"] = projectConfiguration.signing.keyId
 ext["signing.password"] = projectConfiguration.signing.password
-ext["signing.secretKeyRingFile"] = projectConfiguration.signing.secretKeyRingFile
+ext["signing.secretKeyRingFile"] = File(projectConfiguration.signing.secretKeyRingFile).absolutePath
 
 //ext["mavenCentralUsername"] = projectConfiguration.sonatype.username
 //ext["mavenCentralPassword"] = projectConfiguration.sonatype.password

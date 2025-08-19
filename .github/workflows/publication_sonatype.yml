@@ -10,8 +10,8 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    runs-on: macos-15
+    timeout-minutes: 40
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -34,9 +34,11 @@ jobs:
         uses: ./.github/actions/run_gradle
         env:
           ru.vs.signing.password: ${{ secrets.SONATYPE_GPG_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
         with:
           gradle_command: >-
             -Pru.vs.version={{ inputs.version }}
             -Pru.vs.signing.keyId={{ vars.SONATYPE_GPG_KEY_ID }}
             -Pru.vs.signing.secretKeyRingFile=~/sonatype.gpg
-            :core:decompose:components:publishToMavenLocal
+            publishToMavenCentral

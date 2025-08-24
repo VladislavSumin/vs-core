@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.factoryGenerator
 
 import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -20,14 +21,20 @@ import ru.vladislavsumin.core.ksp.utils.writeTo
 
 internal class FactoryGeneratorSymbolProcessor(
     private val codeGenerator: CodeGenerator,
+    private val logger: KSPLogger,
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> =
         resolver.processAnnotated<GenerateFactory>(::processGenerateFactoryAnnotation)
 
     private fun processGenerateFactoryAnnotation(instance: KSAnnotated) {
-        check(instance is KSClassDeclaration) { "Only KSClassDeclaration supported, but $instance was received" }
-        val primaryConstructor = instance.primaryConstructor
-        checkNotNull(primaryConstructor) { "For generate factory class must have primary constructor" }
+        // Проверяем тип объекта к которому применена аннотация
+        if (instance !is KSClassDeclaration) {
+            logger.error(
+                message = "Is not a class. @GenerateFactory applicable only to classes",
+                symbol = instance,
+            )
+            return
+        }
         generateFactory(instance)
     }
 
@@ -42,16 +49,23 @@ internal class FactoryGeneratorSymbolProcessor(
         // Имя будущей фабрики.
         val name = instance.simpleName.getShortName() + "Factory"
 
-        // Список параметров в основном конструкторе.
-        val constructorParams = instance.primaryConstructor!!.parameters
+        val primaryConstructor = instance.primaryConstructor ?: let {
+            logger.error(
+                message = "For generate factory class must have primary constructor",
+                symbol = instance,
+            )
+            return
+        }
 
-        val factoryConstructorParams =
-            constructorParams
-                .filter {
-                    it.annotations
-                        .map { it.toAnnotationSpec().typeName }
-                        .none { it == BY_CREATE_ANNOTATION }
-                }
+        // Список параметров в основном конструкторе.
+        val constructorParams = primaryConstructor.parameters
+
+        val factoryConstructorParams = constructorParams
+            .filter { constructorParam ->
+                constructorParam.annotations
+                    .map { it.toAnnotationSpec().typeName }
+                    .none { it == BY_CREATE_ANNOTATION }
+            }
 
         val functionParams = constructorParams - factoryConstructorParams
 

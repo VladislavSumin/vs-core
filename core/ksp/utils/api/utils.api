@@ -26,6 +26,7 @@ public final class ru/vladislavsumin/core/ksp/utils/Types$Coroutines {
 	public final fun getFlow ()Lcom/squareup/kotlinpoet/ClassName;
 	public final fun getGlobalScope ()Lcom/squareup/kotlinpoet/ClassName;
 	public final fun getReceiveChannel ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getStateFlow ()Lcom/squareup/kotlinpoet/ClassName;
 }
 
 public final class ru/vladislavsumin/core/ksp/utils/Types$Serialization {

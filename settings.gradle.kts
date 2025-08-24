@@ -17,6 +17,7 @@ include(":core:di")
 include(":core:factory-generator:api")
 include(":core:factory-generator:ksp")
 
+include(":core:ksp:test")
 include(":core:ksp:utils")
 
 include(":core:logger:api")

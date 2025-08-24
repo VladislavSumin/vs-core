@@ -1,0 +1,8 @@
+public final class ru/vladislavsumin/core/ksp/test/KotlinCompilationExtKt {
+	public static final fun getKspSourceFileDirectory (Lcom/tschuchort/compiletesting/JvmCompilationResult;)Ljava/io/File;
+}
+
+public final class ru/vladislavsumin/core/ksp/test/PrepareCompilationKt {
+	public static final fun prepareCompilation (Lcom/google/devtools/ksp/processing/SymbolProcessorProvider;[Lcom/tschuchort/compiletesting/SourceFile;)Lcom/tschuchort/compiletesting/JvmCompilationResult;
+}
+

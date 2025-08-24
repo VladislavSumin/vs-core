@@ -1,11 +1,10 @@
 package ru.vladislavsumin.core.navigation.factoryGenerator
 
-import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.symbolProcessorProviders
-import com.tschuchort.compiletesting.useKsp2
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import ru.vladislavsumin.core.ksp.test.kspSourceFileDirectory
+import ru.vladislavsumin.core.ksp.test.prepareCompilation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -66,26 +65,11 @@ class FactoryGeneratorSymbolProcessorTest {
         screen: SourceFile,
         factory: String,
     ) {
-        val compilationResult = prepareCompilation(screenParams, screen)
+        val compilationResult = prepareCompilation(FactoryGeneratorSymbolProcessorProvider(), screenParams, screen)
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.OK)
         val screenFile = compilationResult.kspSourceFileDirectory.listFiles().find { it.name == "TestScreenFactory.kt" }
         assertNotNull(screenFile)
         assertEquals(factory, screenFile.readText())
-    }
-
-    /**
-     * Компилирует переданные файлы, применяя [FactoryGeneratorSymbolProcessorProvider].
-     * Не проверяет результат компиляции.
-     */
-    private fun prepareCompilation(
-        vararg sourceFiles: SourceFile,
-    ): JvmCompilationResult {
-        return KotlinCompilation().apply {
-            useKsp2()
-            sources += sourceFiles
-            symbolProcessorProviders += FactoryGeneratorSymbolProcessorProvider()
-            inheritClassPath = true
-        }.compile()
     }
 
     companion object {

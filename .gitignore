@@ -4,6 +4,7 @@
 /.idea
 
 /build-scripts/.gradle
+/build-scripts/.kotlin
 
 **/build
 

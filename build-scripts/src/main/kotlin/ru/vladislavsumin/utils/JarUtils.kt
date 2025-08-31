@@ -39,7 +39,6 @@ fun KotlinJvmTarget.fatJar(
             this.duplicatesStrategy = duplicatesStrategy
 
             val dependencies = main.runtimeDependencyFiles.map {
-                check(it.exists()) { "${it.absolutePath} not exists" }
                 if (it.isDirectory) it else project.zipTree(it)
             }
             from(dependencies)

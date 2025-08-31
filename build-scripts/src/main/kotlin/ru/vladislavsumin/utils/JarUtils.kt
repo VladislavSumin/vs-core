@@ -38,16 +38,11 @@ fun KotlinJvmTarget.fatJar(
 
             this.duplicatesStrategy = duplicatesStrategy
 
-            // doFirst is workaround
-            // from can`t accept provider as argument, see https://github.com/gradle/gradle/issues/22637
-            // we need to calculate dependencies before tusk run (not at configuration time)
-            doFirst {
-                val dependencies = main.runtimeDependencyFiles.map {
-                    check(it.exists()) { "${it.absolutePath} not exists" }
-                    if (it.isDirectory) it else project.zipTree(it)
-                }
-                from(dependencies)
+            val dependencies = main.runtimeDependencyFiles.map {
+                check(it.exists()) { "${it.absolutePath} not exists" }
+                if (it.isDirectory) it else project.zipTree(it)
             }
+            from(dependencies)
 
             exclude("META-INF/LICENSE")
             exclude("META-INF/DEPENDENCIES")

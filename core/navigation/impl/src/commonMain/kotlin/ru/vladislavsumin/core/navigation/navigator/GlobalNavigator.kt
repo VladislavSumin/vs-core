@@ -76,7 +76,7 @@ internal class GlobalNavigator(
                 }
             for (path in finalPaths) {
                 if (rootNavigator.closeInsideThisScreen(ScreenPath(path.drop(1)))) {
-                    return
+                    return@accept
                 }
             }
         }

@@ -21,6 +21,7 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
 ) {
 
     internal lateinit var rootNavigator: ScreenNavigator<Ctx>
+    private val relay = UnsafeRelay()
 
     /**
      * Открывает экран соответствующий переданным [screenParams], при этом поиск пути производится относительно
@@ -28,8 +29,10 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
      */
     fun open(screenPath: ScreenPath, screenParams: IntentScreenParams<*>, intent: ScreenIntent?) {
         NavigationLogger.i { "Open screen ${screenParams::class.simpleName}" }
-        val path = createOpenPath(screenPath, screenParams)
-        rootNavigator.openInsideThisScreen(path, intent)
+        relay.accept {
+            val path = createOpenPath(screenPath, screenParams)
+            rootNavigator.openInsideThisScreen(path, intent)
+        }
     }
 
     internal fun createOpenPath(screenPath: ScreenPath, screenParams: IntentScreenParams<*>): ScreenPath {
@@ -55,27 +58,56 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
 
     fun close(screenPath: ScreenPath, screenParams: IntentScreenParams<*>) {
         NavigationLogger.i { "Close screen ${screenParams::class.simpleName}" }
+        relay.accept {
+            // Находим ноду соответствующую экрану из которого пришел запрос.
+            val currentNode = navigation.navigationTree.findByPath(
+                path = screenPath.map { it.asScreenKey() },
+                keySelector = { it.screenKey },
+            )!!
 
-        // Находим ноду соответствующую экрану из которого пришел запрос.
-        val currentNode = navigation.navigationTree.findByPath(
-            path = screenPath.map { it.asScreenKey() },
-            keySelector = { it.screenKey },
-        )!!
-
-        // Ищем экраны относительно текущего для определения порядка попыток закрытия.
-        val finalPaths = currentNode.asSequenceUp()
-            .filter { it.value.screenKey == screenParams.asKey() }
-            .map { node ->
-                val path = node.path()
-                    .dropLast(1) // убираем текущую ноду, так как ее параметры у нас в screenParams
-                    .map { it.value.screenKey }
-                    .map { ScreenPath.PathElement.Key(it) }
-                (ScreenPath(path) + screenParams).reachFrom(screenPath)
+            // Ищем экраны относительно текущего для определения порядка попыток закрытия.
+            val finalPaths = currentNode.asSequenceUp()
+                .filter { it.value.screenKey == screenParams.asKey() }
+                .map { node ->
+                    val path = node.path()
+                        .dropLast(1) // убираем текущую ноду, так как ее параметры у нас в screenParams
+                        .map { it.value.screenKey }
+                        .map { ScreenPath.PathElement.Key(it) }
+                    (ScreenPath(path) + screenParams).reachFrom(screenPath)
+                }
+            for (path in finalPaths) {
+                if (rootNavigator.closeInsideThisScreen(ScreenPath(path.drop(1)))) {
+                    return@accept
+                }
             }
-        for (path in finalPaths) {
-            if (rootNavigator.closeInsideThisScreen(ScreenPath(path.drop(1)))) {
+        }
+    }
+}
+
+/**
+ * Упрощенный Relay из навигации Аркадия Иванова.
+ * Служит для той же цели. Предотвратить навигацию внутри навигации.
+ */
+private class UnsafeRelay {
+    private val queue = ArrayDeque<() -> Unit>()
+    private var isDraining = false
+
+    fun accept(value: () -> Unit) {
+        queue.addLast(value)
+        if (isDraining) {
+            return
+        }
+        isDraining = true
+        drainLoop()
+    }
+
+    private fun drainLoop() {
+        while (true) {
+            if (queue.isEmpty()) {
+                isDraining = false
                 return
             }
+            queue.removeFirst().invoke()
         }
     }
 }

@@ -20,7 +20,7 @@ internal class GlobalNavigator(
 ) {
 
     internal lateinit var rootNavigator: ScreenNavigator
-    private val relay = UnsafeRelay()
+    internal val relay = UnsafeRelay()
 
     /**
      * Открывает экран соответствующий переданным [screenParams], при этом поиск пути производится относительно
@@ -87,7 +87,7 @@ internal class GlobalNavigator(
  * Упрощенный Relay из навигации Аркадия Иванова.
  * Служит для той же цели. Предотвратить навигацию внутри навигации.
  */
-private class UnsafeRelay {
+internal class UnsafeRelay {
     private val queue = ArrayDeque<() -> Unit>()
     private var isDraining = false
 

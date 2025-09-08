@@ -15,6 +15,7 @@ import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.GlobalNavigator
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 import ru.vladislavsumin.core.navigation.screen.DefaultScreenContext
+import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenContext
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
@@ -66,9 +67,13 @@ public fun ComponentContext.childNavigationRoot(
         childContext,
     )
 
-    // TODO поддержать события для root экрана.
-    val screen = rootScreenFactory.create(rootScreenContext, params, Channel())
-    rootScreenNavigator.screen = screen
+    // Тут relay гарантированно пуст!
+    var screen: Screen? = null
+    globalNavigator.relay.accept {
+        // TODO поддержать события для root экрана.
+        screen = rootScreenFactory.create(rootScreenContext, params, Channel())
+        rootScreenNavigator.screen = screen
+    }
 
     handleNavigation(navigation, rootScreenContext)
 
@@ -80,7 +85,7 @@ public fun ComponentContext.childNavigationRoot(
         }
     }
 
-    return screen
+    return screen!!
 }
 
 private fun handleInitialNavigationEvent(

@@ -14,6 +14,7 @@ import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.GlobalNavigator
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
@@ -60,14 +61,20 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
 
     globalNavigator.rootNavigator = rootScreenNavigator
 
-    val screen = try {
-        ScreenNavigatorHolder = rootScreenNavigator
-        // TODO поддержать события для root экрана.
-        rootScreenFactory.create(childContext, params, Channel())
-    } finally {
-        ScreenNavigatorHolder = null
+    // При создании root хоста relay внутри globalNavigator гарантированно пуст, поэтому мы можем быть уверены,
+    // что установка значения сюда пройдет синхронно.
+    var screen: GenericScreen<Ctx>? = null
+
+    globalNavigator.protectRestoreState {
+        screen = try {
+            ScreenNavigatorHolder = rootScreenNavigator
+            // TODO поддержать события для root экрана.
+            rootScreenFactory.create(childContext, params, Channel())
+        } finally {
+            ScreenNavigatorHolder = null
+        }
+        rootScreenNavigator.screen = screen
     }
-    rootScreenNavigator.screen = screen
 
     handleNavigation(navigation, rootScreenNavigator)
 
@@ -79,7 +86,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
         }
     }
 
-    return screen
+    return screen ?: error("Unreachable, screen can't be null")
 }
 
 private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(

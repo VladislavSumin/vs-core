@@ -20,7 +20,6 @@ kotlin {
 
             // Compose UI, не содержит в себе материал компоненты, только базовые элементы
             implementation(compose.ui)
-
         }
         commonTest.dependencies {
             @OptIn(ExperimentalComposeLibrary::class)

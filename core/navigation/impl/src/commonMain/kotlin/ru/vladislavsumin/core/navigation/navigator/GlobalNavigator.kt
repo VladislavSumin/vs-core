@@ -35,7 +35,7 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
         }
     }
 
-    internal fun createOpenPath(screenPath: ScreenPath, screenParams: IntentScreenParams<*>): ScreenPath {
+    fun createOpenPath(screenPath: ScreenPath, screenParams: IntentScreenParams<*>): ScreenPath {
         val screenKey = screenParams.asKey()
 
         // Нода в графе навигации соответствующая переданному пути.
@@ -81,6 +81,15 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
                 }
             }
         }
+    }
+
+    /**
+     * При восстановлении состояния экранов тоже может произойти навигационное событие внутри создания состояний
+     * decompose. Такое поведение недопустимо в нашем случае поэтому запускаем восстановление через [relay], тогда
+     * при возникновении навигационных событий они будут выполнены только после завершения восстановления.
+     */
+    fun protectRestoreState(action: () -> Unit) {
+        relay.accept(action)
     }
 }
 

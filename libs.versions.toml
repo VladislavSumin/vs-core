@@ -45,6 +45,8 @@ gradlePlugins-mavenPublish = { module = "com.vanniktech.maven.publish:com.vannik
 # VS Core
 vs-core-collections-tree = { module = "ru.vladislavsumin.core.collections:tree", version.ref = "vs-core" }
 
+vs-core-coroutines-utils = { module = "ru.vladislavsumin.core.coroutines:utils", version.ref = "vs-core" }
+
 vs-core-decompose-components = { module = "ru.vladislavsumin.core.decompose:components", version.ref = "vs-core" }
 vs-core-decompose-compose = { module = "ru.vladislavsumin.core.decompose:compose", version.ref = "vs-core" }
 vs-core-decompose-test = { module = "ru.vladislavsumin.core.decompose:test", version.ref = "vs-core" }

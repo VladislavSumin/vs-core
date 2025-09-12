@@ -8,6 +8,8 @@ rootProject.name = "vs-core"
 
 include(":core:collections:tree")
 
+include(":core:coroutines:utils")
+
 include(":core:decompose:components")
 include(":core:decompose:compose")
 include(":core:decompose:test")

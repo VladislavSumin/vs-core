@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.map
 
 /**
  * Аналог функции [Flow.map], но для [StateFlow] с возвратом [StateFlow] вместо [Flow].
+ * Issue на github https://github.com/Kotlin/kotlinx.coroutines/issues/2631
  */
 public inline fun <T1, R> StateFlow<T1>.mapState(crossinline transform: (a: T1) -> R): StateFlow<R> {
     return DerivedStateFlow(

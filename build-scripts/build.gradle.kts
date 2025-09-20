@@ -10,6 +10,7 @@ dependencies {
     api(files(vsCoreLibs.javaClass.superclass.protectionDomain.codeSource.location))
 
     implementation(vsCoreLibs.gradlePlugins.kotlin.core)
+    implementation(vsCoreLibs.gradlePlugins.kotlin.ksp)
     implementation(vsCoreLibs.gradlePlugins.kotlin.compose.compiler)
     implementation(vsCoreLibs.gradlePlugins.kotlin.serialization)
     implementation(vsCoreLibs.gradlePlugins.kotlin.binaryValidator)

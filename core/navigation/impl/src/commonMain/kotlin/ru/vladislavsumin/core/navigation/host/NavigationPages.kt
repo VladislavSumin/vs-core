@@ -73,8 +73,6 @@ private class PagesHostNavigator(
     private val pagesNavigation: PagesNavigation<ConfigurationHolder>,
 ) : HostNavigator {
     override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
-        // Переключение между экранами, определёнными в initialPages
-        // Если экран не найден, то активный экран не изменяется
         pagesNavigation.navigate(
             transformer = { pages ->
                 val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }
@@ -84,7 +82,12 @@ private class PagesHostNavigator(
                     }
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
-                    pages
+                    val newItem = ConfigurationHolder(params)
+                    if (intent != null) {
+                        newItem.intents.trySend(intent).getOrThrow()
+                    }
+                    val newItems = pages.items + newItem
+                    Pages(newItems, newItems.size - 1)
                 }
             },
             onComplete = { _, _ -> },
@@ -92,8 +95,6 @@ private class PagesHostNavigator(
     }
 
     override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
-        // Если экрана с таким ключом определён в initialPages, то активируем его
-        // иначе пытаемся активировать экран использую defaultParams
         pagesNavigation.navigate(
             transformer = { pages ->
                 val indexOfScreen = pages.items.map { it.screenParams.asKey() }.indexOf(screenKey)
@@ -104,7 +105,9 @@ private class PagesHostNavigator(
                     if (indexOfDefaultScreen >= 0) {
                         pages.copy(selectedIndex = indexOfDefaultScreen)
                     } else {
-                        pages
+                        val newItem = ConfigurationHolder(defaultParams())
+                        val newItems = pages.items + newItem
+                        Pages(newItems, newItems.size - 1)
                     }
                 }
             },
@@ -113,11 +116,73 @@ private class PagesHostNavigator(
     }
 
     override fun close(params: IntentScreenParams<*>): Boolean {
-        return false
+        var isSuccess: Boolean? = null
+        pagesNavigation.navigate(
+            transformer = { pages ->
+                val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }
+                if (indexOfScreen >= 0) {
+                    isSuccess = true
+                    val newItems = pages.items.toMutableList()
+                    newItems.removeAt(indexOfScreen)
+                    val newIndex = if (indexOfScreen == pages.selectedIndex) {
+                        // Если мы закрываем текущую вкладку, то пробуем сначала индекс права, а если его нет, то слева.
+                        if (indexOfScreen == newItems.size) {
+                            pages.selectedIndex - 1
+                        } else {
+                            pages.selectedIndex
+                        }
+                    } else {
+                        // Если мы удаляем не текущую открытую вкладку, то сохраняем новый индекс открытой вкладки
+                        if (indexOfScreen < pages.selectedIndex) {
+                            pages.selectedIndex - 1
+                        } else {
+                            pages.selectedIndex
+                        }
+                    }
+                    pages.copy(items = newItems, selectedIndex = newIndex)
+                } else {
+                    isSuccess = false
+                    pages
+                }
+            },
+            onComplete = { _, _ -> },
+        )
+        return isSuccess ?: error("Unreachable")
     }
 
     override fun close(screenKey: ScreenKey): Boolean {
-        return false
+        var isSuccess: Boolean? = null
+        pagesNavigation.navigate(
+            transformer = { pages ->
+                val indexOfScreen = pages.items.indexOfFirst { it.screenParams.asKey() == screenKey }
+                if (indexOfScreen >= 0) {
+                    isSuccess = true
+                    val newItems = pages.items.toMutableList()
+                    newItems.removeAt(indexOfScreen)
+                    val newIndex = if (indexOfScreen == pages.selectedIndex) {
+                        // Если мы закрываем текущую вкладку, то пробуем сначала индекс права, а если его нет, то слева.
+                        if (indexOfScreen == newItems.size) {
+                            pages.selectedIndex - 1
+                        } else {
+                            pages.selectedIndex
+                        }
+                    } else {
+                        // Если мы удаляем не текущую открытую вкладку, то сохраняем новый индекс открытой вкладки
+                        if (indexOfScreen < pages.selectedIndex) {
+                            pages.selectedIndex - 1
+                        } else {
+                            pages.selectedIndex
+                        }
+                    }
+                    pages.copy(items = newItems, selectedIndex = newIndex)
+                } else {
+                    isSuccess = false
+                    pages
+                }
+            },
+            onComplete = { _, _ -> },
+        )
+        return isSuccess ?: error("Unreachable")
     }
 }
 

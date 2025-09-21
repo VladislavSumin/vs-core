@@ -9,6 +9,7 @@ import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.utils.asValue
@@ -59,15 +60,22 @@ public abstract class GenericComponent<Ctx : GenericComponentContext<Ctx>>(prote
             // не нужно.
             val state = context.stateKeeper.consume(key, SerializableContainer.serializer())
             val viewModelStateKeeperDispatcher = StateKeeperDispatcher(state)
+            val viewModelUiLifecycle = MutableStateFlow(context.lifecycle.state)
 
             val viewModel = try {
                 WhileConstructedViewModelStateKeeper = viewModelStateKeeperDispatcher
+                WhileConstructedViewModelUiLifecycle = viewModelUiLifecycle
                 factory()
             } finally {
                 WhileConstructedViewModelStateKeeper = null
+                WhileConstructedViewModelUiLifecycle = null
             }
 
-            ViewModelHolder(viewModel, viewModelStateKeeperDispatcher)
+            ViewModelHolder(
+                viewModel = viewModel,
+                viewModelStateKeeper = viewModelStateKeeperDispatcher,
+                viewModelUiLifecycle = StateFlowLifecycleCallbacks(viewModelUiLifecycle),
+            )
         }
 
         // В отличие от кейса восстановления данных, сохранять данные вью модели нужно при сохранении данных экрана,
@@ -77,6 +85,10 @@ public abstract class GenericComponent<Ctx : GenericComponentContext<Ctx>>(prote
             key = key,
             strategy = SerializableContainer.serializer(),
         ) { viewModelHolder.viewModelStateKeeper.save() }
+
+        // Связываем lifecycle текущего компонента с lifecycle viewModel
+        context.lifecycle.subscribe(viewModelHolder.viewModelUiLifecycle)
+
         return viewModelHolder.viewModel
     }
 }

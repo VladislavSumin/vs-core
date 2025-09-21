@@ -1,6 +1,8 @@
 package ru.vladislavsumin.core.decompose.components
 
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.StateKeeper
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Грязный хак с передачей [StateKeeper] в [ViewModel], необходим потому что мы не хотим явно пробрасывать [StateKeeper]
@@ -10,3 +12,4 @@ import com.arkivanov.essenty.statekeeper.StateKeeper
  * исключаем вероятность гонки потоков.
  */
 internal var WhileConstructedViewModelStateKeeper: StateKeeper? = null
+internal var WhileConstructedViewModelUiLifecycle: StateFlow<Lifecycle.State>? = null

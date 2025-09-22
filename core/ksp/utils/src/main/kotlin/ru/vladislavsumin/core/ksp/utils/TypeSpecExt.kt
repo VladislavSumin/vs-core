@@ -16,7 +16,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
 public fun TypeSpec.writeTo(
     codeGenerator: CodeGenerator,
     packageName: String,
-    aggregating: Boolean = false,
+    aggregating: Boolean = true,
 ) {
     FileSpec.builder(
         packageName,

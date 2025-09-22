@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -88,12 +91,31 @@ public abstract class ViewModel {
      * вниз по цепочке.
      */
     protected fun <T> Flow<T>.resubscribeOnUiLifecycle(lifecycleState: Lifecycle.State): Flow<T> {
-        return uiLifecycle.flatMapLatest { state ->
-            if (state >= lifecycleState) {
-                this
-            } else {
-                emptyFlow()
+        return uiLifecycle
+            .map { it >= lifecycleState }
+            .distinctUntilChanged()
+            .flatMapLatest {
+                if (it) {
+                    this
+                } else {
+                    emptyFlow()
+                }
             }
+    }
+
+    /**
+     * Аналогична функции [resubscribeOnUiLifecycle] но для launch.
+     */
+    protected fun relaunchOnUiLifecycle(lifecycleState: Lifecycle.State, block: suspend () -> Unit) {
+        launch {
+            uiLifecycle
+                .map { it >= lifecycleState }
+                .distinctUntilChanged()
+                .collectLatest {
+                    if (it) {
+                        block()
+                    }
+                }
         }
     }
 

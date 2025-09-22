@@ -10,6 +10,7 @@ import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 internal class ViewModelHolder<T : ViewModel>(
     val viewModel: T,
     val viewModelStateKeeper: StateKeeperDispatcher,
+    val viewModelUiLifecycle: StateFlowLifecycleCallbacks,
 ) : InstanceKeeper.Instance {
     override fun onDestroy() = viewModel.onDestroy()
 }

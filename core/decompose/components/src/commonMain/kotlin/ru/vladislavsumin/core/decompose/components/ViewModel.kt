@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.decompose.components
 
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -35,6 +38,17 @@ public abstract class ViewModel {
         val keeper = WhileConstructedViewModelStateKeeper ?: throw WrongViewModelUsageException()
         WhileConstructedViewModelStateKeeper = null
         keeper
+    }
+
+    /**
+     * Жизненный цикл аналогичный компоненту создавшему эту модель, но переживающий его пересоздание.
+     * Относительно [Lifecycle] Аркадия добавляется еще один возможный переход
+     * [Lifecycle.State.DESTROYED] -> [Lifecycle.State.INITIALIZED]
+     */
+    private val uiLifecycle: StateFlow<Lifecycle.State> = let {
+        val lifecycle = WhileConstructedViewModelUiLifecycle ?: throw WrongViewModelUsageException()
+        WhileConstructedViewModelUiLifecycle = null
+        lifecycle
     }
 
     /**
@@ -65,6 +79,22 @@ public abstract class ViewModel {
         block: suspend CoroutineScope.() -> Unit,
     ) {
         viewModelScope.launch(context, start, block)
+    }
+
+    /**
+     * Остается подписанным на вышестоящий [Flow] пока [uiLifecycle] удовлетворяет переданному [lifecycleState].
+     * При изменении [uiLifecycle] на более низкий, отписывается от вышестоящего [Flow], но не закрывает нижестоящий.
+     * После восстановления [uiLifecycle] обратно подпишется на вышестоящий [Flow] и будет пересылать все его события
+     * вниз по цепочке.
+     */
+    protected fun <T> Flow<T>.resubscribeOnUiLifecycle(lifecycleState: Lifecycle.State): Flow<T> {
+        return uiLifecycle.flatMapLatest { state ->
+            if (state >= lifecycleState) {
+                this
+            } else {
+                emptyFlow()
+            }
+        }
     }
 
     /**

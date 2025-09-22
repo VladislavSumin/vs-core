@@ -14,6 +14,7 @@ public abstract class ru/vladislavsumin/core/decompose/components/ViewModel {
 	protected final fun getViewModelScope ()Lkotlinx/coroutines/CoroutineScope;
 	protected final fun launch (Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lru/vladislavsumin/core/decompose/components/ViewModel;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+	protected final fun resubscribeOnUiLifecycle (Lkotlinx/coroutines/flow/Flow;Lcom/arkivanov/essenty/lifecycle/Lifecycle$State;)Lkotlinx/coroutines/flow/Flow;
 	protected final fun stateIn (Lkotlinx/coroutines/flow/Flow;Ljava/lang/Object;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;
 	public static synthetic fun stateIn$default (Lru/vladislavsumin/core/decompose/components/ViewModel;Lkotlinx/coroutines/flow/Flow;Ljava/lang/Object;Lkotlinx/coroutines/flow/SharingStarted;ILjava/lang/Object;)Lkotlinx/coroutines/flow/StateFlow;
 }

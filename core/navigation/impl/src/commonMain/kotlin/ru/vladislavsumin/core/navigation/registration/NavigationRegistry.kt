@@ -25,31 +25,52 @@ public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>> {
      *
      * @param P тип параметров экрана.
      * @param S тип экрана.
-     * @param factory фабрика компонента экрана, может быть явно задана как null, если используются customFactories.
+     * @param factory фабрика компонента экрана.
      * @param defaultParams параметры экрана по умолчанию.
      * @param navigationHosts хосты навигации на этом экране, а также экраны, которые они могут открывать.
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
     public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx>> registerScreen(
-        factory: ScreenFactory<Ctx, P, I, S>?,
+        factory: ScreenFactory<Ctx, P, I, S>,
         defaultParams: P? = null,
         description: String? = null,
         noinline navigationHosts: HostRegistry.() -> Unit = {},
     ): Unit = registerScreen(
-        ScreenKey(P::class),
-        factory,
-        Json.serializersModule.serializer<P>(),
-        defaultParams,
-        description,
-        navigationHosts,
+        key = ScreenKey(P::class),
+        factory = factory,
+        paramsSerializer = Json.serializersModule.serializer<P>(),
+        defaultParams = defaultParams,
+        description = description,
+        navigationHosts = navigationHosts,
     )
 
+    /**
+     * Регистрирует экран с custom factory. Фабрика такого экрана должна быть задана явно в родительском экране через
+     * [GenericScreen.registerCustomFactory].
+     */
+    public inline fun <reified P : IntentScreenParams<*>> registerScreen(
+        defaultParams: P? = null,
+        description: String? = null,
+        noinline navigationHosts: HostRegistry.() -> Unit = {},
+    ): Unit = registerScreen(
+        key = ScreenKey(P::class),
+        factory = null,
+        paramsSerializer = Json.serializersModule.serializer<P>(),
+        defaultParams = defaultParams,
+        description = description,
+        navigationHosts = navigationHosts,
+    )
+
+    /**
+     * Приватный unsafe метод регистрации. Обратите внимание, при вызове необходимо обеспечивать совместимость типов
+     * всех параметров.
+     */
     @PublishedApi
-    internal abstract fun <P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx>> registerScreen(
+    internal abstract fun registerScreen(
         key: ScreenKey,
-        factory: ScreenFactory<Ctx, P, I, S>?,
-        paramsSerializer: KSerializer<P>,
-        defaultParams: P?,
+        factory: ScreenFactory<Ctx, *, *, *>?,
+        paramsSerializer: KSerializer<out IntentScreenParams<*>>,
+        defaultParams: IntentScreenParams<*>?,
         description: String?,
         navigationHosts: HostRegistry.() -> Unit,
     )

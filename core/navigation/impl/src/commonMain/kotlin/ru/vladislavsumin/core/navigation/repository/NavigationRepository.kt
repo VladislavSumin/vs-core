@@ -4,11 +4,9 @@ import com.arkivanov.decompose.GenericComponentContext
 import kotlinx.serialization.KSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
-import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
-import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.tree.NavigationTree
@@ -21,12 +19,12 @@ internal interface NavigationRepository<Ctx : GenericComponentContext<Ctx>> {
     /**
      * Список всех зарегистрированных экранов.
      */
-    val screens: Map<ScreenKey, ScreenRegistration<Ctx, *, *, *>>
+    val screens: Map<ScreenKey, ScreenRegistration<Ctx>>
 
     /**
      * Множество [KSerializer] для сериализации [ScreenParams].
      */
-    val serializers: Map<ScreenKey, KSerializer<out IntentScreenParams<ScreenIntent>>>
+    val serializers: Map<ScreenKey, KSerializer<out IntentScreenParams<*>>>
 }
 
 /**
@@ -37,8 +35,8 @@ internal interface NavigationRepository<Ctx : GenericComponentContext<Ctx>> {
 internal class NavigationRepositoryImpl<Ctx : GenericComponentContext<Ctx>>(
     registrars: Set<GenericNavigationRegistrar<Ctx>>,
 ) : NavigationRepository<Ctx> {
-    override val screens = mutableMapOf<ScreenKey, ScreenRegistration<Ctx, *, *, *>>()
-    override val serializers = mutableMapOf<ScreenKey, KSerializer<IntentScreenParams<ScreenIntent>>>()
+    override val screens = mutableMapOf<ScreenKey, ScreenRegistration<Ctx>>()
+    override val serializers = mutableMapOf<ScreenKey, KSerializer<out IntentScreenParams<*>>>()
 
     /**
      * Состояние финализации [NavigationRegistry]. После создания [NavigationRepositoryImpl] добавлять новые элементы
@@ -58,11 +56,11 @@ internal class NavigationRepositoryImpl<Ctx : GenericComponentContext<Ctx>>(
             with(registrar) { register() }
         }
 
-        override fun <P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx>> registerScreen(
+        override fun registerScreen(
             key: ScreenKey,
-            factory: ScreenFactory<Ctx, P, I, S>?,
-            paramsSerializer: KSerializer<P>,
-            defaultParams: P?,
+            factory: ScreenFactory<Ctx, *, *, *>?,
+            paramsSerializer: KSerializer<out IntentScreenParams<*>>,
+            defaultParams: IntentScreenParams<*>?,
             description: String?,
             navigationHosts: HostRegistry.() -> Unit,
         ) {
@@ -70,7 +68,7 @@ internal class NavigationRepositoryImpl<Ctx : GenericComponentContext<Ctx>>(
                 throw ScreenRegistrationAfterFinalizeException(key)
             }
 
-            serializers[key] = paramsSerializer as KSerializer<IntentScreenParams<ScreenIntent>> // TODO проверить это
+            serializers[key] = paramsSerializer
 
             val hostRegistry = HostRegistryImpl(key)
             navigationHosts(hostRegistry)

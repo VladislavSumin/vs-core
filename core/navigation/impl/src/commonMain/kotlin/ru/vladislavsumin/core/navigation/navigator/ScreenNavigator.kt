@@ -15,6 +15,7 @@ import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
+import ru.vladislavsumin.core.navigation.screen.ScreenPathWithIntent
 import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
@@ -33,7 +34,7 @@ public class ScreenNavigator<Ctx : GenericComponentContext<Ctx>> internal constr
     internal val node: LinkedTreeNode<ScreenInfo<Ctx>>,
     internal val serializer: KSerializer<IntentScreenParams<*>>,
     private val lifecycle: Lifecycle,
-    internal val initialPath: ScreenPath?,
+    internal val initialPath: ScreenPathWithIntent?,
 ) {
     /**
      * Список зарегистрированных на этом экране [HostNavigator].
@@ -84,18 +85,26 @@ public class ScreenNavigator<Ctx : GenericComponentContext<Ctx>> internal constr
     /**
      * Возвращает стартовые параметры для [navigationHost] если таковые есть.
      */
-    internal fun getInitialParamsFor(navigationHost: NavigationHost): IntentScreenParams<*>? {
-        val element = initialPath?.first() ?: return null
+    internal fun getInitialParamsFor(navigationHost: NavigationHost): ScreenParamsWithIntent? {
+        val element = initialPath?.screenPath?.first() ?: return null
         val screenKey = element.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }?.value
             ?: error("Child node with screenKey=$screenKey not found")
-        return if (childNode.hostInParent == navigationHost) {
+        val screenParams = if (childNode.hostInParent == navigationHost) {
             when (element) {
                 is ScreenPath.PathElement.Key -> childNode.defaultParams ?: error("No default params")
                 is ScreenPath.PathElement.Params -> element.screenParams
             }
         } else {
             null
+        }
+        return screenParams?.let {
+            val intent = if (initialPath.screenPath.size == 1) {
+                initialPath.intent
+            } else {
+                null
+            }
+            ScreenParamsWithIntent(it, intent)
         }
     }
 
@@ -234,7 +243,7 @@ public class ScreenNavigator<Ctx : GenericComponentContext<Ctx>> internal constr
             "Screen ${childScreenParams.asKey()} is not a child for screen ${childScreenParams.asKey()}"
         }
 
-        val initialPath = initialPath?.let { path ->
+        val newInitialPath = initialPath?.screenPath?.let { path ->
             val newPath = path.drop(1)
             if (newPath.isNotEmpty()) {
                 ScreenPath(newPath)
@@ -250,7 +259,7 @@ public class ScreenNavigator<Ctx : GenericComponentContext<Ctx>> internal constr
             node = childNode,
             serializer = serializer,
             lifecycle = childContext.lifecycle,
-            initialPath = initialPath,
+            initialPath = newInitialPath?.let { ScreenPathWithIntent(it, initialPath.intent) },
         )
     }
 

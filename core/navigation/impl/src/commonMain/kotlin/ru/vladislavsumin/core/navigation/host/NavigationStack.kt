@@ -61,16 +61,17 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         key = key,
         initialStack = {
             val stack = internalNavigator.getInitialParamsFor(navigationHost)?.let { params ->
-                val stack = defaultStack()
-                val index = stack.indexOf(params)
+                val stack = defaultStack().map { ConfigurationHolder(it) }
+                val index = stack.indexOfFirst { it.screenParams == params.screenParams }
                 if (index >= 0) {
+                    stack[index].sendIntent(params.intent)
                     stack.subList(0, index + 1)
                 } else {
-                    stack + params
+                    stack + ConfigurationHolder(params.screenParams, params.intent)
                 }
-            } ?: initialStack()
+            } ?: initialStack().map { ConfigurationHolder(it) }
 
-            stack.map { ConfigurationHolder(it) }
+            stack
         },
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
@@ -92,9 +93,7 @@ private class StackHostNavigator(
                 } else {
                     stack + ConfigurationHolder(params)
                 }
-                if (intent != null) {
-                    newStack.last().intents.trySend(intent).getOrThrow()
-                }
+                newStack.last().sendIntent(intent)
                 newStack
             },
             onComplete = { _, _ -> },

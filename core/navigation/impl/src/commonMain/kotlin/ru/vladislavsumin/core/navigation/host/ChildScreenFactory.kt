@@ -24,7 +24,7 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         screenFactory.create(
             context = childScreenContext,
             params = configuration.screenParams as IntentScreenParams<ScreenIntent>,
-            intents = configuration.intents,
+            intents = configuration.intentReceiveChannel,
         )
     } finally {
         ScreenNavigatorHolder = null

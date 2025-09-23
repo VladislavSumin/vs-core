@@ -57,10 +57,14 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         },
         key = key,
         initialPages = {
-            val pages = internalNavigator.getInitialParamsFor(navigationHost)
-                ?.let { Pages(listOf(it), 0) }
-                ?: initialPages()
-            Pages(pages.items.map { ConfigurationHolder(it) }, pages.selectedIndex)
+            val initial = internalNavigator.getInitialParamsFor(navigationHost)
+            if (initial != null) {
+                val holder = ConfigurationHolder(initial.screenParams, initial.intent)
+                Pages(listOf(holder), 0)
+            } else {
+                val initial = initialPages()
+                Pages(initial.items.map { ConfigurationHolder(it) }, initial.selectedIndex)
+            }
         },
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
@@ -77,15 +81,11 @@ private class PagesHostNavigator(
             transformer = { pages ->
                 val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }
                 if (indexOfScreen >= 0) {
-                    if (intent != null) {
-                        pages.items[indexOfScreen].intents.trySend(intent).getOrThrow()
-                    }
+                    pages.items[indexOfScreen].sendIntent(intent)
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
                     val newItem = ConfigurationHolder(params)
-                    if (intent != null) {
-                        newItem.intents.trySend(intent).getOrThrow()
-                    }
+                    newItem.sendIntent(intent)
                     val newItems = pages.items + newItem
                     Pages(newItems, newItems.size - 1)
                 }

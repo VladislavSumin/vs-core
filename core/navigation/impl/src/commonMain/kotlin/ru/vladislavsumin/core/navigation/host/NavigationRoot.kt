@@ -18,6 +18,7 @@ import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
+import ru.vladislavsumin.core.navigation.screen.ScreenPathWithIntent
 
 /**
  * Корневая точка входа в навигацию.
@@ -43,6 +44,9 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
     // Создаем рутовый навигатор.
     val globalNavigator = GlobalNavigator(navigation)
 
+    // Считываем тут первое событие навигации на момент вызова корня навигации
+    // Это нужно если мы хотим сразу отобразить отличную от стандартной иерархию экранов без создания
+    // иерархии по умолчанию, например, это может использоваться при открытии приложения через deepLink.
     val initialPath = handleInitialNavigationEvent(params, navigation, globalNavigator)
 
     // Создаем дочерний контекст который будет являться контекстом для корневого экрана графа навигации.
@@ -93,11 +97,11 @@ private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
     rootScreenParams: IntentScreenParams<ScreenIntent>,
     navigation: GenericNavigation<Ctx>,
     globalNavigator: GlobalNavigator<Ctx>,
-): ScreenPath? {
+): ScreenPathWithIntent? {
     val initialNavigationParams = navigation.navigationChannel.tryReceive().getOrNull()
     NavigationLogger.d { "childNavigationRoot() initialNavigationParams = $initialNavigationParams" }
 
-    return when (initialNavigationParams) {
+    val initialPath = when (initialNavigationParams) {
         is NavigationEvent.Close -> {
             // Можно поддержать, но пока нет такой необходимости.
             error("Unsupported initial close event")
@@ -110,6 +114,8 @@ private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
 
         null -> null
     }
+
+    return initialPath?.let { ScreenPathWithIntent(it, initialNavigationParams?.intent) }
 }
 
 /**

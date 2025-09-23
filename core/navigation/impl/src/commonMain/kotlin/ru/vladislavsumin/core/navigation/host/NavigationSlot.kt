@@ -54,8 +54,12 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         },
         key = key,
         initialConfiguration = {
-            (internalNavigator.getInitialParamsFor(navigationHost) ?: initialConfiguration())
-                ?.let { ConfigurationHolder(it) }
+            val initial = internalNavigator.getInitialParamsFor(navigationHost)
+            if (initial != null) {
+                ConfigurationHolder(initial.screenParams, initial.intent)
+            } else {
+                initialConfiguration()?.let { ConfigurationHolder(it) }
+            }
         },
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
@@ -76,9 +80,7 @@ private class SlotHostNavigator(
             } else {
                 ConfigurationHolder(params)
             }
-            if (intent != null) {
-                newConfig.intents.trySend(intent).getOrThrow()
-            }
+            newConfig.sendIntent(intent)
             newConfig
         }
     }

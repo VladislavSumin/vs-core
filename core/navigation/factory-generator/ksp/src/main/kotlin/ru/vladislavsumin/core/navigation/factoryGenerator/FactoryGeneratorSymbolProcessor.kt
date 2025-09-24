@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
@@ -65,7 +66,7 @@ internal class FactoryGeneratorSymbolProcessor(
         // Ищем среди родителей GenericScreen
         val genericScreenResolvedType = instance.findParametrizedSuperTypeOrNull(SCREEN_CLASS) ?: let {
             logger.error(
-                message = "@GenerateScreenFactory only applicable to classes implementing Screen",
+                message = "@GenerateScreenFactory only applicable to classes implementing GenericScreen",
                 symbol = instance,
             )
             return
@@ -74,8 +75,11 @@ internal class FactoryGeneratorSymbolProcessor(
         check(genericScreenResolvedType.typeArguments.size == 2) { "Wrong generic argument count" }
         // Тип GenericComponentContext
         val componentContextType = genericScreenResolvedType.typeArguments[0]
-        // Тип Render
-        val componentRenderType = genericScreenResolvedType.typeArguments[1]
+        // Тип BS
+        val componentBaseScreenTypeRaw = genericScreenResolvedType.typeArguments[1] as ParameterizedTypeName
+        val componentBaseScreenType = componentBaseScreenTypeRaw.copy(
+            typeArguments = listOf(componentContextType),
+        )
 
         // Проверяем наличие основного конструктора
         val primaryConstructor = instance.primaryConstructor ?: let {
@@ -140,7 +144,7 @@ internal class FactoryGeneratorSymbolProcessor(
                         componentContextType,
                         screenParamsClassDeclaration.toClassName(),
                         screenIntentType,
-                        componentRenderType,
+                        componentBaseScreenType,
                         instance.toClassName(),
                     ),
             )

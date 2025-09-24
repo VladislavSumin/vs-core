@@ -49,6 +49,26 @@ public fun KSClassDeclaration.findParametrizedSuperTypeOrNull(className: ClassNa
                         override val parametersMap: Map<String, TypeVariableName> = typeResolver.parametersMap + map
                     }
                 }
+            } else {
+                val keys = type.declaration.typeParameters.map { it.name.asString() }
+                val values =
+                    type.arguments.map { it.type!!.resolve().toTypeNameOrNull() }
+                val map = mutableMapOf<String, TypeVariableName>()
+                keys.forEachIndexed { index, string ->
+                    val value = values[index]
+                    if (value != null) {
+                        map[string] = TypeVariableName(string, value)
+                    }
+                }
+
+                typeResolver = object : TypeParameterResolver {
+                    override fun get(index: String): TypeVariableName {
+                        return parametersMap[index]
+                            ?: throw NoSuchElementException("No TypeParameter found for index $index")
+                    }
+
+                    override val parametersMap: Map<String, TypeVariableName> = typeResolver.parametersMap + map
+                }
             }
 
             if (parametrized?.rawType == className) {

@@ -1,7 +1,7 @@
 package ru.vladislavsumin.core.navigation.registration
 
 import com.arkivanov.decompose.GenericComponentContext
-import ru.vladislavsumin.core.navigation.screen.Render
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 
 /**
  * Если вы используете kodein, то этот интерфейс необходимо реализовать в вашем модуле и вернуть его в графе навигации
@@ -15,9 +15,9 @@ import ru.vladislavsumin.core.navigation.screen.Render
  *
  * Если вы не используете kodein используйте конструктор [ru.vladislavsumin.core.navigation.Navigation]
  */
-public fun interface GenericNavigationRegistrar<Ctx : GenericComponentContext<Ctx>, R : Render> {
+public fun interface GenericNavigationRegistrar<Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> {
     /**
      * Регистрирует фабрики, хосты навигации и экраны в хостах.
      */
-    public fun NavigationRegistry<Ctx, R>.register()
+    public fun NavigationRegistry<Ctx, BS>.register()
 }

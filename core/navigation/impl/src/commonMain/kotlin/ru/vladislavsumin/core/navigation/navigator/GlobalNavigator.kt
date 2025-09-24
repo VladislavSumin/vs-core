@@ -9,7 +9,7 @@ import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
-import ru.vladislavsumin.core.navigation.screen.Render
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
@@ -17,11 +17,11 @@ import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 /**
  * Глобальный навигатор.
  */
-internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>, R : Render>(
-    private val navigation: GenericNavigation<Ctx, R>,
+internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>>(
+    private val navigation: GenericNavigation<Ctx, BS>,
 ) {
 
-    internal lateinit var rootNavigator: ScreenNavigator<Ctx, R>
+    internal lateinit var rootNavigator: ScreenNavigator<Ctx, BS>
     private val relay = UnsafeRelay()
 
     /**
@@ -40,13 +40,13 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>, R : Render>(
         val screenKey = screenParams.asKey()
 
         // Нода в графе навигации соответствующая переданному пути.
-        val fromScreenNode: LinkedTreeNode<ScreenInfo<Ctx, R>> = navigation.navigationTree.findByPath(
+        val fromScreenNode: LinkedTreeNode<ScreenInfo<Ctx, BS>> = navigation.navigationTree.findByPath(
             path = screenPath.map { it.asScreenKey() },
             keySelector = { it.screenKey },
         )!!
 
         // Нода в графе навигации куда мы хотим перейти.
-        val destinationNode: LinkedTreeNode<ScreenInfo<Ctx, R>> = fromScreenNode
+        val destinationNode: LinkedTreeNode<ScreenInfo<Ctx, BS>> = fromScreenNode
             .asSequenceUp()
             .first { node -> node.value.screenKey == screenKey }
 

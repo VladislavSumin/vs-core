@@ -8,7 +8,6 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
-import ru.vladislavsumin.core.navigation.screen.Render
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import kotlin.reflect.KClass
@@ -20,7 +19,7 @@ import kotlin.reflect.KClass
  *
  * Абстрактный класс вместо интерфейса для возможности использовать internal && inline для создания удобного апи.
  */
-public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>, R : Render> {
+public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> {
     /**
      * Регистрирует экран.
      *
@@ -31,8 +30,8 @@ public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>, R :
      * @param navigationHosts хосты навигации на этом экране, а также экраны, которые они могут открывать.
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
-    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx, R>> registerScreen(
-        factory: ScreenFactory<Ctx, P, I, R, S>,
+    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : BS> registerScreen(
+        factory: ScreenFactory<Ctx, P, I, BS, S>,
         defaultParams: P? = null,
         description: String? = null,
         noinline navigationHosts: HostRegistry.() -> Unit = {},
@@ -69,7 +68,7 @@ public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>, R :
     @PublishedApi
     internal abstract fun registerScreen(
         key: ScreenKey,
-        factory: ScreenFactory<Ctx, *, *, R, *>?,
+        factory: ScreenFactory<Ctx, *, *, BS, *>?,
         paramsSerializer: KSerializer<out IntentScreenParams<*>>,
         defaultParams: IntentScreenParams<*>?,
         description: String?,

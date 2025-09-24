@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import ru.vladislavsumin.core.collections.tree.asSequence
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
 import ru.vladislavsumin.core.navigation.repository.NavigationRepositoryImpl
-import ru.vladislavsumin.core.navigation.screen.Render
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.serializer.NavigationSerializer
 import ru.vladislavsumin.core.navigation.tree.NavigationTree
 import ru.vladislavsumin.core.navigation.tree.NavigationTreeBuilder
@@ -13,9 +13,9 @@ import ru.vladislavsumin.core.navigation.tree.NavigationTreeBuilder
 /**
  * Точка входа в навигацию, она же глобальный навигатор.
  */
-public class GenericNavigation<Ctx : GenericComponentContext<Ctx>, R : Render> internal constructor(
+public class GenericNavigation<Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> internal constructor(
     @InternalNavigationApi
-    public val navigationTree: NavigationTree<Ctx, R>,
+    public val navigationTree: NavigationTree<Ctx, BS>,
     internal val navigationSerializer: NavigationSerializer,
 ) {
     internal val navigationChannel = Channel<NavigationEvent>(Channel.BUFFERED)
@@ -48,9 +48,9 @@ public class GenericNavigation<Ctx : GenericComponentContext<Ctx>, R : Render> i
     }
 
     public companion object {
-        public operator fun <Ctx : GenericComponentContext<Ctx>, R : Render> invoke(
-            registrars: Set<GenericNavigationRegistrar<Ctx, R>>,
-        ): GenericNavigation<Ctx, R> {
+        public operator fun <Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> invoke(
+            registrars: Set<GenericNavigationRegistrar<Ctx, BS>>,
+        ): GenericNavigation<Ctx, BS> {
             val navigationRepository = NavigationRepositoryImpl(registrars)
             val navigationSerializer = NavigationSerializer(navigationRepository)
             val navigationTreeBuilder = NavigationTreeBuilder(navigationRepository)

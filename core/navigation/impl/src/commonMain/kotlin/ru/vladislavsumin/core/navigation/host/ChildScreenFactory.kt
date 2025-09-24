@@ -4,17 +4,16 @@ import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
-import ru.vladislavsumin.core.navigation.screen.Render
 import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.asKey
 
 /**
  * Стандартная фабрика дочерних экранов для использования в compose навигации.
  */
-internal fun <Ctx : GenericComponentContext<Ctx>, R : Render> GenericScreen<Ctx, R>.childScreenFactory(
+internal fun <Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> BS.childScreenFactory(
     configuration: ConfigurationHolder,
     childScreenContext: Ctx,
-): GenericScreen<Ctx, R> {
+): BS {
     val childScreenNavigator = internalNavigator.createChildNavigator(
         childScreenParams = configuration.screenParams,
         childContext = childScreenContext,

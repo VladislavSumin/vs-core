@@ -6,7 +6,7 @@ import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.decompose.components.GenericComponent
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.GenericNavigation
-import ru.vladislavsumin.core.navigation.screen.ComposeRender
+import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
 
 /**
  * @param navigationProvider провайдер [GenericNavigation] на основе которой будет построен граф. Выполнен в виде
@@ -14,7 +14,7 @@ import ru.vladislavsumin.core.navigation.screen.ComposeRender
  * зацикливания DI выбран именно такой способ предоставления зависимостей.
  */
 public class NavigationGraphUmlDiagramComponentFactory<Ctx : GenericComponentContext<Ctx>>(
-    navigationProvider: () -> GenericNavigation<*, ComposeRender>,
+    navigationProvider: () -> GenericNavigation<*, GenericComposeScreen<Ctx>>,
 ) {
     private val viewModelFactory = NavigationGraphUmlDiagramViewModelFactory(navigationProvider)
 
@@ -39,11 +39,11 @@ public class NavigationGraphUmlDiagramComponentFactory<Ctx : GenericComponentCon
  * Отображает текущий граф навигации в удобной для человека форме.
  */
 internal class NavigationGraphUmlDiagramComponent<Ctx : GenericComponentContext<Ctx>>(
-    viewModelFactory: NavigationGraphUmlDiagramViewModelFactory,
+    viewModelFactory: NavigationGraphUmlDiagramViewModelFactory<Ctx>,
     context: Ctx,
     navigationTreeInterceptor: (NavigationGraphUmlNode) -> NavigationGraphUmlNode,
 ) : GenericComponent<Ctx>(context), ComposeComponent {
-    private val viewModel: NavigationGraphUmlDiagramViewModel = viewModel {
+    private val viewModel: NavigationGraphUmlDiagramViewModel<Ctx> = viewModel {
         viewModelFactory.create(navigationTreeInterceptor)
     }
 

@@ -13,28 +13,21 @@ import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 /**
  * Базовая реализация экрана с набором полезных расширений.
  */
-public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>, R : Render>(context: Ctx) :
+public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>>(context: Ctx) :
     GenericComponent<Ctx>(context) {
-
-    /**
-     * К сожалению ограничения языка не позволяют нам наследоваться от generic типа, поэтому мы вынуждены
-     * хранить [render] как поле класса.
-     */
-    public abstract val render: R
-
     /**
      * Предоставляет доступ к навигации с учетом контекста этого экрана.
      *
      * Доступ к контексту означает что поиск ближайшего экрана будет происходить не от корня графа, а от текущего этого
      * экрана.
      */
-    protected val navigator: ScreenNavigator<Ctx, R> = let {
+    protected val navigator: ScreenNavigator<Ctx, BS> = let {
         val navigator = ScreenNavigatorHolder
         check(navigator != null) { "Wrong screen usage, only navigation framework may create screen instances" }
-        navigator as ScreenNavigator<Ctx, R>
+        navigator as ScreenNavigator<Ctx, BS>
     }
 
-    internal val internalNavigator: ScreenNavigator<Ctx, R> get() = navigator
+    internal val internalNavigator: ScreenNavigator<Ctx, BS> get() = navigator
     internal val internalContext: Ctx get() = context
 
     /**
@@ -70,9 +63,9 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>, R : Rend
     protected inline fun <
         reified T : IntentScreenParams<I>,
         I : ScreenIntent,
-        S : GenericScreen<Ctx, R>,
+        S : BS,
         > registerCustomFactory(
-        factory: ScreenFactory<Ctx, T, I, R, S>,
+        factory: ScreenFactory<Ctx, T, I, BS, S>,
     ) {
         navigator.registerCustomFactory(ScreenKey(T::class), factory)
     }

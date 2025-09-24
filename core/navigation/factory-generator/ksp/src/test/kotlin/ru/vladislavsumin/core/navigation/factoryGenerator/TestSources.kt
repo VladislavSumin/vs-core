@@ -56,15 +56,17 @@ object TestSources {
         name = "TestScreen.kt",
         contents = """
             import com.arkivanov.decompose.GenericComponentContext
-            import ru.vladislavsumin.core.navigation.screen.ComposeRender
-            import ru.vladislavsumin.core.navigation.screen.GenericScreen
+            import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
             
             interface TestComponentContext: GenericComponentContext<TestComponentContext>
             
             @GenerateScreenFactory
-            class TestScreen(context: TestComponentContext): GenericScreen<TestComponentContext, ComposeRender>(context) {
-                override val render: ComposeRender get() = error("not implemented")
+            class TestScreen(context: TestComponentContext): GenericComposeScreen<TestComponentContext>(context) {
+                @Composable
+                override fun Render(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -76,17 +78,20 @@ object TestSources {
         name = "TestScreen.kt",
         contents = """
             import com.arkivanov.decompose.GenericComponentContext
-            import ru.vladislavsumin.core.navigation.screen.ComposeRender
-            import ru.vladislavsumin.core.navigation.screen.GenericScreen
+            import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
+            
             
             interface TestComponentContext: GenericComponentContext<TestComponentContext>
             
-            typealias TestGenericScreen = GenericScreen<TestComponentContext, ComposeRender>
+            typealias TestGenericScreen = GenericComposeScreen<TestComponentContext>
             
             @GenerateScreenFactory
             class TestScreen(context: TestComponentContext): TestGenericScreen(context) {
-                override val render: ComposeRender get() = error("not implemented")
+                @Composable
+                override fun Render(modifier: Modifier){}
             }
         """.trimIndent(),
     )

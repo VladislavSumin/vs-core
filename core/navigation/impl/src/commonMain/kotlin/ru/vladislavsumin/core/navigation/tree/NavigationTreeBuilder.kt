@@ -8,20 +8,20 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.repository.NavigationRepository
-import ru.vladislavsumin.core.navigation.screen.Render
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
-internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>, R : Render>(
-    private val repository: NavigationRepository<Ctx, R>,
+internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>>(
+    private val repository: NavigationRepository<Ctx, BS>,
 ) {
-    fun build() = NavigationTree<Ctx, R>(buildNavGraph())
+    fun build() = NavigationTree<Ctx, BS>(buildNavGraph())
 
     /**
      * Строит навигационное дерево.
      *
      * @return возвращает корень полученного дерева.
      */
-    private fun buildNavGraph(): LinkedTreeNode<ScreenInfo<Ctx, R>> {
+    private fun buildNavGraph(): LinkedTreeNode<ScreenInfo<Ctx, BS>> {
         val rootScreen = findRootScreen()
         return buildNode(
             parent = null,
@@ -42,7 +42,7 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>, R : Ren
         parent: ScreenKey?,
         hostInParent: NavigationHost?,
         screenKey: ScreenKey,
-    ): LinkedTreeNodeImpl<ScreenInfo<Ctx, R>> {
+    ): LinkedTreeNodeImpl<ScreenInfo<Ctx, BS>> {
         val screenRegistration = repository.screens[screenKey]
             ?: throw ScreenNotRegisteredException(parent, hostInParent, screenKey)
 
@@ -56,7 +56,7 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>, R : Ren
         )
 
         // Пробегаемся по всем навигационным хостам, объявленным для данной ноды.
-        val child: List<LinkedTreeNodeImpl<ScreenInfo<Ctx, R>>> = screenRegistration.navigationHosts
+        val child: List<LinkedTreeNodeImpl<ScreenInfo<Ctx, BS>>> = screenRegistration.navigationHosts
             .flatMap { (host, screens) ->
                 screens.map { screen -> buildNode(screenKey, host, screen) }
             }

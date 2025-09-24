@@ -77,10 +77,10 @@ class FactoryGeneratorSymbolProcessorTest {
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
-import ru.vladislavsumin.core.navigation.screen.ComposeRender
+import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, ComposeRender, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, GenericComposeScreen<ComponentContext>, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -93,10 +93,10 @@ internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenP
         private val CUSTOM_CONTEXT_SCREEN_FACTORY = """
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
-import ru.vladislavsumin.core.navigation.screen.ComposeRender
+import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<TestComponentContext, TestScreenParams, NoIntent, ComposeRender, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<TestComponentContext, TestScreenParams, NoIntent, GenericComposeScreen<TestComponentContext>, TestScreen> {
   override fun create(
     context: TestComponentContext,
     params: TestScreenParams,
@@ -110,10 +110,10 @@ internal class TestScreenFactory() : ScreenFactory<TestComponentContext, TestScr
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.navigation.NoIntent
-import ru.vladislavsumin.core.navigation.screen.ComposeRender
+import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, ComposeRender, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, NoIntent, GenericComposeScreen<ComponentContext>, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -126,10 +126,10 @@ internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenP
         private val SCREEN_INTENTS_ARGS_SCREEN_FACTORY = """
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
-import ru.vladislavsumin.core.navigation.screen.ComposeRender
+import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, ComposeRender, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, GenericComposeScreen<ComponentContext>, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -142,10 +142,10 @@ internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenP
         private val SCREEN_PARAMS_AND_INTENTS_ARGS_SCREEN_FACTORY = """
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.channels.ReceiveChannel
-import ru.vladislavsumin.core.navigation.screen.ComposeRender
+import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
-internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, ComposeRender, TestScreen> {
+internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, GenericComposeScreen<ComponentContext>, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,
@@ -159,12 +159,12 @@ internal class TestScreenFactory() : ScreenFactory<ComponentContext, TestScreenP
 import com.arkivanov.decompose.ComponentContext
 import kotlin.String
 import kotlinx.coroutines.channels.ReceiveChannel
-import ru.vladislavsumin.core.navigation.screen.ComposeRender
+import ru.vladislavsumin.core.navigation.screen.GenericComposeScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 
 internal class TestScreenFactory(
   private val extra: String,
-) : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, ComposeRender, TestScreen> {
+) : ScreenFactory<ComponentContext, TestScreenParams, TestScreenIntent, GenericComposeScreen<ComponentContext>, TestScreen> {
   override fun create(
     context: ComponentContext,
     params: TestScreenParams,

@@ -56,17 +56,15 @@ object TestSources {
         name = "TestScreen.kt",
         contents = """
             import com.arkivanov.decompose.GenericComponentContext
+            import ru.vladislavsumin.core.navigation.screen.ComposeRender
             import ru.vladislavsumin.core.navigation.screen.GenericScreen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
             
             interface TestComponentContext: GenericComponentContext<TestComponentContext>
             
             @GenerateScreenFactory
-            class TestScreen(context: TestComponentContext): GenericScreen<TestComponentContext>(context) {
-                @Composable
-                override fun Render(modifier: Modifier){}
+            class TestScreen(context: TestComponentContext): GenericScreen<TestComponentContext, ComposeRender>(context) {
+                override val render: ComposeRender get() = error("not implemented")
             }
         """.trimIndent(),
     )
@@ -78,19 +76,17 @@ object TestSources {
         name = "TestScreen.kt",
         contents = """
             import com.arkivanov.decompose.GenericComponentContext
+            import ru.vladislavsumin.core.navigation.screen.ComposeRender
             import ru.vladislavsumin.core.navigation.screen.GenericScreen
             import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
             
             interface TestComponentContext: GenericComponentContext<TestComponentContext>
             
-            typealias TestGenericScreen = GenericScreen<TestComponentContext>
+            typealias TestGenericScreen = GenericScreen<TestComponentContext, ComposeRender>
             
             @GenerateScreenFactory
             class TestScreen(context: TestComponentContext): TestGenericScreen(context) {
-                @Composable
-                override fun Render(modifier: Modifier){}
+                override val render: ComposeRender get() = error("not implemented")
             }
         """.trimIndent(),
     )

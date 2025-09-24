@@ -6,4 +6,5 @@ plugins {
 dependencies {
     implementation(projects.core.navigation.factoryGenerator.api)
     testImplementation(projects.core.navigation.impl)
+    testImplementation(projects.core.navigation.compose)
 }

@@ -7,6 +7,7 @@ import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
+import ru.vladislavsumin.core.navigation.screen.Render
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.tree.NavigationTree
@@ -15,11 +16,11 @@ import kotlin.reflect.KClass
 /**
  * Репозиторий навигации, используется для построения [NavigationTree].
  */
-internal interface NavigationRepository<Ctx : GenericComponentContext<Ctx>> {
+internal interface NavigationRepository<Ctx : GenericComponentContext<Ctx>, R : Render> {
     /**
      * Список всех зарегистрированных экранов.
      */
-    val screens: Map<ScreenKey, ScreenRegistration<Ctx>>
+    val screens: Map<ScreenKey, ScreenRegistration<Ctx, R>>
 
     /**
      * Множество [KSerializer] для сериализации [ScreenParams].
@@ -32,10 +33,10 @@ internal interface NavigationRepository<Ctx : GenericComponentContext<Ctx>> {
  *
  * @param registrars множество регистраторов экранов.
  */
-internal class NavigationRepositoryImpl<Ctx : GenericComponentContext<Ctx>>(
-    registrars: Set<GenericNavigationRegistrar<Ctx>>,
-) : NavigationRepository<Ctx> {
-    override val screens = mutableMapOf<ScreenKey, ScreenRegistration<Ctx>>()
+internal class NavigationRepositoryImpl<Ctx : GenericComponentContext<Ctx>, R : Render>(
+    registrars: Set<GenericNavigationRegistrar<Ctx, R>>,
+) : NavigationRepository<Ctx, R> {
+    override val screens = mutableMapOf<ScreenKey, ScreenRegistration<Ctx, R>>()
     override val serializers = mutableMapOf<ScreenKey, KSerializer<out IntentScreenParams<*>>>()
 
     /**
@@ -51,14 +52,14 @@ internal class NavigationRepositoryImpl<Ctx : GenericComponentContext<Ctx>>(
         isFinalized = true
     }
 
-    private inner class NavigationRegistryImpl : NavigationRegistry<Ctx>() {
-        fun register(registrar: GenericNavigationRegistrar<Ctx>) {
+    private inner class NavigationRegistryImpl : NavigationRegistry<Ctx, R>() {
+        fun register(registrar: GenericNavigationRegistrar<Ctx, R>) {
             with(registrar) { register() }
         }
 
         override fun registerScreen(
             key: ScreenKey,
-            factory: ScreenFactory<Ctx, *, *, *>?,
+            factory: ScreenFactory<Ctx, *, *, R, *>?,
             paramsSerializer: KSerializer<out IntentScreenParams<*>>,
             defaultParams: IntentScreenParams<*>?,
             description: String?,

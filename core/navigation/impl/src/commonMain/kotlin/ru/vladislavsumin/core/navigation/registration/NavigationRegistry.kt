@@ -8,6 +8,7 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
+import ru.vladislavsumin.core.navigation.screen.Render
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import kotlin.reflect.KClass
@@ -19,7 +20,7 @@ import kotlin.reflect.KClass
  *
  * Абстрактный класс вместо интерфейса для возможности использовать internal && inline для создания удобного апи.
  */
-public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>> {
+public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>, R : Render> {
     /**
      * Регистрирует экран.
      *
@@ -30,8 +31,8 @@ public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>> {
      * @param navigationHosts хосты навигации на этом экране, а также экраны, которые они могут открывать.
      * @param description опциональное описание экрана, используется только для дебага, при отображении графа навигации
      */
-    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx>> registerScreen(
-        factory: ScreenFactory<Ctx, P, I, S>,
+    public inline fun <reified P : IntentScreenParams<I>, I : ScreenIntent, S : GenericScreen<Ctx, R>> registerScreen(
+        factory: ScreenFactory<Ctx, P, I, R, S>,
         defaultParams: P? = null,
         description: String? = null,
         noinline navigationHosts: HostRegistry.() -> Unit = {},
@@ -68,7 +69,7 @@ public abstract class NavigationRegistry<Ctx : GenericComponentContext<Ctx>> {
     @PublishedApi
     internal abstract fun registerScreen(
         key: ScreenKey,
-        factory: ScreenFactory<Ctx, *, *, *>?,
+        factory: ScreenFactory<Ctx, *, *, R, *>?,
         paramsSerializer: KSerializer<out IntentScreenParams<*>>,
         defaultParams: IntentScreenParams<*>?,
         description: String?,

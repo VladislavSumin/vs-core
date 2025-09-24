@@ -3,6 +3,7 @@ package ru.vladislavsumin.core.navigation.repository
 import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
+import ru.vladislavsumin.core.navigation.screen.Render
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
@@ -17,8 +18,8 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
  * @param navigationHosts список [NavigationHost] и их экранов, которые открываются с этого экрана.
  * @param description опциональное описание экрана для отладки.
  */
-internal data class ScreenRegistration<Ctx : GenericComponentContext<Ctx>>(
-    val factory: ScreenFactory<Ctx, *, *, *>?,
+internal data class ScreenRegistration<Ctx : GenericComponentContext<Ctx>, R : Render>(
+    val factory: ScreenFactory<Ctx, *, *, R, *>?,
     val defaultParams: IntentScreenParams<*>?,
     val navigationHosts: Map<NavigationHost, Set<ScreenKey>>,
     val description: String?,

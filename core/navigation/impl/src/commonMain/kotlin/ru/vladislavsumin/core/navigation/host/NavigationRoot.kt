@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.utils.createCoroutineScope
-import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.GenericNavigation.NavigationEvent
 import ru.vladislavsumin.core.navigation.IntentScreenParams
@@ -15,6 +14,7 @@ import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.GlobalNavigator
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
+import ru.vladislavsumin.core.navigation.screen.Render
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
@@ -30,15 +30,16 @@ import ru.vladislavsumin.core.navigation.screen.ScreenPathWithIntent
  * [ru.vs.core.navigation.screen.Screen.delaySplashScreen] в цепочке открываемых экранов и после того как все вызовы
  * завершатся, будет вызван этот callback. Таким образом можно задерживать splash экран в обычных экранах.
  */
-public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
-    navigation: GenericNavigation<Ctx>,
+public fun <Ctx : GenericComponentContext<Ctx>, R : Render> Ctx.childNavigationRoot(
+    navigation: GenericNavigation<Ctx, R>,
     key: String = "navigation-root",
     coroutineScope: CoroutineScope = lifecycle.createCoroutineScope(),
     onContentReady: (() -> Unit)? = null,
-): ComposeComponent {
+): GenericScreen<Ctx, R> {
     val node = navigation.navigationTree
     val params = node.value.defaultParams ?: error("Root screen must have default params")
-    val rootScreenFactory = node.value.factory as ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *>?
+    val rootScreenFactory =
+        node.value.factory as ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, R, *>?
     check(rootScreenFactory != null) { "Factory for $params not found" }
 
     // Создаем рутовый навигатор.
@@ -67,7 +68,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
 
     // При создании root хоста relay внутри globalNavigator гарантированно пуст, поэтому мы можем быть уверены,
     // что установка значения сюда пройдет синхронно.
-    var screen: GenericScreen<Ctx>? = null
+    var screen: GenericScreen<Ctx, R>? = null
 
     globalNavigator.protectRestoreState {
         screen = try {
@@ -93,10 +94,10 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
     return screen ?: error("Unreachable, screen can't be null")
 }
 
-private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
+private fun <Ctx : GenericComponentContext<Ctx>, R : Render> handleInitialNavigationEvent(
     rootScreenParams: IntentScreenParams<ScreenIntent>,
-    navigation: GenericNavigation<Ctx>,
-    globalNavigator: GlobalNavigator<Ctx>,
+    navigation: GenericNavigation<Ctx, R>,
+    globalNavigator: GlobalNavigator<Ctx, R>,
 ): ScreenPathWithIntent? {
     val initialNavigationParams = navigation.navigationChannel.tryReceive().getOrNull()
     NavigationLogger.d { "childNavigationRoot() initialNavigationParams = $initialNavigationParams" }
@@ -121,9 +122,9 @@ private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
 /**
  * Обрабатывает глобальную навигацию из [navigation].
  */
-private fun <Ctx : GenericComponentContext<Ctx>> Ctx.handleNavigation(
-    navigation: GenericNavigation<Ctx>,
-    rootScreenNavigator: ScreenNavigator<Ctx>,
+private fun <Ctx : GenericComponentContext<Ctx>, R : Render> Ctx.handleNavigation(
+    navigation: GenericNavigation<Ctx, R>,
+    rootScreenNavigator: ScreenNavigator<Ctx, R>,
 ) {
     val scope = lifecycle.createCoroutineScope()
     scope.launch {

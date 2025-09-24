@@ -1,25 +1,26 @@
 package ru.vladislavsumin.core.navigation.screen
 
-import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.components.GenericComponent
 import ru.vladislavsumin.core.decompose.components.ViewModel
-import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 import ru.vladislavsumin.core.navigation.viewModel.IsNavigationViewModelConstructing
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
-public typealias Screen = GenericScreen<ComponentContext>
-
 /**
  * Базовая реализация экрана с набором полезных расширений.
  */
-public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context: Ctx) :
-    GenericComponent<Ctx>(context),
-    ComposeComponent {
+public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>, R : Render>(context: Ctx) :
+    GenericComponent<Ctx>(context) {
+
+    /**
+     * К сожалению ограничения языка не позволяют нам наследоваться от generic типа, поэтому мы вынуждены
+     * хранить [render] как поле класса.
+     */
+    public abstract val render: R
 
     /**
      * Предоставляет доступ к навигации с учетом контекста этого экрана.
@@ -27,13 +28,13 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
      * Доступ к контексту означает что поиск ближайшего экрана будет происходить не от корня графа, а от текущего этого
      * экрана.
      */
-    protected val navigator: ScreenNavigator<Ctx> = let {
+    protected val navigator: ScreenNavigator<Ctx, R> = let {
         val navigator = ScreenNavigatorHolder
         check(navigator != null) { "Wrong screen usage, only navigation framework may create screen instances" }
-        navigator as ScreenNavigator<Ctx>
+        navigator as ScreenNavigator<Ctx, R>
     }
 
-    internal val internalNavigator: ScreenNavigator<Ctx> get() = navigator
+    internal val internalNavigator: ScreenNavigator<Ctx, R> get() = navigator
     internal val internalContext: Ctx get() = context
 
     /**
@@ -69,9 +70,9 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
     protected inline fun <
         reified T : IntentScreenParams<I>,
         I : ScreenIntent,
-        S : GenericScreen<Ctx>,
+        S : GenericScreen<Ctx, R>,
         > registerCustomFactory(
-        factory: ScreenFactory<Ctx, T, I, S>,
+        factory: ScreenFactory<Ctx, T, I, R, S>,
     ) {
         navigator.registerCustomFactory(ScreenKey(T::class), factory)
     }

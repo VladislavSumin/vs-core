@@ -71,8 +71,11 @@ internal class FactoryGeneratorSymbolProcessor(
             return
         }
 
+        check(genericScreenResolvedType.typeArguments.size == 2) { "Wrong generic argument count" }
         // Тип GenericComponentContext
-        val componentContextType = genericScreenResolvedType.typeArguments.single()
+        val componentContextType = genericScreenResolvedType.typeArguments[0]
+        // Тип Render
+        val componentRenderType = genericScreenResolvedType.typeArguments[1]
 
         // Проверяем наличие основного конструктора
         val primaryConstructor = instance.primaryConstructor ?: let {
@@ -137,6 +140,7 @@ internal class FactoryGeneratorSymbolProcessor(
                         componentContextType,
                         screenParamsClassDeclaration.toClassName(),
                         screenIntentType,
+                        componentRenderType,
                         instance.toClassName(),
                     ),
             )

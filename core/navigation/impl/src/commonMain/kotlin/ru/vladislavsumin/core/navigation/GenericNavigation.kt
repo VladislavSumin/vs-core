@@ -1,23 +1,21 @@
 package ru.vladislavsumin.core.navigation
 
-import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.GenericComponentContext
 import kotlinx.coroutines.channels.Channel
 import ru.vladislavsumin.core.collections.tree.asSequence
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
 import ru.vladislavsumin.core.navigation.repository.NavigationRepositoryImpl
+import ru.vladislavsumin.core.navigation.screen.Render
 import ru.vladislavsumin.core.navigation.serializer.NavigationSerializer
 import ru.vladislavsumin.core.navigation.tree.NavigationTree
 import ru.vladislavsumin.core.navigation.tree.NavigationTreeBuilder
 
-public typealias Navigation = GenericNavigation<ComponentContext>
-
 /**
  * Точка входа в навигацию, она же глобальный навигатор.
  */
-public class GenericNavigation<Ctx : GenericComponentContext<Ctx>> internal constructor(
+public class GenericNavigation<Ctx : GenericComponentContext<Ctx>, R : Render> internal constructor(
     @InternalNavigationApi
-    public val navigationTree: NavigationTree<Ctx>,
+    public val navigationTree: NavigationTree<Ctx, R>,
     internal val navigationSerializer: NavigationSerializer,
 ) {
     internal val navigationChannel = Channel<NavigationEvent>(Channel.BUFFERED)
@@ -50,9 +48,9 @@ public class GenericNavigation<Ctx : GenericComponentContext<Ctx>> internal cons
     }
 
     public companion object {
-        public operator fun <Ctx : GenericComponentContext<Ctx>> invoke(
-            registrars: Set<GenericNavigationRegistrar<Ctx>>,
-        ): GenericNavigation<Ctx> {
+        public operator fun <Ctx : GenericComponentContext<Ctx>, R : Render> invoke(
+            registrars: Set<GenericNavigationRegistrar<Ctx, R>>,
+        ): GenericNavigation<Ctx, R> {
             val navigationRepository = NavigationRepositoryImpl(registrars)
             val navigationSerializer = NavigationSerializer(navigationRepository)
             val navigationTreeBuilder = NavigationTreeBuilder(navigationRepository)

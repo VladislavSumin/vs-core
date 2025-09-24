@@ -6,14 +6,15 @@ import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.decompose.components.GenericComponent
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.GenericNavigation
+import ru.vladislavsumin.core.navigation.screen.ComposeRender
 
 /**
- * @param navigationProvider провайдер [Navigation] на основе которой будет построен граф. Выполнен в виде
+ * @param navigationProvider провайдер [GenericNavigation] на основе которой будет построен граф. Выполнен в виде
  * провайдера, так как данная фабрика может встраиваться в один из экранов собственно навигации и для избежания
  * зацикливания DI выбран именно такой способ предоставления зависимостей.
  */
 public class NavigationGraphUmlDiagramComponentFactory<Ctx : GenericComponentContext<Ctx>>(
-    navigationProvider: () -> GenericNavigation<*>,
+    navigationProvider: () -> GenericNavigation<*, ComposeRender>,
 ) {
     private val viewModelFactory = NavigationGraphUmlDiagramViewModelFactory(navigationProvider)
 

@@ -14,7 +14,8 @@ public fun interface ScreenFactory<
     Ctx : GenericComponentContext<Ctx>,
     P : IntentScreenParams<I>,
     I : ScreenIntent,
-    S : GenericScreen<Ctx>,
+    BS : GenericScreen<Ctx, BS>,
+    S : BS,
     > {
     /**
      * Создает компонент экрана.

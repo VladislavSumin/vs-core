@@ -27,13 +27,13 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
-public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigationSlot(
+public fun <Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> BS.childNavigationSlot(
     navigationHost: NavigationHost,
     initialConfiguration: () -> IntentScreenParams<*>? = { null },
     key: String = "slot_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildSlot<ConfigurationHolder, GenericScreen<Ctx>>> {
+): Value<ChildSlot<ConfigurationHolder, BS>> {
     val source = SlotNavigation<ConfigurationHolder>()
 
     val hostNavigator = SlotHostNavigator(source)

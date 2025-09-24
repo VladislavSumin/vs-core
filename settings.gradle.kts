@@ -29,6 +29,7 @@ include(":core:logger:manager")
 include(":core:logger:platform")
 
 include(":core:navigation:api")
+include(":core:navigation:compose")
 include(":core:navigation:debug")
 include(":core:navigation:di")
 include(":core:navigation:impl")

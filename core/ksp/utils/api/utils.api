@@ -3,7 +3,8 @@ public final class ru/vladislavsumin/core/ksp/utils/KsClassDeclarationUtilsKt {
 }
 
 public final class ru/vladislavsumin/core/ksp/utils/KsTypeUtilsKt {
-	public static final fun toTypeNameOrNull (Lcom/google/devtools/ksp/symbol/KSType;)Lcom/squareup/kotlinpoet/TypeName;
+	public static final fun toTypeNameOrNull (Lcom/google/devtools/ksp/symbol/KSType;Lcom/squareup/kotlinpoet/ksp/TypeParameterResolver;)Lcom/squareup/kotlinpoet/TypeName;
+	public static synthetic fun toTypeNameOrNull$default (Lcom/google/devtools/ksp/symbol/KSType;Lcom/squareup/kotlinpoet/ksp/TypeParameterResolver;ILjava/lang/Object;)Lcom/squareup/kotlinpoet/TypeName;
 }
 
 public final class ru/vladislavsumin/core/ksp/utils/ResolverExtKt {

@@ -10,10 +10,10 @@ import ru.vladislavsumin.core.navigation.screen.asKey
 /**
  * Стандартная фабрика дочерних экранов для использования в compose навигации.
  */
-internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreenFactory(
+internal fun <Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> BS.childScreenFactory(
     configuration: ConfigurationHolder,
     childScreenContext: Ctx,
-): GenericScreen<Ctx> {
+): BS {
     val childScreenNavigator = internalNavigator.createChildNavigator(
         childScreenParams = configuration.screenParams,
         childContext = childScreenContext,

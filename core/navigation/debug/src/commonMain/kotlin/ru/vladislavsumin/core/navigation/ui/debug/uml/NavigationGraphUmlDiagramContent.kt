@@ -17,7 +17,7 @@ import ru.vladislavsumin.core.uikit.graph.Tree
 
 @Composable
 internal fun NavigationGraphUmlDiagramContent(
-    viewModel: NavigationGraphUmlDiagramViewModel,
+    viewModel: NavigationGraphUmlDiagramViewModel<*>,
     modifier: Modifier,
 ) {
     // Текущее приближение графа.

@@ -1,0 +1,5 @@
+public abstract class ru/vladislavsumin/core/navigation/screen/GenericComposeScreen : ru/vladislavsumin/core/navigation/screen/GenericScreen, ru/vladislavsumin/core/decompose/compose/ComposeComponent {
+	public static final field $stable I
+	public fun <init> (Lcom/arkivanov/decompose/GenericComponentContext;)V
+}
+

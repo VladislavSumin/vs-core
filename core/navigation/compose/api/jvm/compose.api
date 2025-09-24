@@ -1,10 +1,5 @@
-public abstract interface class ru/vladislavsumin/core/navigation/screen/ComposeRender : ru/vladislavsumin/core/decompose/compose/ComposeComponent, ru/vladislavsumin/core/navigation/screen/Render {
-}
-
-public abstract class ru/vladislavsumin/core/navigation/screen/GenericComposeScreen : ru/vladislavsumin/core/navigation/screen/GenericScreen, ru/vladislavsumin/core/navigation/screen/ComposeRender {
+public abstract class ru/vladislavsumin/core/navigation/screen/GenericComposeScreen : ru/vladislavsumin/core/navigation/screen/GenericScreen, ru/vladislavsumin/core/decompose/compose/ComposeComponent {
 	public static final field $stable I
 	public fun <init> (Lcom/arkivanov/decompose/GenericComponentContext;)V
-	public final fun getRender ()Lru/vladislavsumin/core/navigation/screen/ComposeRender;
-	public synthetic fun getRender ()Lru/vladislavsumin/core/navigation/screen/Render;
 }
 

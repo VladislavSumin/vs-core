@@ -82,12 +82,8 @@ public abstract class ru/vladislavsumin/core/navigation/screen/GenericScreen : r
 	public fun <init> (Lcom/arkivanov/decompose/GenericComponentContext;)V
 	protected fun delaySplashScreen (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	protected final fun getNavigator ()Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;
-	public abstract fun getRender ()Lru/vladislavsumin/core/navigation/screen/Render;
 	public final fun handleNavigation (Lru/vladislavsumin/core/navigation/viewModel/NavigationViewModel;)V
 	protected final fun viewModel (Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/decompose/components/ViewModel;
-}
-
-public abstract interface class ru/vladislavsumin/core/navigation/screen/Render {
 }
 
 public abstract interface class ru/vladislavsumin/core/navigation/screen/ScreenFactory {

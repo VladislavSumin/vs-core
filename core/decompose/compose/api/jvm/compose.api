@@ -2,3 +2,7 @@ public abstract interface class ru/vladislavsumin/core/decompose/compose/Compose
 	public abstract fun Render (Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)V
 }
 
+public final class ru/vladislavsumin/core/decompose/compose/MainThreadUtilsKt {
+	public static final fun runOnUiThread (Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+}
+

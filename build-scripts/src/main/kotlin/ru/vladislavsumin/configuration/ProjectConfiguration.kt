@@ -21,7 +21,7 @@ open class ProjectConfiguration(project: Project, propertyProvider: PropertyProv
         /**
          * Версия jvm используемая для сборки проекта
          */
-        val jvmVersion = property("jvmVersion", "17")
+        val jvmVersion = property("jvmVersion", "21")
 
         val android = Android()
 

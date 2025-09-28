@@ -57,7 +57,8 @@ internal class FactoryGeneratorSymbolProcessor(
             it.annotationType.resolve().toClassName().canonicalName == GenerateFactory::class.qualifiedName
         }
 
-        val factoryInterface = (annotation.arguments.single().value as KSType).toClassName().let {
+        // Я без понятия почему, но аргументы могут быть пустыми несмотря на default value. А могут и нет...
+        val factoryInterface = (annotation.arguments.firstOrNull()?.value as? KSType)?.toClassName().let {
             if (it == Types.Kotlin.Any) {
                 null
             } else {

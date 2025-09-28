@@ -2,5 +2,6 @@ public abstract interface annotation class ru/vladislavsumin/core/factoryGenerat
 }
 
 public abstract interface annotation class ru/vladislavsumin/core/factoryGenerator/GenerateFactory : java/lang/annotation/Annotation {
+	public abstract fun factoryInterface ()Ljava/lang/Class;
 }
 

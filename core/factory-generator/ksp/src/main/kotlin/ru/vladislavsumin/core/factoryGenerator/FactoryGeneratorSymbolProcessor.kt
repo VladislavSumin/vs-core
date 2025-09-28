@@ -1,11 +1,14 @@
 package ru.vladislavsumin.core.factoryGenerator
 
+import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getKotlinClassByName
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
@@ -15,6 +18,7 @@ import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
+import ru.vladislavsumin.core.ksp.utils.Types
 import ru.vladislavsumin.core.ksp.utils.primaryConstructorWithPrivateFields
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
 import ru.vladislavsumin.core.ksp.utils.writeTo
@@ -24,9 +28,9 @@ internal class FactoryGeneratorSymbolProcessor(
     private val logger: KSPLogger,
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> =
-        resolver.processAnnotated<GenerateFactory>(::processGenerateFactoryAnnotation)
+        resolver.processAnnotated<GenerateFactory> { processGenerateFactoryAnnotation(resolver, it) }
 
-    private fun processGenerateFactoryAnnotation(instance: KSAnnotated) {
+    private fun processGenerateFactoryAnnotation(resolver: Resolver, instance: KSAnnotated) {
         // Проверяем тип объекта к которому применена аннотация
         if (instance !is KSClassDeclaration) {
             logger.error(
@@ -35,7 +39,7 @@ internal class FactoryGeneratorSymbolProcessor(
             )
             return
         }
-        generateFactory(instance)
+        generateFactory(resolver, instance)
     }
 
     /**
@@ -43,11 +47,26 @@ internal class FactoryGeneratorSymbolProcessor(
      *
      * @param instance инстанс который должна создавать фабрика
      */
+    @OptIn(KspExperimental::class)
+    @Suppress("LongMethod") // TODO отрефакторить + написать тесты.
     private fun generateFactory(
+        resolver: Resolver,
         instance: KSClassDeclaration,
     ) {
+        val annotation = instance.annotations.first {
+            it.annotationType.resolve().toClassName().canonicalName == GenerateFactory::class.qualifiedName
+        }
+
+        val factoryInterface = (annotation.arguments.single().value as KSType).toClassName().let {
+            if (it == Types.Kotlin.Any) {
+                null
+            } else {
+                it
+            }
+        }
+
         // Имя будущей фабрики.
-        val name = instance.simpleName.getShortName() + "Factory"
+        val name = (factoryInterface?.simpleName?.plus("Impl") ?: instance.simpleName.getShortName().plus("Factory"))
 
         val primaryConstructor = instance.primaryConstructor ?: let {
             logger.error(
@@ -60,12 +79,21 @@ internal class FactoryGeneratorSymbolProcessor(
         // Список параметров в основном конструкторе.
         val constructorParams = primaryConstructor.parameters
 
-        val factoryConstructorParams = constructorParams
-            .filter { constructorParam ->
-                constructorParam.annotations
-                    .map { it.toAnnotationSpec().typeName }
-                    .none { it == BY_CREATE_ANNOTATION }
-            }
+        val factoryConstructorParams = if (factoryInterface == null) {
+            constructorParams
+                .filter { constructorParam ->
+                    constructorParam.annotations
+                        .map { it.toAnnotationSpec().typeName }
+                        .none { it == BY_CREATE_ANNOTATION }
+                }
+        } else {
+            val functionParams = resolver.getKotlinClassByName(factoryInterface.canonicalName)!!
+                .getAllFunctions().first { it.simpleName.asString() == "create" }
+                .parameters
+                .map { it.name }
+                .toSet()
+            constructorParams.filter { it.name !in functionParams }
+        }
 
         val functionParams = constructorParams - factoryConstructorParams
 
@@ -87,6 +115,9 @@ internal class FactoryGeneratorSymbolProcessor(
                 functionParams.forEach {
                     addParameter(it.name!!.getShortName(), it.type.toTypeName())
                 }
+                if (factoryInterface != null) {
+                    addModifiers(KModifier.OVERRIDE)
+                }
             }
             .addCode(returnCodeBlock)
             .returns(instance.toClassName())
@@ -96,6 +127,11 @@ internal class FactoryGeneratorSymbolProcessor(
             .primaryConstructorWithPrivateFields(
                 factoryConstructorParams.map { it.name!!.getShortName() to it.type.toTypeName() },
             )
+            .apply {
+                if (factoryInterface != null) {
+                    addSuperinterface(factoryInterface)
+                }
+            }
             .addModifiers(KModifier.INTERNAL)
             .addFunction(createFunction)
             .addOriginatingKSFile(instance.containingFile!!)

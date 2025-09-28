@@ -6,6 +6,10 @@ import com.squareup.kotlinpoet.ClassName
  * Набор стандартных типов для использования в кодогенерации.
  */
 public object Types {
+    public object Kotlin {
+        public val Any: ClassName = ClassName("kotlin", "Any")
+    }
+
     public object Coroutines {
         public val Flow: ClassName = ClassName("kotlinx.coroutines.flow", "Flow")
         public val StateFlow: ClassName = ClassName("kotlinx.coroutines.flow", "StateFlow")

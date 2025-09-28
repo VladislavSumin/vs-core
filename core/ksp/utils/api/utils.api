@@ -29,6 +29,11 @@ public final class ru/vladislavsumin/core/ksp/utils/Types$Coroutines {
 	public final fun getStateFlow ()Lcom/squareup/kotlinpoet/ClassName;
 }
 
+public final class ru/vladislavsumin/core/ksp/utils/Types$Kotlin {
+	public static final field INSTANCE Lru/vladislavsumin/core/ksp/utils/Types$Kotlin;
+	public final fun getAny ()Lcom/squareup/kotlinpoet/ClassName;
+}
+
 public final class ru/vladislavsumin/core/ksp/utils/Types$Serialization {
 	public static final field INSTANCE Lru/vladislavsumin/core/ksp/utils/Types$Serialization;
 	public final fun getProtoBuf ()Lcom/squareup/kotlinpoet/ClassName;

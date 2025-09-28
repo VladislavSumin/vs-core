@@ -6,6 +6,7 @@ kotlin-core = "2.2.0"
 kotlin-ksp = "2.2.0-2.0.2"
 kotlin-coroutines = "1.10.2"
 kotlin-serialization = "1.9.0"
+kotlin-atomicfu = "0.29.0"
 kotlin-binaryValidator = "0.18.1"
 kotlin-compileTesting = "0.8.0"
 
@@ -34,6 +35,7 @@ testing-mockk = "1.14.5"
 gradlePlugins-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-core" }
 gradlePlugins-kotlin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "kotlin-ksp" }
 gradlePlugins-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin-core" }
+gradlePlugins-kotlin-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "kotlin-atomicfu" }
 gradlePlugins-kotlin-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin-core" }
 gradlePlugins-kotlin-binaryValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "kotlin-binaryValidator" }
 gradlePlugins-jb-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jb-compose" }
@@ -79,6 +81,7 @@ kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-te
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-serialization" }
+kotlin-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlin-atomicfu" }
 kotlin-compileTesting-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kotlin-compileTesting" }
 
 # Decompose

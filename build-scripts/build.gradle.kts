@@ -13,6 +13,7 @@ dependencies {
     implementation(vsCoreLibs.gradlePlugins.kotlin.ksp)
     implementation(vsCoreLibs.gradlePlugins.kotlin.compose.compiler)
     implementation(vsCoreLibs.gradlePlugins.kotlin.serialization)
+    implementation(vsCoreLibs.gradlePlugins.kotlin.atomicfu)
     implementation(vsCoreLibs.gradlePlugins.kotlin.binaryValidator)
     implementation(vsCoreLibs.gradlePlugins.jb.compose)
     implementation(vsCoreLibs.gradlePlugins.android)

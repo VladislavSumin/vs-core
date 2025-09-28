@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ListAsyncTransformTest {
+class ListAsyncMapNotNullTest {
     @Test
     fun mapCollectionWithoutNulls() = runBlocking {
         val original = buildList<Int>(ELEMENT_COUNT) {
@@ -15,7 +15,7 @@ class ListAsyncTransformTest {
             }
         }
         withContext(Dispatchers.Default) {
-            val transformed = original.asyncTransform { -it }
+            val transformed = original.asyncMapNotNull { -it }
             val expected = original.map { -it }
             assertEquals(expected, transformed)
 
@@ -30,7 +30,7 @@ class ListAsyncTransformTest {
             }
         }
         withContext(Dispatchers.Default) {
-            val transformed = original.asyncTransform { if (it % 2 == 0) it else null }
+            val transformed = original.asyncMapNotNull { if (it % 2 == 0) it else null }
             val expected = original.mapNotNull { if (it % 2 == 0) it else null }
             assertEquals(expected, transformed)
 
@@ -38,7 +38,7 @@ class ListAsyncTransformTest {
     }
 
 
-    companion object {
+    companion object Companion {
         private const val ELEMENT_COUNT: Int = 1_000_000
     }
 }

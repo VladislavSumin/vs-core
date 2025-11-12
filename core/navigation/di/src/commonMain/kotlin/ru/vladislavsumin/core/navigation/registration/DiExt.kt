@@ -5,6 +5,7 @@ import org.kodein.di.DI
 import org.kodein.di.DirectDIAware
 import org.kodein.di.inBindSet
 import org.kodein.di.provider
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 
 /**
  * Синтаксический сахар для регистрации навигации.
@@ -12,11 +13,12 @@ import org.kodein.di.provider
  */
 public inline fun <
     Ctx : GenericComponentContext<Ctx>,
-    reified T : GenericNavigationRegistrar<Ctx>,
+    BS : GenericScreen<Ctx, BS>,
+    reified T : GenericNavigationRegistrar<Ctx, BS>,
     > DI.Builder.bindGenericNavigation(
     crossinline block: DirectDIAware.() -> T,
 ) {
-    inBindSet<GenericNavigationRegistrar<Ctx>> {
+    inBindSet<GenericNavigationRegistrar<Ctx, BS>> {
         add { provider { block() } }
     }
 }

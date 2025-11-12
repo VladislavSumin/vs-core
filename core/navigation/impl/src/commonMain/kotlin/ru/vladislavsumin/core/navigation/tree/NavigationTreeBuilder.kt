@@ -8,19 +8,20 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.repository.NavigationRepository
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
-internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
-    private val repository: NavigationRepository<Ctx>,
+internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>>(
+    private val repository: NavigationRepository<Ctx, BS>,
 ) {
-    fun build() = NavigationTree<Ctx>(buildNavGraph())
+    fun build() = NavigationTree<Ctx, BS>(buildNavGraph())
 
     /**
      * Строит навигационное дерево.
      *
      * @return возвращает корень полученного дерева.
      */
-    private fun buildNavGraph(): LinkedTreeNode<ScreenInfo<Ctx>> {
+    private fun buildNavGraph(): LinkedTreeNode<ScreenInfo<Ctx, BS>> {
         val rootScreen = findRootScreen()
         return buildNode(
             parent = null,
@@ -41,7 +42,7 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
         parent: ScreenKey?,
         hostInParent: NavigationHost?,
         screenKey: ScreenKey,
-    ): LinkedTreeNodeImpl<ScreenInfo<Ctx>> {
+    ): LinkedTreeNodeImpl<ScreenInfo<Ctx, BS>> {
         val screenRegistration = repository.screens[screenKey]
             ?: throw ScreenNotRegisteredException(parent, hostInParent, screenKey)
 
@@ -55,7 +56,7 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
         )
 
         // Пробегаемся по всем навигационным хостам, объявленным для данной ноды.
-        val child: List<LinkedTreeNodeImpl<ScreenInfo<Ctx>>> = screenRegistration.navigationHosts
+        val child: List<LinkedTreeNodeImpl<ScreenInfo<Ctx, BS>>> = screenRegistration.navigationHosts
             .flatMap { (host, screens) ->
                 screens.map { screen -> buildNode(screenKey, host, screen) }
             }

@@ -14,7 +14,9 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.collections.tree)
 
+            implementation(projects.core.decompose.compose)
             implementation(projects.core.navigation.impl)
+            implementation(projects.core.navigation.compose)
             implementation(projects.core.uikit.graph)
 
             implementation(compose.runtime)

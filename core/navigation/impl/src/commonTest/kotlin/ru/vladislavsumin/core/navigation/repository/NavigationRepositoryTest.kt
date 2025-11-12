@@ -2,12 +2,12 @@ package ru.vladislavsumin.core.navigation.repository
 
 import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
-import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
 import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.testData.ScreenA
 import ru.vladislavsumin.core.navigation.testData.ScreenB
 import ru.vladislavsumin.core.navigation.utils.FailingScreenFactory
+import ru.vladislavsumin.core.navigation.utils.TestScreen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -15,7 +15,7 @@ import kotlin.test.assertFailsWith
 class NavigationRepositoryTest {
     @Test
     fun checkNoneScreenRegistration() {
-        val repository = NavigationRepositoryImpl<ComponentContext>(emptySet())
+        val repository = NavigationRepositoryImpl<ComponentContext, TestScreen>(emptySet())
         assertEquals(0, repository.screens.size)
         assertEquals(0, repository.serializers.size)
     }
@@ -23,7 +23,11 @@ class NavigationRepositoryTest {
     @Test
     fun checkSingleScreenRegistration() {
         val registrars = setOf(
-            NavigationRegistrar { registerScreen(factory = FailingScreenFactory<ScreenA>()) },
+            GenericNavigationRegistrar<ComponentContext, TestScreen> {
+                registerScreen(
+                    factory = FailingScreenFactory<ScreenA>(),
+                )
+            },
         )
         val repository = NavigationRepositoryImpl(registrars)
         assertEquals(1, repository.screens.size)
@@ -34,8 +38,16 @@ class NavigationRepositoryTest {
     @Test
     fun checkMultipleScreenRegistration() {
         val registrars = setOf(
-            GenericNavigationRegistrar { registerScreen(factory = FailingScreenFactory<ScreenA>()) },
-            GenericNavigationRegistrar { registerScreen(factory = FailingScreenFactory<ScreenB>()) },
+            GenericNavigationRegistrar<ComponentContext, TestScreen> {
+                registerScreen(
+                    factory = FailingScreenFactory<ScreenA>(),
+                )
+            },
+            GenericNavigationRegistrar<ComponentContext, TestScreen> {
+                registerScreen(
+                    factory = FailingScreenFactory<ScreenB>(),
+                )
+            },
         )
         val repository = NavigationRepositoryImpl(registrars)
         assertEquals(2, repository.screens.size)
@@ -45,8 +57,16 @@ class NavigationRepositoryTest {
     @Test
     fun checkDoubleScreenRegistration() {
         val registrars = setOf(
-            GenericNavigationRegistrar { registerScreen(factory = FailingScreenFactory<ScreenA>()) },
-            GenericNavigationRegistrar { registerScreen(factory = FailingScreenFactory<ScreenA>()) },
+            GenericNavigationRegistrar<ComponentContext, TestScreen> {
+                registerScreen(
+                    factory = FailingScreenFactory<ScreenA>(),
+                )
+            },
+            GenericNavigationRegistrar<ComponentContext, TestScreen> {
+                registerScreen(
+                    factory = FailingScreenFactory<ScreenA>(),
+                )
+            },
         )
         assertFailsWith<DoubleScreenRegistrationException> {
             NavigationRepositoryImpl(registrars)
@@ -55,9 +75,9 @@ class NavigationRepositoryTest {
 
     @Test
     fun checkScreenRegistrationAfterFinalize() {
-        var screenRegistry: NavigationRegistry<ComponentContext>? = null
+        var screenRegistry: NavigationRegistry<ComponentContext, TestScreen>? = null
         val registrars = setOf(
-            GenericNavigationRegistrar { screenRegistry = this },
+            GenericNavigationRegistrar<ComponentContext, TestScreen> { screenRegistry = this },
         )
         NavigationRepositoryImpl(registrars)
 

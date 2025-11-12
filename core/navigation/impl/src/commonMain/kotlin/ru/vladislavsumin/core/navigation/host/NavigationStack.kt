@@ -29,14 +29,14 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
-public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigationStack(
+public fun <Ctx : GenericComponentContext<Ctx>, BS : GenericScreen<Ctx, BS>> BS.childNavigationStack(
     navigationHost: NavigationHost,
     defaultStack: () -> List<IntentScreenParams<*>> = { emptyList() },
     initialStack: () -> List<IntentScreenParams<*>> = defaultStack,
     key: String = "stack_navigation",
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildStack<ConfigurationHolder, GenericScreen<Ctx>>> {
+): Value<ChildStack<ConfigurationHolder, BS>> {
     val source = StackNavigation<ConfigurationHolder>()
 
     val hostNavigator = StackHostNavigator(source)

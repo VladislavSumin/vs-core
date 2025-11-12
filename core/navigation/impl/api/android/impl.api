@@ -24,8 +24,8 @@ public final class ru/vladislavsumin/core/navigation/host/NavigationPagesKt {
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationRootKt {
-	public static final fun childNavigationRoot (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
-	public static synthetic fun childNavigationRoot$default (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
+	public static final fun childNavigationRoot (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/navigation/screen/GenericScreen;
+	public static synthetic fun childNavigationRoot$default (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lru/vladislavsumin/core/navigation/screen/GenericScreen;
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationSlotKt {
@@ -77,7 +77,7 @@ public final class ru/vladislavsumin/core/navigation/repository/ScreenRegistrati
 	public static final field $stable I
 }
 
-public abstract class ru/vladislavsumin/core/navigation/screen/GenericScreen : ru/vladislavsumin/core/decompose/components/GenericComponent, ru/vladislavsumin/core/decompose/compose/ComposeComponent {
+public abstract class ru/vladislavsumin/core/navigation/screen/GenericScreen : ru/vladislavsumin/core/decompose/components/GenericComponent {
 	public static final field $stable I
 	public fun <init> (Lcom/arkivanov/decompose/GenericComponentContext;)V
 	protected fun delaySplashScreen (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

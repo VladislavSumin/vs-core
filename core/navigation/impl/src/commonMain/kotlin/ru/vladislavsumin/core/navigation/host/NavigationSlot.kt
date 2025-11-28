@@ -26,6 +26,8 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param initialConfiguration начальный экран, который будет открыт в данной навигации. Можно использовать null, если
  * в дальнейшем мы будем открывать тут экраны через навигационный граф.
  * @param key уникальный в пределах экрана ключ для навигации.
+ * @param allowCloseScreen позволяет отменить закрытие экрана (переход слота в пустое состояние). Это нужно, например,
+ * при необходимости закрыть родительский экран при закрытии дочернего экрана с корректной анимацией.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
@@ -33,13 +35,14 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     navigationHost: NavigationHost,
     initialConfiguration: () -> IntentScreenParams<*>? = { null },
     key: String = "slot_navigation",
+    allowCloseScreen: () -> Boolean = { true },
     extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
 ): Value<ChildSlot<ConfigurationHolder, GenericScreen<Ctx>>> {
     val source = SlotNavigation<ConfigurationHolder>()
 
-    val hostNavigator = SlotHostNavigator(source)
+    val hostNavigator = SlotHostNavigator(source, allowCloseScreen)
     internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val context = if (extraLifecycle != null) internalContext.childContext(key, extraLifecycle) else internalContext
@@ -75,6 +78,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
 
 private class SlotHostNavigator(
     private val slotNavigation: SlotNavigation<ConfigurationHolder>,
+    private val allowCloseScreen: () -> Boolean,
 ) : HostNavigator {
     override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
@@ -106,7 +110,7 @@ private class SlotHostNavigator(
         slotNavigation.navigate { currentOpenedScreen ->
             if (params == currentOpenedScreen?.screenParams) {
                 isSuccess = true
-                null
+                if (allowCloseScreen()) null else currentOpenedScreen
             } else {
                 isSuccess = false
                 currentOpenedScreen
@@ -117,24 +121,24 @@ private class SlotHostNavigator(
 
     override fun close(screenKey: ScreenKey): Boolean {
         var isSuccess: Boolean? = null
-        slotNavigation.navigate {
+        slotNavigation.navigate { currentOpenedScreen ->
             when {
                 // Все экраны закрыты
-                it == null -> {
+                currentOpenedScreen == null -> {
                     isSuccess = false
-                    it
+                    currentOpenedScreen
                 }
 
                 // Открыт нужный нам экран
-                screenKey == it.screenParams.asKey() -> {
+                screenKey == currentOpenedScreen.screenParams.asKey() -> {
                     isSuccess = true
-                    null
+                    if (allowCloseScreen()) null else currentOpenedScreen
                 }
 
                 // Открыт другой экран, закрывать нечего.
                 else -> {
                     isSuccess = false
-                    it
+                    currentOpenedScreen
                 }
             }
         }

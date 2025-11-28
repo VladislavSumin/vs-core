@@ -1,12 +1,9 @@
 name: Publication Sonatype
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: Version (for example 0.0.0-SNAPSHOT)
-        required: true
-        type: string
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   publish:
@@ -38,7 +35,40 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
         with:
           gradle_command: >-
-            -Pru.vs.version=${{ inputs.version }}
+            -Pru.vs.version=${{ github.ref_name && format('{0}', github.ref_name) }}
             -Pru.vs.signing.keyId=${{ vars.SONATYPE_GPG_KEY_ID }}
             -Pru.vs.signing.secretKeyRingFile=${{ github.workspace }}/sonatype.gpg
             publishToMavenCentral
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get last tag except first
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          
+          if [ -z "$LAST_TAG" ]; then
+            # First release
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            # All commits science last release
+            CHANGELOG=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Changes in this release
+            
+            ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

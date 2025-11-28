@@ -1,11 +1,13 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.GenericComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
 import kotlinx.serialization.Serializable
@@ -31,6 +33,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     navigationHost: NavigationHost,
     initialPages: () -> Pages<IntentScreenParams<*>>,
     key: String = "pages_navigation",
+    extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
 ): Value<ChildPages<ConfigurationHolder, GenericScreen<Ctx>>> {
@@ -39,7 +42,9 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     val hostNavigator = PagesHostNavigator(source)
     internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
-    val pages = internalContext.childPages(
+    val context = if (extraLifecycle != null) internalContext.childContext(key, extraLifecycle) else internalContext
+
+    val pages = context.childPages(
         source = source,
         savePages = { state ->
             if (allowStateSave) {

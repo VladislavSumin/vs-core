@@ -21,6 +21,12 @@ jobs:
         with:
           key: "publish"
 
+      - name: Parse version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Load GPG Keys
         env:
           SONATYPE_GPG_BASE64: ${{ secrets.SONATYPE_GPG_BASE64 }}
@@ -35,7 +41,7 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
         with:
           gradle_command: >-
-            -Pru.vs.version=${{ github.ref_name && format('{0}', github.ref_name) }}
+            -Pru.vs.version=${VERSION}
             -Pru.vs.signing.keyId=${{ vars.SONATYPE_GPG_KEY_ID }}
             -Pru.vs.signing.secretKeyRingFile=${{ github.workspace }}/sonatype.gpg
             publishToMavenCentral

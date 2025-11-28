@@ -41,7 +41,7 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
         with:
           gradle_command: >-
-            -Pru.vs.version=${VERSION}
+            -Pru.vs.version=${{ env.VERSION }}
             -Pru.vs.signing.keyId=${{ vars.SONATYPE_GPG_KEY_ID }}
             -Pru.vs.signing.secretKeyRingFile=${{ github.workspace }}/sonatype.gpg
             publishToMavenCentral

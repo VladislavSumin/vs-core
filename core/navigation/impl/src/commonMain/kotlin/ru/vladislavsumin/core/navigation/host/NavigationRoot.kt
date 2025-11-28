@@ -2,6 +2,7 @@ package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -34,6 +35,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
     navigation: GenericNavigation<Ctx>,
     key: String = "navigation-root",
     coroutineScope: CoroutineScope = lifecycle.createCoroutineScope(),
+    extraLifecycle: Lifecycle? = null,
     onContentReady: (() -> Unit)? = null,
 ): ComposeComponent {
     val node = navigation.navigationTree
@@ -51,7 +53,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
 
     // Создаем дочерний контекст который будет являться контекстом для корневого экрана графа навигации.
     // Lifecycle полученного компонента будет совпадать с родителем
-    val childContext = childContext(key, lifecycle = null)
+    val childContext = childContext(key, lifecycle = extraLifecycle)
 
     val rootScreenNavigator = ScreenNavigator(
         globalNavigator = globalNavigator,

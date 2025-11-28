@@ -1,11 +1,13 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.GenericComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.navigate
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
 import ru.vladislavsumin.core.navigation.IntentScreenParams
@@ -31,6 +33,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     navigationHost: NavigationHost,
     initialConfiguration: () -> IntentScreenParams<*>? = { null },
     key: String = "slot_navigation",
+    extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
 ): Value<ChildSlot<ConfigurationHolder, GenericScreen<Ctx>>> {
@@ -39,7 +42,9 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     val hostNavigator = SlotHostNavigator(source)
     internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
-    val slot = internalContext.childSlot(
+    val context = if (extraLifecycle != null) internalContext.childContext(key, extraLifecycle) else internalContext
+
+    val slot = context.childSlot(
         source = source,
         saveConfiguration = { state ->
             if (allowStateSave && state != null) {

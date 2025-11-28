@@ -1,10 +1,12 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.GenericComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
 import kotlinx.serialization.builtins.ListSerializer
@@ -34,6 +36,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     defaultStack: () -> List<IntentScreenParams<*>> = { emptyList() },
     initialStack: () -> List<IntentScreenParams<*>> = defaultStack,
     key: String = "stack_navigation",
+    extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
 ): Value<ChildStack<ConfigurationHolder, GenericScreen<Ctx>>> {
@@ -42,7 +45,9 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     val hostNavigator = StackHostNavigator(source)
     internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
-    val stack = internalContext.childStack(
+    val context = if (extraLifecycle != null) internalContext.childContext(key, extraLifecycle) else internalContext
+
+    val stack = context.childStack(
         source = source,
         saveStack = { state ->
             if (allowStateSave) {

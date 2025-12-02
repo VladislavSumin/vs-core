@@ -26,8 +26,7 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param initialConfiguration начальный экран, который будет открыт в данной навигации. Можно использовать null, если
  * в дальнейшем мы будем открывать тут экраны через навигационный граф.
  * @param key уникальный в пределах экрана ключ для навигации.
- * @param allowCloseScreen позволяет отменить закрытие экрана (переход слота в пустое состояние). Это нужно, например,
- * при необходимости закрыть родительский экран при закрытии дочернего экрана с корректной анимацией.
+ * @param closeParentWhenEmpty закрывает родительский экран при попытке закрыть экран в этом слоте.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
@@ -35,14 +34,21 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     navigationHost: NavigationHost,
     initialConfiguration: () -> IntentScreenParams<*>? = { null },
     key: String = "slot_navigation",
-    allowCloseScreen: () -> Boolean = { true },
+    closeParentWhenEmpty: Boolean = false,
     extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
 ): Value<ChildSlot<ConfigurationHolder, GenericScreen<Ctx>>> {
     val source = SlotNavigation<ConfigurationHolder>()
 
-    val hostNavigator = SlotHostNavigator(source, allowCloseScreen)
+    val hostNavigator = SlotHostNavigator(source) {
+        if (closeParentWhenEmpty) {
+            internalNavigator.close()
+            false
+        } else {
+            true
+        }
+    }
     internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val context = if (extraLifecycle != null) internalContext.childContext(key, extraLifecycle) else internalContext

@@ -11,7 +11,7 @@ jobs:
   detekt:
     name: Detekt
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
   unit-tests:
     name: Unit tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -53,7 +53,7 @@ jobs:
   check-api:
     name: Check public api
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
   assemble:
     name: Assemble
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Clone repository
         uses: actions/checkout@v4

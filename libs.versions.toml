@@ -8,6 +8,7 @@ kotlin-coroutines = "1.10.2"
 kotlin-serialization = "1.9.0"
 kotlin-binaryValidator = "0.18.1"
 kotlin-compileTesting = "0.11.1"
+kotlin-io = "0.8.2"
 
 # Gradle
 gradlePlugins-android = "8.11.0"
@@ -56,6 +57,9 @@ vs-core-di = { module = "ru.vladislavsumin.core:di", version.ref = "vs-core" }
 vs-core-factoryGenerator-api = { module = "ru.vladislavsumin.core.factory-generator:api", version.ref = "vs-core" }
 vs-core-factoryGenerator-ksp = { module = "ru.vladislavsumin.core.factory-generator:ksp", version.ref = "vs-core" }
 
+vs-core-fs-api = { module = "ru.vladislavsumin.core.fs:api", version.ref = "vs-core" }
+vs-core-fs-impl = { module = "ru.vladislavsumin.core.fs:impl", version.ref = "vs-core" }
+
 vs-core-ksp-test = { module = "ru.vladislavsumin.core.ksp:test", version.ref = "vs-core" }
 vs-core-ksp-utils = { module = "ru.vladislavsumin.core.ksp:utils", version.ref = "vs-core" }
 
@@ -80,6 +84,7 @@ kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-serialization" }
 kotlin-compileTesting-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kotlin-compileTesting" }
+kotlin-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlin-io" }
 
 # Decompose
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }

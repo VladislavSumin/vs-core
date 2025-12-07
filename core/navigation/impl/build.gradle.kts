@@ -1,3 +1,5 @@
+import ru.vladislavsumin.utils.internalApi
+
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
     id("ru.vladislavsumin.convention.compose")
@@ -6,13 +8,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+internalApi("ru.vladislavsumin.core.navigation.InternalNavigationApi")
+
 kotlin {
-
     sourceSets {
-        all {
-            languageSettings.optIn("ru.vladislavsumin.core.navigation.InternalNavigationApi")
-        }
-
         commonMain.dependencies {
             api(projects.core.navigation.api)
             api(projects.core.decompose.components)
@@ -25,8 +24,4 @@ kotlin {
             implementation(vsCoreLibs.kotlin.serialization.json)
         }
     }
-}
-
-apiValidation {
-    nonPublicMarkers.add("ru.vladislavsumin.core.navigation.InternalNavigationApi")
 }

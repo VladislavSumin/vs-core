@@ -1,7 +1,6 @@
 plugins {
     id("ru.vladislavsumin.convention.kmp.all")
     id("ru.vladislavsumin.convention.preset.publish-off")
-    kotlin("plugin.serialization") // TODO кажется конкретно тут можно убрать плагин
 }
 
 kotlin {

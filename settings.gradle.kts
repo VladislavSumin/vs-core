@@ -38,4 +38,9 @@ include(":core:navigation:impl")
 include(":core:navigation:factory-generator:api")
 include(":core:navigation:factory-generator:ksp")
 
+include(":core:serialization:core")
+include(":core:serialization:json")
+include(":core:serialization:protobuf")
+include(":core:serialization:yaml")
+
 include(":core:uikit:graph")

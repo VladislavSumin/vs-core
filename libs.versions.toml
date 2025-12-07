@@ -5,7 +5,8 @@ vs-core = "NO_VERSION"
 kotlin-core = "2.2.21"
 kotlin-ksp = "2.3.3"
 kotlin-coroutines = "1.10.2"
-kotlin-serialization = "1.9.0"
+kotlin-serialization-core = "1.9.0"
+kotlin-serialization-kaml = "0.104.0"
 kotlin-binaryValidator = "0.18.1"
 kotlin-compileTesting = "0.11.1"
 kotlin-io = "0.8.2"
@@ -74,15 +75,21 @@ vs-core-navigation-di = { module = "ru.vladislavsumin.core.navigation:di", versi
 vs-core-navigation-factoryGenerator-api = { module = "ru.vladislavsumin.core.navigation.factory-generator:api", version.ref = "vs-core" }
 vs-core-navigation-factoryGenerator-ksp = { module = "ru.vladislavsumin.core.navigation.factory-generator:ksp", version.ref = "vs-core" }
 
+vs-core-serialization-api = { module = "ru.vladislavsumin.core.serialization:api", version.ref = "vs-core" }
+vs-core-serialization-json = { module = "ru.vladislavsumin.core.serialization:json", version.ref = "vs-core" }
+vs-core-serialization-protobuf = { module = "ru.vladislavsumin.core.serialization:protobuf", version.ref = "vs-core" }
+vs-core-serialization-yaml = { module = "ru.vladislavsumin.core.serialization:yaml", version.ref = "vs-core" }
+
 vs-core-uikit-graph = { module = "ru.vladislavsumin.core.uikit:graph", version.ref = "vs-core" }
 
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
-kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization" }
-kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
-kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-serialization" }
+kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlin-serialization-core" }
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization-core" }
+kotlin-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlin-serialization-core" }
+kotlin-serialization-yaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kotlin-serialization-kaml" }
 kotlin-compileTesting-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref = "kotlin-compileTesting" }
 kotlin-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlin-io" }
 

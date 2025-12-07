@@ -1,0 +1,4 @@
+public final class ru/vladislavsumin/core/serialization/json/DiKt {
+	public static final fun coreSerializationJson (Lru/vladislavsumin/core/di/Modules;)Lorg/kodein/di/DI$Module;
+}
+

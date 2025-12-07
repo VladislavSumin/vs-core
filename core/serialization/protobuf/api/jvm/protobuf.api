@@ -1,0 +1,4 @@
+public final class ru/vladislavsumin/core/serialization/protobuf/DiKt {
+	public static final fun coreSerializationProtobuf (Lru/vladislavsumin/core/di/Modules;)Lorg/kodein/di/DI$Module;
+}
+

@@ -1,0 +1,4 @@
+public final class ru/vladislavsumin/core/serialization/yaml/DiKt {
+	public static final fun coreSerializationYaml (Lru/vladislavsumin/core/di/Modules;)Lorg/kodein/di/DI$Module;
+}
+

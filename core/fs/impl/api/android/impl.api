@@ -1,0 +1,4 @@
+public final class ru/vladislavsumin/core/fs/DiKt {
+	public static final fun coreFs (Lru/vladislavsumin/core/di/Modules;Ljava/lang/String;)Lorg/kodein/di/DI$Module;
+}
+

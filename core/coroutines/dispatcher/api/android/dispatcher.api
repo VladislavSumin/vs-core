@@ -1,0 +1,11 @@
+public final class ru/vladislavsumin/core/coroutines/dispatcher/DiKt {
+	public static final fun coreCoroutinesDispatchers (Lru/vladislavsumin/core/di/Modules;)Lorg/kodein/di/DI$Module;
+}
+
+public abstract interface class ru/vladislavsumin/core/coroutines/dispatcher/VsDispatchers {
+	public abstract fun getDefault ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public abstract fun getIO ()Lkotlinx/coroutines/CoroutineDispatcher;
+	public abstract fun getMain ()Lkotlinx/coroutines/MainCoroutineDispatcher;
+	public abstract fun getUnconfined ()Lkotlinx/coroutines/CoroutineDispatcher;
+}
+

@@ -13,7 +13,7 @@ private class FileSystemBaseDirProviderImpl(
         File(homePath)
     }
 
-    private val appDir by lazy { homeDir.resolve(fsApplicationMeta.name) }
+    private val appDir by lazy { homeDir.resolve(".${fsApplicationMeta.name}") }
 
     override fun getAppFileDir(): Path = Path(appDir.absolutePath)
 }

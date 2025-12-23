@@ -7,4 +7,7 @@ internal class FileSystemServiceImpl(
 ) : FileSystemService {
     override fun getPreferencesDir(): Path =
         Path(fileSystemBaseDirProvider.getAppFileDir().toString() + "/data/preferences")
+
+    override fun getDatabaseDir(): Path =
+        Path(fileSystemBaseDirProvider.getAppFileDir().toString() + "/data/db")
 }

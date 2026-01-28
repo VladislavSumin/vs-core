@@ -3,5 +3,14 @@ public abstract interface annotation class ru/vladislavsumin/core/factoryGenerat
 
 public abstract interface annotation class ru/vladislavsumin/core/factoryGenerator/GenerateFactory : java/lang/annotation/Annotation {
 	public abstract fun factoryInterface ()Ljava/lang/Class;
+	public abstract fun visibility ()Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;
+}
+
+public final class ru/vladislavsumin/core/factoryGenerator/PackageVisibility : java/lang/Enum {
+	public static final field Internal Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;
+	public static final field Public Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;
+	public static fun values ()[Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;
 }
 

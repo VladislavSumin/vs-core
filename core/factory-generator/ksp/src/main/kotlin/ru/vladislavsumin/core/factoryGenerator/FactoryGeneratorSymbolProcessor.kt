@@ -48,23 +48,35 @@ internal class FactoryGeneratorSymbolProcessor(
      * @param instance инстанс который должна создавать фабрика
      */
     @OptIn(KspExperimental::class)
-    @Suppress("LongMethod") // TODO отрефакторить + написать тесты.
+    @Suppress("LongMethod", "CyclomaticComplexMethod") // TODO отрефакторить + написать тесты.
     private fun generateFactory(
         resolver: Resolver,
         instance: KSClassDeclaration,
     ) {
+        // TODO разобраться с получением инстанса аннотации для упрощения дальнейшей работы с ней
         val annotation = instance.annotations.first {
             it.annotationType.resolve().toClassName().canonicalName == GenerateFactory::class.qualifiedName
         }
 
         // Я без понятия почему, но аргументы могут быть пустыми несмотря на default value. А могут и нет...
-        val factoryInterface = (annotation.arguments.firstOrNull()?.value as? KSType)?.toClassName().let {
-            if (it == Types.Kotlin.Any) {
-                null
-            } else {
-                it
-            }
-        }
+        val factoryInterface =
+            (annotation.arguments.find { it.name?.asString() == "factoryInterface" }?.value as? KSType)
+                ?.toClassName()
+                .let {
+                    if (it == Types.Kotlin.Any) {
+                        null
+                    } else {
+                        it
+                    }
+                }
+
+        val visibilityModifier =
+            (annotation.arguments.find { it.name?.asString() == "visibility" }?.value as? KSClassDeclaration)
+                ?.simpleName
+                ?.asString()
+                ?.let { visibility ->
+                    PackageVisibility.valueOf(visibility)
+                } ?: PackageVisibility.Internal
 
         // Имя будущей фабрики.
         val name = (factoryInterface?.simpleName?.plus("Impl") ?: instance.simpleName.getShortName().plus("Factory"))
@@ -133,7 +145,7 @@ internal class FactoryGeneratorSymbolProcessor(
                     addSuperinterface(factoryInterface)
                 }
             }
-            .addModifiers(KModifier.INTERNAL)
+            .addModifiers(visibilityModifier.toModifier())
             .addFunction(createFunction)
             .addOriginatingKSFile(instance.containingFile!!)
             .build()
@@ -143,4 +155,9 @@ internal class FactoryGeneratorSymbolProcessor(
     companion object {
         private val BY_CREATE_ANNOTATION = ClassName("ru.vladislavsumin.core.factoryGenerator", "ByCreate")
     }
+}
+
+private fun PackageVisibility.toModifier(): KModifier = when (this) {
+    PackageVisibility.Public -> KModifier.PUBLIC
+    PackageVisibility.Internal -> KModifier.INTERNAL
 }

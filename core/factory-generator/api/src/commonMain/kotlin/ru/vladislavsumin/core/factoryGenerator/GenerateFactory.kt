@@ -17,7 +17,17 @@ import kotlin.reflect.KClass
  * 2) [factoryInterface] указан, тогда будет создана FactoryInterfaceImpl фабрика. [ByCreate] в этом случае не
  * учитывается. [factoryInterface] должен иметь один метод create возвращающий совместимый тип. Параметры метода
  * create и конструктора класса сравниваются по имени. Не найденные параметры будут вынесены в конструктор фабрики.
+ *
+ * @param visibility модификатор видимости у класса сгенерированной фабрики
  */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-public annotation class GenerateFactory(val factoryInterface: KClass<*> = Any::class)
+public annotation class GenerateFactory(
+    val factoryInterface: KClass<*> = Any::class,
+    val visibility: PackageVisibility = PackageVisibility.Internal,
+)
+
+public enum class PackageVisibility {
+    Public,
+    Internal,
+}

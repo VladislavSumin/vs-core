@@ -25,6 +25,19 @@ class FactoryGeneratorSymbolProcessorTest {
     }
 
     @Test
+    fun testFactoryWithoutParamsWithPublicModifier() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithNoParamsAndPublicModifier,
+            factory = """
+                public class TestClassFactory() {
+                  public fun create(): TestClass = TestClass()
+                }
+                
+            """.trimIndent(),
+        )
+    }
+
+    @Test
     fun testFactoryWithParams() {
         assertScreenFactorySuccess(
             source = TestSources.classWithParams,
@@ -52,6 +65,23 @@ class FactoryGeneratorSymbolProcessorTest {
                   private val test: String,
                 ) {
                   public fun create(byCreate: String): TestClass = TestClass(test, byCreate, )
+                }
+                
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun testFactoryWithInterface() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithInterface,
+            factory = """
+                import kotlin.String
+
+                internal class TestClassFactoryImpl(
+                  private val test: String,
+                ) : TestClassFactory {
+                  override fun create(byCreate: String): TestClass = TestClass(test, byCreate, )
                 }
                 
             """.trimIndent(),

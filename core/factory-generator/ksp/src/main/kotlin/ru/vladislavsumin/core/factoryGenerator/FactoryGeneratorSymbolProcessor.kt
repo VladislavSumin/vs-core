@@ -48,7 +48,7 @@ internal class FactoryGeneratorSymbolProcessor(
      * @param instance инстанс который должна создавать фабрика
      */
     @OptIn(KspExperimental::class)
-    @Suppress("LongMethod") // TODO отрефакторить + написать тесты.
+    @Suppress("LongMethod", "CyclomaticComplexMethod") // TODO отрефакторить + написать тесты.
     private fun generateFactory(
         resolver: Resolver,
         instance: KSClassDeclaration,

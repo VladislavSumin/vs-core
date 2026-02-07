@@ -50,6 +50,101 @@ class ScoutBindingSymbolProcessorTest {
     }
 
     @Test
+    fun testFactoryWithListParams() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithListParams,
+            factory = """
+                import scout.definition.Registry
+                
+                internal fun Registry.registerTestClassFactory() {
+                  singleton<TestClassFactory> {
+                    TestClassFactory(
+                      test = collect(),
+                    )
+                  }
+                }
+
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun testFactoryWithLazyListParams() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithLazyListParams,
+            factory = """
+                import scout.definition.Registry
+                
+                internal fun Registry.registerTestClassFactory() {
+                  singleton<TestClassFactory> {
+                    TestClassFactory(
+                      test = collectLazy(),
+                    )
+                  }
+                }
+
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun testFactoryWithMapParams() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithMapParams,
+            factory = """
+                import scout.definition.Registry
+                
+                internal fun Registry.registerTestClassFactory() {
+                  singleton<TestClassFactory> {
+                    TestClassFactory(
+                      test = associate(),
+                    )
+                  }
+                }
+
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun testFactoryWithLazyMapParams() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithLazyMapParams,
+            factory = """
+                import scout.definition.Registry
+                
+                internal fun Registry.registerTestClassFactory() {
+                  singleton<TestClassFactory> {
+                    TestClassFactory(
+                      test = associateLazy(),
+                    )
+                  }
+                }
+
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun testFactoryWithNullableParams() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithNullableParams,
+            factory = """
+                import scout.definition.Registry
+                
+                internal fun Registry.registerTestClassFactory() {
+                  singleton<TestClassFactory> {
+                    TestClassFactory(
+                      test = opt(),
+                    )
+                  }
+                }
+
+            """.trimIndent(),
+        )
+    }
+
+    @Test
     fun testFactoryWithLazyParams() {
         assertScreenFactorySuccess(
             source = TestSources.classWithLazyParams,
@@ -60,6 +155,25 @@ class ScoutBindingSymbolProcessorTest {
                   singleton<TestClassFactory> {
                     TestClassFactory(
                       test = getLazy(),
+                    )
+                  }
+                }
+
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun testFactoryWithLazyNullableParams() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithLazyNullableParams,
+            factory = """
+                import scout.definition.Registry
+                
+                internal fun Registry.registerTestClassFactory() {
+                  singleton<TestClassFactory> {
+                    TestClassFactory(
+                      test = optLazy(),
                     )
                   }
                 }

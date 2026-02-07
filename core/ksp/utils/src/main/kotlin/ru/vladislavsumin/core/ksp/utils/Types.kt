@@ -9,6 +9,8 @@ public object Types {
     public object Kotlin {
         public val Any: ClassName = ClassName("kotlin", "Any")
         public val Lazy: ClassName = ClassName("kotlin", "Lazy")
+        public val List: ClassName = ClassName("kotlin.collections", "List")
+        public val Map: ClassName = ClassName("kotlin.collections", "Map")
     }
 
     public object Coroutines {

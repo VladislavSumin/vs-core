@@ -16,6 +16,9 @@ class FactoryGeneratorSymbolProcessorTest {
         assertScreenFactorySuccess(
             source = TestSources.classWithNoParams,
             factory = """
+                import ru.vladislavsumin.core.factoryGenerator.GeneratedFactory
+
+                @GeneratedFactory
                 internal class TestClassFactory() {
                   public fun create(): TestClass = TestClass()
                 }
@@ -29,6 +32,9 @@ class FactoryGeneratorSymbolProcessorTest {
         assertScreenFactorySuccess(
             source = TestSources.classWithNoParamsAndPublicModifier,
             factory = """
+                import ru.vladislavsumin.core.factoryGenerator.GeneratedFactory
+
+                @GeneratedFactory
                 public class TestClassFactory() {
                   public fun create(): TestClass = TestClass()
                 }
@@ -43,7 +49,9 @@ class FactoryGeneratorSymbolProcessorTest {
             source = TestSources.classWithParams,
             factory = """
                 import kotlin.String
+                import ru.vladislavsumin.core.factoryGenerator.GeneratedFactory
 
+                @GeneratedFactory
                 internal class TestClassFactory(
                   private val test: String,
                 ) {
@@ -60,7 +68,9 @@ class FactoryGeneratorSymbolProcessorTest {
             source = TestSources.classWithByCreate,
             factory = """
                 import kotlin.String
+                import ru.vladislavsumin.core.factoryGenerator.GeneratedFactory
 
+                @GeneratedFactory
                 internal class TestClassFactory(
                   private val test: String,
                 ) {
@@ -77,7 +87,9 @@ class FactoryGeneratorSymbolProcessorTest {
             source = TestSources.classWithInterface,
             factory = """
                 import kotlin.String
+                import ru.vladislavsumin.core.factoryGenerator.GeneratedFactory
 
+                @GeneratedFactory
                 internal class TestClassFactoryImpl(
                   private val test: String,
                 ) : TestClassFactory {

@@ -23,6 +23,16 @@ object TestSources {
         """.trimIndent(),
     )
 
+    val classWithLazyParams = SourceFile.kotlin(
+        name = "TestClass.kt",
+        contents = """
+            import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+            
+            @GenerateFactory
+            class TestClass(private val test: Lazy<String>)
+        """.trimIndent(),
+    )
+
     val classWithInterface = SourceFile.kotlin(
         name = "TestClass.kt",
         contents = """

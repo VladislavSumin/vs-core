@@ -10,8 +10,10 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
+import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.withIndent
 import ru.vladislavsumin.core.factoryGenerator.GeneratedFactory
 import ru.vladislavsumin.core.ksp.utils.Types
@@ -56,7 +58,14 @@ internal class ScoutBindingSymbolProcessor(
 
                 withIndent {
                     instance.primaryConstructor!!.parameters.forEach { parameter ->
-                        addStatement("${parameter.name!!.asString()} = get(),")
+                        val typeName = parameter.type.resolve().toTypeName()
+                        val isLazy = (typeName as? ParameterizedTypeName)?.rawType == Types.Kotlin.Lazy
+                        val getter = if (isLazy) {
+                            "getLazy()"
+                        } else {
+                            "get()"
+                        }
+                        addStatement("${parameter.name!!.asString()} = $getter,")
                     }
                 }
 

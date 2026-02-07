@@ -10,7 +10,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-
 @OptIn(ExperimentalCompilerApi::class)
 class ScoutBindingSymbolProcessorTest {
     @Test
@@ -51,6 +50,25 @@ class ScoutBindingSymbolProcessorTest {
     }
 
     @Test
+    fun testFactoryWithLazyParams() {
+        assertScreenFactorySuccess(
+            source = TestSources.classWithLazyParams,
+            factory = """
+                import scout.definition.Registry
+                
+                internal fun Registry.registerTestClassFactory() {
+                  singleton<TestClassFactory> {
+                    TestClassFactory(
+                      test = getLazy(),
+                    )
+                  }
+                }
+
+            """.trimIndent(),
+        )
+    }
+
+    @Test
     fun testFactoryWithInterface() {
         assertScreenFactorySuccess(
             source = TestSources.classWithInterface,
@@ -82,9 +100,7 @@ class ScoutBindingSymbolProcessorTest {
         )
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.OK)
         val binderFile = compilationResult.kspSourceFileDirectory.listFiles().single {
-            it.name.endsWith(
-                "Registrar.kt",
-            )
+            it.name.endsWith("Registrar.kt")
         }
         assertNotNull(binderFile)
         assertEquals(factory, binderFile.readText())

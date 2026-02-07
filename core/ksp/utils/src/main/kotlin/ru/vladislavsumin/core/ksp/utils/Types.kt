@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.ClassName
 public object Types {
     public object Kotlin {
         public val Any: ClassName = ClassName("kotlin", "Any")
+        public val Lazy: ClassName = ClassName("kotlin", "Lazy")
     }
 
     public object Coroutines {

@@ -6,6 +6,9 @@ public abstract interface annotation class ru/vladislavsumin/core/factoryGenerat
 	public abstract fun visibility ()Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;
 }
 
+public abstract interface annotation class ru/vladislavsumin/core/factoryGenerator/GeneratedFactory : java/lang/annotation/Annotation {
+}
+
 public final class ru/vladislavsumin/core/factoryGenerator/PackageVisibility : java/lang/Enum {
 	public static final field Internal Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;
 	public static final field Public Lru/vladislavsumin/core/factoryGenerator/PackageVisibility;

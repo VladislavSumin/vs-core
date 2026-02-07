@@ -4,5 +4,6 @@ public final class ru/vladislavsumin/core/ksp/test/KotlinCompilationExtKt {
 
 public final class ru/vladislavsumin/core/ksp/test/PrepareCompilationKt {
 	public static final fun prepareCompilation (Lcom/google/devtools/ksp/processing/SymbolProcessorProvider;[Lcom/tschuchort/compiletesting/SourceFile;)Lcom/tschuchort/compiletesting/JvmCompilationResult;
+	public static final fun prepareCompilation (Ljava/util/List;[Lcom/tschuchort/compiletesting/SourceFile;)Lcom/tschuchort/compiletesting/JvmCompilationResult;
 }
 

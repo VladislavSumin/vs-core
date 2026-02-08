@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.factoryGenerator.scout
 
+import com.tschuchort.compiletesting.DiagnosticSeverity
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -201,17 +202,40 @@ class ScoutBindingSymbolProcessorTest {
         )
     }
 
+    @Test
+    fun testFactoryWithNullableListParams() {
+        assertScreenFactoryFail(
+            source = TestSources.classWithNullableListParams,
+            message = "TestClassFactory.kt:7: Nullable list not allowed",
+        )
+    }
+
+    @Test
+    fun testFactoryWithNullableMapParams() {
+        assertScreenFactoryFail(
+            source = TestSources.classWithNullableMapParams,
+            message = "TestClassFactory.kt:7: Nullable map not allowed",
+        )
+    }
+
+    private fun assertScreenFactoryFail(
+        source: SourceFile,
+        message: String,
+    ) {
+        val compilationResult = compile(source)
+        assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.COMPILATION_ERROR)
+        assertNotNull(
+            actual = compilationResult.diagnosticMessages.single {
+                it.severity == DiagnosticSeverity.ERROR && it.message.contains(message)
+            },
+        ) { "Output not contains '$message', output:\n${compilationResult.diagnosticMessages}" }
+    }
+
     private fun assertScreenFactorySuccess(
         source: SourceFile,
         factory: String,
     ) {
-        val compilationResult = prepareCompilation(
-            symbolProcessorProviders = listOf(
-                FactoryGeneratorSymbolProcessorProvider(),
-                ScoutBindingSymbolProcessorProvider(),
-            ),
-            source,
-        )
+        val compilationResult = compile(source)
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.OK)
         val binderFile = compilationResult.kspSourceFileDirectory.listFiles().single {
             it.name.endsWith("Registrar.kt")
@@ -219,4 +243,12 @@ class ScoutBindingSymbolProcessorTest {
         assertNotNull(binderFile)
         assertEquals(factory, binderFile.readText())
     }
+
+    private fun compile(source: SourceFile) = prepareCompilation(
+        symbolProcessorProviders = listOf(
+            FactoryGeneratorSymbolProcessorProvider(),
+            ScoutBindingSymbolProcessorProvider(),
+        ),
+        source,
+    )
 }

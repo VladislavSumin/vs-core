@@ -33,6 +33,16 @@ object TestSources {
         """.trimIndent(),
     )
 
+    val classWithNullableListParams = SourceFile.kotlin(
+        name = "TestClass.kt",
+        contents = """
+            import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+            
+            @GenerateFactory
+            class TestClass(private val test: List<String>?)
+        """.trimIndent(),
+    )
+
     val classWithLazyListParams = SourceFile.kotlin(
         name = "TestClass.kt",
         contents = """
@@ -50,6 +60,16 @@ object TestSources {
             
             @GenerateFactory
             class TestClass(private val test: Map<String, String>)
+        """.trimIndent(),
+    )
+
+    val classWithNullableMapParams = SourceFile.kotlin(
+        name = "TestClass.kt",
+        contents = """
+            import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+            
+            @GenerateFactory
+            class TestClass(private val test: Map<String, String>?)
         """.trimIndent(),
     )
 

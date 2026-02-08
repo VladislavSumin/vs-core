@@ -39,7 +39,7 @@ internal class ScoutBindingSymbolProcessor(
         generateScoutBinding(instance)
     }
 
-    @Suppress("CyclomaticComplexMethod")
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     private fun generateScoutBinding(
         instance: KSClassDeclaration,
     ) {
@@ -65,25 +65,37 @@ internal class ScoutBindingSymbolProcessor(
                         val innerTypeRaw = when (innerType) {
                             is ParameterizedTypeName -> innerType.rawType
                             is ClassName -> innerType
-                            else -> error("Unexpected type $innerType")
+                            else -> {
+                                logger.error("Unexpected type $innerType", parameter)
+                                return
+                            }
                         }
                         val isNullable = innerType.isNullable
 
                         val getter = when {
                             isLazy && innerTypeRaw == Types.Kotlin.List && !isNullable -> "collectLazy()"
                             !isLazy && innerTypeRaw == Types.Kotlin.List && !isNullable -> "collect()"
-                            innerTypeRaw == Types.Kotlin.List -> error("Nullable list not allowed")
+                            innerTypeRaw == Types.Kotlin.List -> {
+                                logger.error("Nullable list not allowed", parameter)
+                                return
+                            }
 
                             isLazy && innerTypeRaw == Types.Kotlin.Map && !isNullable -> "associateLazy()"
                             !isLazy && innerTypeRaw == Types.Kotlin.Map && !isNullable -> "associate()"
-                            innerTypeRaw == Types.Kotlin.Map -> error("Nullable map not allowed")
+                            innerTypeRaw == Types.Kotlin.Map -> {
+                                logger.error("Nullable map not allowed", parameter)
+                                return
+                            }
 
                             isLazy && !isNullable -> "getLazy()"
                             isLazy && isNullable -> "optLazy()"
 
                             isNullable -> "opt()"
                             !isNullable -> "get()"
-                            else -> error("Unexpected parameter")
+                            else -> {
+                                logger.error("Unexpected parameter", parameter)
+                                return
+                            }
                         }
 
                         addStatement("${parameter.name!!.asString()} = $getter,")

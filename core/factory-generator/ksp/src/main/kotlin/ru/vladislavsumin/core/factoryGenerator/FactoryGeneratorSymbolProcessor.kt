@@ -9,11 +9,11 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -137,6 +137,7 @@ internal class FactoryGeneratorSymbolProcessor(
             .build()
 
         TypeSpec.classBuilder(name)
+            .addAnnotation(GeneratedFactory::class)
             .primaryConstructorWithPrivateFields(
                 factoryConstructorParams.map { it.name!!.getShortName() to it.type.toTypeName() },
             )
@@ -153,7 +154,7 @@ internal class FactoryGeneratorSymbolProcessor(
     }
 
     companion object {
-        private val BY_CREATE_ANNOTATION = ClassName("ru.vladislavsumin.core.factoryGenerator", "ByCreate")
+        private val BY_CREATE_ANNOTATION = ByCreate::class.asClassName()
     }
 }
 

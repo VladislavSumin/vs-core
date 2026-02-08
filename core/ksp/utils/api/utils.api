@@ -1,3 +1,8 @@
+public final class ru/vladislavsumin/core/ksp/utils/FunSpecExtKt {
+	public static final fun writeTo (Lcom/squareup/kotlinpoet/FunSpec;Lcom/google/devtools/ksp/processing/CodeGenerator;Ljava/lang/String;Ljava/lang/String;Z)V
+	public static synthetic fun writeTo$default (Lcom/squareup/kotlinpoet/FunSpec;Lcom/google/devtools/ksp/processing/CodeGenerator;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)V
+}
+
 public final class ru/vladislavsumin/core/ksp/utils/KsClassDeclarationUtilsKt {
 	public static final fun findParametrizedSuperTypeOrNull (Lcom/google/devtools/ksp/symbol/KSClassDeclaration;Lcom/squareup/kotlinpoet/ClassName;)Lcom/squareup/kotlinpoet/ParameterizedTypeName;
 }
@@ -32,6 +37,9 @@ public final class ru/vladislavsumin/core/ksp/utils/Types$Coroutines {
 public final class ru/vladislavsumin/core/ksp/utils/Types$Kotlin {
 	public static final field INSTANCE Lru/vladislavsumin/core/ksp/utils/Types$Kotlin;
 	public final fun getAny ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getLazy ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getList ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getMap ()Lcom/squareup/kotlinpoet/ClassName;
 }
 
 public final class ru/vladislavsumin/core/ksp/utils/Types$Serialization {

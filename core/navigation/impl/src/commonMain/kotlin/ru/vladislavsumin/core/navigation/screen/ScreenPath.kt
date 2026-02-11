@@ -1,7 +1,6 @@
 package ru.vladislavsumin.core.navigation.screen
 
 import ru.vladislavsumin.core.navigation.IntentScreenParams
-import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement
 import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement.Params
 
@@ -11,9 +10,9 @@ import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement.Params
  */
 internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> by path {
 
-    constructor(screenParams: Iterable<IntentScreenParams<ScreenIntent>>) : this(screenParams.map { Params(it) })
+    constructor(screenParams: Iterable<IntentScreenParams<*>>) : this(screenParams.map { Params(it) })
 
-    constructor(screenParams: IntentScreenParams<ScreenIntent>) : this(listOf(screenParams))
+    constructor(screenParams: IntentScreenParams<*>) : this(listOf(screenParams))
 
     operator fun plus(screenParams: IntentScreenParams<*>): ScreenPath {
         return ScreenPath(path + Params(screenParams))

@@ -40,7 +40,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
 ): ComposeComponent {
     val node = navigation.navigationTree
     val params = node.value.defaultParams ?: error("Root screen must have default params")
-    val rootScreenFactory = node.value.factory as ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *>?
+    val rootScreenFactory = node.value.factory as ScreenFactory<Ctx, IntentScreenParams<*>, ScreenIntent, *>?
     check(rootScreenFactory != null) { "Factory for $params not found" }
 
     // Создаем рутовый навигатор.
@@ -96,7 +96,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
 }
 
 private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
-    rootScreenParams: IntentScreenParams<ScreenIntent>,
+    rootScreenParams: IntentScreenParams<*>,
     navigation: GenericNavigation<Ctx>,
     globalNavigator: GlobalNavigator<Ctx>,
 ): ScreenPathWithIntent? {

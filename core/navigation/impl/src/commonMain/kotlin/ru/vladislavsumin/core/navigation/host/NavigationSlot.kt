@@ -100,7 +100,7 @@ private class SlotHostNavigator(
         }
     }
 
-    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<*>) {
         // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
         slotNavigation.navigate { currentOpenedScreen ->
             if (currentOpenedScreen != null && currentOpenedScreen.screenParams.asKey() == screenKey) {

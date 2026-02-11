@@ -2,7 +2,6 @@ package ru.vladislavsumin.core.navigation.screen
 
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.InternalNavigationApi
-import ru.vladislavsumin.core.navigation.ScreenIntent
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
@@ -12,6 +11,6 @@ import kotlin.reflect.KClass
  */
 @JvmInline
 @InternalNavigationApi
-public value class ScreenKey(public val key: KClass<out IntentScreenParams<out ScreenIntent>>)
+public value class ScreenKey @PublishedApi internal constructor(public val key: KClass<out IntentScreenParams<*>>)
 
-internal fun <T : IntentScreenParams<I>, I : ScreenIntent> T.asKey(): ScreenKey = ScreenKey(this::class)
+internal fun IntentScreenParams<*>.asKey(): ScreenKey = ScreenKey(this::class)

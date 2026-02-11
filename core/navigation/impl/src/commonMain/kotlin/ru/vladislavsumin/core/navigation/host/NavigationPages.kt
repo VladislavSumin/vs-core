@@ -99,7 +99,7 @@ private class PagesHostNavigator(
         )
     }
 
-    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<*>) {
         pagesNavigation.navigate(
             transformer = { pages ->
                 val indexOfScreen = pages.items.map { it.screenParams.asKey() }.indexOf(screenKey)

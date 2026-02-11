@@ -23,9 +23,9 @@ internal class NavigationSerializer(
      */
     @OptIn(ExperimentalSerializationApi::class, ExperimentalStateKeeperApi::class)
     val serializer: KSerializer<IntentScreenParams<*>> = polymorphicSerializer(
-        IntentScreenParams::class,
-        SerializersModule {
-            polymorphic(IntentScreenParams::class) {
+        baseClass = IntentScreenParams::class,
+        module = SerializersModule {
+            polymorphic(baseClass = IntentScreenParams::class) {
                 repository.serializers.forEach { (clazz, serializer) ->
                     subclass(
                         subclass = clazz.key as KClass<IntentScreenParams<ScreenIntent>>,
@@ -34,5 +34,5 @@ internal class NavigationSerializer(
                 }
             }
         },
-    ) as KSerializer<IntentScreenParams<*>> // TODO прочекать это
+    )
 }

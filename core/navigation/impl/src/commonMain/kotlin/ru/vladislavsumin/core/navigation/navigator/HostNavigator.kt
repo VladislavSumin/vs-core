@@ -16,7 +16,7 @@ internal interface HostNavigator {
      */
     fun open(params: IntentScreenParams<*>, intent: ScreenIntent?)
 
-    fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>)
+    fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<*>)
 
     /**
      * Пытается закрыть экран с соответствующими параметрами. Если закрыть экран невозможно по какой-либо причине **не**

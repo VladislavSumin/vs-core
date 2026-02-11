@@ -4,16 +4,14 @@ import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNodeImpl
 import ru.vladislavsumin.core.collections.tree.linkedNodeOf
-import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
-import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.repository.NavigationRepository
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 
 internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
     private val repository: NavigationRepository<Ctx>,
 ) {
-    fun build() = NavigationTree<Ctx>(buildNavGraph())
+    fun build() = NavigationTree(root = buildNavGraph())
 
     /**
      * Строит навигационное дерево.
@@ -49,16 +47,15 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
             screenKey = screenKey,
             hostInParent = hostInParent,
             factory = screenRegistration.factory,
-            defaultParams = screenRegistration.defaultParams as IntentScreenParams<ScreenIntent>?,
+            defaultParams = screenRegistration.defaultParams,
             description = screenRegistration.description,
             navigationHosts = screenRegistration.navigationHosts.keys,
         )
 
         // Пробегаемся по всем навигационным хостам, объявленным для данной ноды.
-        val child: List<LinkedTreeNodeImpl<ScreenInfo<Ctx>>> = screenRegistration.navigationHosts
-            .flatMap { (host, screens) ->
-                screens.map { screen -> buildNode(screenKey, host, screen) }
-            }
+        val child = screenRegistration.navigationHosts.flatMap { (host, screens) ->
+            screens.map { screen -> buildNode(parent = screenKey, hostInParent = host, screenKey = screen) }
+        }
 
         return linkedNodeOf(screenInfo, children = child)
     }
@@ -67,9 +64,9 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
      * Ищет root screen, этим экраном является такой экран который невозможно открыть из другой точки графа.
      */
     private fun findRootScreen(): ScreenKey {
-        val nonRootScreens = repository.screens.values.map { registration ->
+        val nonRootScreens = repository.screens.flatMap { (_, registration) ->
             registration.navigationHosts.values.flatten()
-        }.flatten()
+        }.toSet()
 
         // Множество экранов, у которых нет точек входа (множество рутовых экранов)
         val roots = repository.screens.keys - nonRootScreens
@@ -82,7 +79,6 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
     }
 }
 
-// TODO вынести в core модуль
 /**
  * Форматирует последовательность в строку добавляя форматирование по умолчанию.
  */

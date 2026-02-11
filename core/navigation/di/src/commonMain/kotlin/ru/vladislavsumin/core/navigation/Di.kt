@@ -18,8 +18,5 @@ public inline fun <reified Ctx : GenericComponentContext<Ctx>> Modules.coreNavig
         var navigation: GenericNavigation<Ctx>? = null
 
         bindSingleton { GenericNavigation<Ctx>(registrars = i()).also { navigation = it } }
-
-        bindSingleton {
-            NavigationGraphUmlDiagramComponentFactory<Ctx> { navigation!! }
-        }
+        bindSingleton { NavigationGraphUmlDiagramComponentFactory { navigation!! } }
     }

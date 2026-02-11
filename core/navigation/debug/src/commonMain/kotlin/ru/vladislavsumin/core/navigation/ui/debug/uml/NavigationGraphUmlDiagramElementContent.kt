@@ -30,7 +30,7 @@ import ru.vladislavsumin.core.navigation.NavigationHost
  */
 @Composable
 internal fun NavigationGraphUmlDiagramElementContent(
-    info: NavigationGraphUmlNodeInfo,
+    info: NavigationGraphUmlNode,
     modifier: Modifier = Modifier,
 ) {
     val finalModifier = if (!info.isPartOfMainGraph) {
@@ -59,7 +59,7 @@ internal fun NavigationGraphUmlDiagramElementContent(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
-            if (info.isPartOfMainGraph && !info.hasDefaultParams) {
+            if (info is InternalNavigationGraphUmlNode && !info.hasDefaultParams) {
                 Text(
                     "hasDefaultParams=${info.hasDefaultParams}",
                     style = MaterialTheme.typography.bodyMedium,
@@ -68,12 +68,12 @@ internal fun NavigationGraphUmlDiagramElementContent(
             }
             if (info.description != null) {
                 Text(
-                    info.description,
+                    info.description!!,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary,
                 )
             }
-            if (info.navigationHosts.isNotEmpty()) {
+            if (info is InternalNavigationGraphUmlNode && info.navigationHosts.isNotEmpty()) {
                 Row(
                     modifier = Modifier.padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -128,3 +128,9 @@ private fun Modifier.dashedBorder(strokeWidth: Dp, color: Color, cornerRadiusDp:
         )
     },
 )
+
+private val NavigationGraphUmlNode.isPartOfMainGraph: Boolean
+    get() = when (this) {
+        is ExternalNavigationGraphUmlNode -> false
+        is InternalNavigationGraphUmlNode -> true
+    }

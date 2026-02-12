@@ -71,9 +71,14 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
         // Множество экранов, у которых нет точек входа (множество рутовых экранов)
         val roots = repository.screens.keys - nonRootScreens
 
-        check(roots.size == 1) {
+        if (roots.isEmpty()) {
+            throw NoRootFoundException()
+        }
+
+        if (roots.size != 1) {
             val formattedRoots = roots.joinToStingFormatted { it.key.simpleName!! }
-            "Found more than one root or no root found, roots:\n$formattedRoots"
+            val message = "Found more than one root, roots:\n$formattedRoots"
+            throw MoreThanOneRootFoundException(message)
         }
         return roots.first()
     }

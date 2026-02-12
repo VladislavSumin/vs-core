@@ -9,6 +9,7 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
+import ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl
 import ru.vladislavsumin.core.navigation.viewModel.IsNavigationViewModelConstructing
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
@@ -21,19 +22,21 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
     GenericComponent<Ctx>(context),
     ComposeComponent {
 
+    @PublishedApi
+    internal val internalNavigator: ScreenNavigatorImpl<Ctx> = let {
+        val navigator = ScreenNavigatorHolder
+        check(navigator != null) { "Wrong screen usage, only navigation framework may create screen instances" }
+        navigator as ScreenNavigatorImpl<Ctx>
+    }
+
     /**
      * Предоставляет доступ к навигации с учетом контекста этого экрана.
      *
      * Доступ к контексту означает что поиск ближайшего экрана будет происходить не от корня графа, а от текущего этого
      * экрана.
      */
-    protected val navigator: ScreenNavigator<Ctx> = let {
-        val navigator = ScreenNavigatorHolder
-        check(navigator != null) { "Wrong screen usage, only navigation framework may create screen instances" }
-        navigator as ScreenNavigator<Ctx>
-    }
+    protected val navigator: ScreenNavigator get() = internalNavigator
 
-    internal val internalNavigator: ScreenNavigator<Ctx> get() = navigator
     internal val internalContext: Ctx get() = context
 
     /**
@@ -73,7 +76,7 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
         > registerCustomFactory(
         factory: ScreenFactory<Ctx, T, I, S>,
     ) {
-        navigator.registerCustomFactory(ScreenKey(T::class), factory)
+        internalNavigator.registerCustomFactory(ScreenKey(T::class), factory)
     }
 
     @PublishedApi

@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.ui.debug.uml
 
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
+import ru.vladislavsumin.core.collections.tree.TreeNodeImpl
 import ru.vladislavsumin.core.collections.tree.map
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.navigation.GenericNavigation
@@ -10,7 +11,7 @@ internal class NavigationGraphUmlDiagramViewModelFactory(
     private val navigationProvider: () -> GenericNavigation<*>,
 ) {
     fun create(
-        navigationTreeInterceptor: (NavigationGraphUmlNode) -> NavigationGraphUmlNode,
+        navigationTreeInterceptor: NavigationTreeInterceptor,
     ): NavigationGraphUmlDiagramViewModel {
         return NavigationGraphUmlDiagramViewModel(navigationProvider(), navigationTreeInterceptor)
     }
@@ -18,30 +19,25 @@ internal class NavigationGraphUmlDiagramViewModelFactory(
 
 internal class NavigationGraphUmlDiagramViewModel(
     private val navigation: GenericNavigation<*>,
-    private val navigationTreeInterceptor: (NavigationGraphUmlNode) -> NavigationGraphUmlNode,
+    private val navigationTreeInterceptor: NavigationTreeInterceptor,
 ) : ViewModel() {
 
     val graph = createDebugGraph()
 
-    private fun createDebugGraph(): NavigationGraphUmlDiagramViewState {
-        return NavigationGraphUmlDiagramViewState(
-            root = navigationTreeInterceptor(
-                mapNodesRecursively(
-                    navigation.navigationTree as LinkedTreeNode<ScreenInfo<*>>,
-                ),
-            ),
-        )
-    }
+    private fun createDebugGraph() = NavigationGraphUmlDiagramViewState(
+        root = navigationTreeInterceptor(
+            mapNodesRecursively(node = navigation.navigationTree as LinkedTreeNode<ScreenInfo<*>>),
+        ),
+    )
 
     /**
      * Переводит все [NavigationTree.Node] исходного графа навигации в граф [NavigationGraphUmlDiagramViewState.Node].
      */
-    private fun mapNodesRecursively(node: LinkedTreeNode<ScreenInfo<*>>): NavigationGraphUmlNode {
+    private fun mapNodesRecursively(node: LinkedTreeNode<ScreenInfo<*>>): TreeNodeImpl<InternalNavigationGraphUmlNode> {
         return node.map {
-            NavigationGraphUmlNodeInfo(
+            InternalNavigationGraphUmlNode(
                 name = it.screenKey.key.simpleName!!,
                 hasDefaultParams = it.defaultParams != null,
-                isPartOfMainGraph = true,
                 description = it.description,
                 navigationHosts = it.navigationHosts,
             )

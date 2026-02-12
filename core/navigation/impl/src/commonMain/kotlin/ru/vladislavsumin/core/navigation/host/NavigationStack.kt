@@ -105,7 +105,7 @@ private class StackHostNavigator(
         )
     }
 
-    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<ScreenIntent>) {
+    override fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<*>) {
         // Если экрана с таким ключом еще нет в стеке, то открываем его используя defaultParams.
         // Если же экран с таким ключом уже есть в стеке, то закрываем все экраны после него.
         stackNavigation.navigate(

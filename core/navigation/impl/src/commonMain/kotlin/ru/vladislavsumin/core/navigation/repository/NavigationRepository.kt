@@ -89,6 +89,7 @@ internal class NavigationRepositoryImpl<Ctx : GenericComponentContext<Ctx>>(
 
     private class HostRegistryImpl(private val parentScreen: ScreenKey) : NavigationRegistry.HostRegistry {
         private val hosts = mutableMapOf<NavigationHost, Set<ScreenKey>>()
+
         override fun NavigationHost.opens(screens: Set<KClass<out IntentScreenParams<*>>>) {
             val oldRegistration = hosts.put(this, screens.map { ScreenKey(it) }.toSet())
             if (oldRegistration != null) {

@@ -20,6 +20,6 @@ class ScreenTest {
 private class WrongScreen(context: ComponentContext) : Screen(context) {
     @Composable
     override fun Render(modifier: Modifier) {
-        TODO("Not yet implemented")
+        // empty
     }
 }

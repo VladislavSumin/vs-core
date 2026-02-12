@@ -10,7 +10,6 @@ public abstract class ru/vladislavsumin/core/decompose/components/GenericCompone
 
 public abstract class ru/vladislavsumin/core/decompose/components/ViewModel {
 	public fun <init> ()V
-	public final fun getStateKeeper ()Lcom/arkivanov/essenty/statekeeper/StateKeeper;
 	protected final fun getViewModelScope ()Lkotlinx/coroutines/CoroutineScope;
 	protected final fun launch (Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lru/vladislavsumin/core/decompose/components/ViewModel;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
@@ -18,18 +17,6 @@ public abstract class ru/vladislavsumin/core/decompose/components/ViewModel {
 	protected final fun resubscribeOnUiLifecycle (Lkotlinx/coroutines/flow/Flow;Lcom/arkivanov/essenty/lifecycle/Lifecycle$State;)Lkotlinx/coroutines/flow/Flow;
 	protected final fun stateIn (Lkotlinx/coroutines/flow/Flow;Ljava/lang/Object;Lkotlinx/coroutines/flow/SharingStarted;)Lkotlinx/coroutines/flow/StateFlow;
 	public static synthetic fun stateIn$default (Lru/vladislavsumin/core/decompose/components/ViewModel;Lkotlinx/coroutines/flow/Flow;Ljava/lang/Object;Lkotlinx/coroutines/flow/SharingStarted;ILjava/lang/Object;)Lkotlinx/coroutines/flow/StateFlow;
-}
-
-public final class ru/vladislavsumin/core/decompose/components/ViewModel$Holder {
-	public static final field Companion Lru/vladislavsumin/core/decompose/components/ViewModel$Holder$Companion;
-	public fun <init> (Ljava/lang/Object;)V
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun copy (Ljava/lang/Object;)Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;
-	public static synthetic fun copy$default (Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;Ljava/lang/Object;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/components/ViewModel$Holder;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getData ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public final synthetic class ru/vladislavsumin/core/decompose/components/ViewModel$Holder$$serializer : kotlinx/serialization/internal/GeneratedSerializer {

@@ -33,14 +33,15 @@ public class GenericNavigation<Ctx : GenericComponentContext<Ctx>> internal cons
 
     /**
      * Ищет параметры экрана по их имени. Можно использовать для реализации отладочных ссылок.
-     * **Внимание** Названия параметров могут быть изменены при минимизации приложения, поэтому данный метод не будет
+     *
+     * **Внимание!** Названия параметров могут быть изменены при минимизации приложения, поэтому данный метод не будет
      * работать в релизе.
      */
     public fun findDefaultScreenParamsByName(name: String): IntentScreenParams<*>? {
         return navigationTree
             .asSequence()
-            .find { it.value.screenKey.key.simpleName == name }
-            ?.value
+            .map { it.value }
+            .find { it.screenKey.key.simpleName == name }
             ?.defaultParams
     }
 

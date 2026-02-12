@@ -24,59 +24,67 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
     private val relay = UnsafeRelay()
 
     /**
-     * Открывает экран соответствующий переданным [screenParams], при этом поиск пути производится относительно
-     * переданного [screenPath]. (подробнее про поиск пути до экрана можно прочитать в документации).
+     * Открывает экран соответствующий переданным [targetScreenParams], при этом поиск пути производится относительно
+     * переданного [startScreenPath]. (подробнее про поиск пути до экрана можно прочитать в документации).
      */
-    fun open(screenPath: ScreenPath, screenParams: IntentScreenParams<*>, intent: ScreenIntent?) {
-        NavigationLogger.i { "Open screen ${screenParams::class.simpleName}" }
+    fun open(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>, intent: ScreenIntent?) {
+        NavigationLogger.i { "Open screen ${targetScreenParams::class.simpleName}" }
         relay.accept {
-            val path = createOpenPath(screenPath, screenParams)
-            rootNavigator.openInsideThisScreen(path, intent)
+            val screenPath = createOpenPath(startScreenPath, targetScreenParams)
+            rootNavigator.openChain(screenPath, intent)
         }
     }
 
-    fun createOpenPath(screenPath: ScreenPath, screenParams: IntentScreenParams<*>): ScreenPath {
-        val screenKey = screenParams.asKey()
+    /**
+     * Ищет путь к экрану [targetScreenParams] начиная поиск от [startScreenPath].
+     */
+    fun createOpenPath(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>): ScreenPath {
+        val targetScreenKey = targetScreenParams.asKey()
 
         // Нода в графе навигации соответствующая переданному пути.
-        val fromScreenNode: LinkedTreeNode<ScreenInfo<Ctx>> = navigation.navigationTree.findByPath(
-            path = screenPath.map { it.asScreenKey() },
+        val startSearchScreenNode: LinkedTreeNode<ScreenInfo<Ctx>> = navigation.navigationTree.findByPath(
+            path = startScreenPath.map { it.asScreenKey() },
             keySelector = { it.screenKey },
         )!!
 
         // Нода в графе навигации куда мы хотим перейти.
-        val destinationNode: LinkedTreeNode<ScreenInfo<Ctx>> = fromScreenNode
+        val destinationNode: LinkedTreeNode<ScreenInfo<Ctx>> = startSearchScreenNode
             .asSequenceUp()
-            .first { node -> node.value.screenKey == screenKey }
+            .first { node -> node.value.screenKey == targetScreenKey }
 
         // Путь до искомой ноды.
-        val destinationKeysPath: List<ScreenPath.PathElement.Key> = destinationNode.path()
-            .map { node -> node.value.screenKey }
-            .map { ScreenPath.PathElement.Key(it) }
-        return ScreenPath(destinationKeysPath.drop(1).dropLast(1) + ScreenPath.PathElement.Params(screenParams))
+        val destinationKeysPath: List<ScreenPath.PathElement> = destinationNode.path()
+            .map { node -> ScreenPath.PathElement.Key(node.value.screenKey) }
+        return ScreenPath(
+            destinationKeysPath
+                .drop(1) // Исключаем первый (рутовый) экран.
+                .dropLast(1) // Исключаем последний (целевой) экран.
+                // Добавляем целевой экран уже как параметр.
+                .plus(ScreenPath.PathElement.Params(targetScreenParams)),
+        )
     }
 
-    fun close(screenPath: ScreenPath, screenParams: IntentScreenParams<*>) {
-        NavigationLogger.i { "Close screen ${screenParams::class.simpleName}" }
+    fun close(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>) {
+        NavigationLogger.i { "Close screen ${targetScreenParams::class.simpleName}" }
         relay.accept {
             // Находим ноду соответствующую экрану из которого пришел запрос.
             val currentNode = navigation.navigationTree.findByPath(
-                path = screenPath.map { it.asScreenKey() },
+                path = startScreenPath.map { it.asScreenKey() },
                 keySelector = { it.screenKey },
             )!!
 
             // Ищем экраны относительно текущего для определения порядка попыток закрытия.
             val finalPaths = currentNode.asSequenceUp()
-                .filter { it.value.screenKey == screenParams.asKey() }
+                .filter { it.value.screenKey == targetScreenParams.asKey() }
                 .map { node ->
                     val path = node.path()
                         .dropLast(1) // убираем текущую ноду, так как ее параметры у нас в screenParams
                         .map { it.value.screenKey }
                         .map { ScreenPath.PathElement.Key(it) }
-                    (ScreenPath(path) + screenParams).reachFrom(screenPath)
+                    (ScreenPath(path) + targetScreenParams).reachFrom(startScreenPath)
                 }
             for (path in finalPaths) {
-                if (rootNavigator.closeInsideThisScreen(ScreenPath(path.drop(1)))) {
+                if (rootNavigator.closeChain(ScreenPath(path.drop(1)))) {
                     return@accept
                 }
             }
@@ -85,7 +93,7 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
 
     /**
      * При восстановлении состояния экранов тоже может произойти навигационное событие внутри создания состояний
-     * decompose. Такое поведение недопустимо в нашем случае поэтому запускаем восстановление через [relay], тогда
+     * decompose. Такое поведение недопустимо в нашем случае, поэтому запускаем восстановление через [relay], тогда
      * при возникновении навигационных событий они будут выполнены только после завершения восстановления.
      */
     fun protectRestoreState(action: () -> Unit) {

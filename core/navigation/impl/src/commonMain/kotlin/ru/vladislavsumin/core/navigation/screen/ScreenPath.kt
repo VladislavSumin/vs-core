@@ -5,8 +5,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement
 import ru.vladislavsumin.core.navigation.screen.ScreenPath.PathElement.Params
 
 /**
- * Путь до экрана.
- * Относительные пути не используются, любой путь должен начинаться от корня графа.
+ * Цепочка пути до экрана.
  */
 internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> by path {
 

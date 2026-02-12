@@ -54,7 +54,7 @@ public fun <T> LinkedTreeNode<T>.asSequenceUp(): Sequence<LinkedTreeNode<T>> = s
 }
 
 /**
- * Возвращает путь от корня дерева до текущей ноды, первым элементом будет корень, последним это нода.
+ * Возвращает путь от корня дерева до текущей ноды, первым элементом будет корень, последним эта нода.
  */
 public fun <T> LinkedTreeNode<T>.path(): List<LinkedTreeNode<T>> {
     val reversedPath = sequence {

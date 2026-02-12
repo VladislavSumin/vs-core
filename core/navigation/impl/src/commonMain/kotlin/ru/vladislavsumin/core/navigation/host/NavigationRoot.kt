@@ -28,7 +28,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenPathWithIntent
  * @param key уникальный в пределах компонента ключ дочернего компонента.
  * @param coroutineScope scope на котором будут запускаться асинхронные задачи навигации в этом экране.
  * @param onContentReady если передано не нулевое значение, то будут вызваны методы
- * [ru.vs.core.navigation.screen.Screen.delaySplashScreen] в цепочке открываемых экранов и после того как все вызовы
+ * `Screen.delaySplashScreen` в цепочке открываемых экранов и после того как все вызовы
  * завершатся, будет вызван этот callback. Таким образом можно задерживать splash экран в обычных экранах.
  */
 public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
@@ -40,7 +40,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
 ): ComposeComponent {
     val node = navigation.navigationTree
     val params = node.value.defaultParams ?: error("Root screen must have default params")
-    val rootScreenFactory = node.value.factory as ScreenFactory<Ctx, IntentScreenParams<*>, ScreenIntent, *>?
+    val rootScreenFactory = node.value.factory as ScreenFactory<Ctx, IntentScreenParams<*>, *, *>?
     check(rootScreenFactory != null) { "Factory for $params not found" }
 
     // Создаем рутовый навигатор.
@@ -82,7 +82,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
         rootScreenNavigator.screen = screen
     }
 
-    handleNavigation(navigation, rootScreenNavigator)
+    handleNavigation(navigation, rootScreenNavigator, coroutineScope)
 
     // Обрабатываем задержку splash экрана.
     if (onContentReady != null) {
@@ -123,18 +123,18 @@ private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
 /**
  * Обрабатывает глобальную навигацию из [navigation].
  */
-private fun <Ctx : GenericComponentContext<Ctx>> Ctx.handleNavigation(
-    navigation: GenericNavigation<Ctx>,
-    rootScreenNavigator: ScreenNavigator<Ctx>,
+private fun handleNavigation(
+    navigation: GenericNavigation<*>,
+    rootScreenNavigator: ScreenNavigator<*>,
+    scope: CoroutineScope,
 ) {
-    val scope = lifecycle.createCoroutineScope()
     scope.launch {
         for (event in navigation.navigationChannel) {
             NavigationLogger.d { "Handle global navigation event $event" }
             when (event) {
                 is NavigationEvent.Open -> rootScreenNavigator.open(
-                    event.screenParams as IntentScreenParams<ScreenIntent>,
-                    event.intent as ScreenIntent?,
+                    screenParams = event.screenParams as IntentScreenParams<ScreenIntent>,
+                    intent = event.intent,
                 )
 
                 is NavigationEvent.Close -> rootScreenNavigator.close(event.screenParams)

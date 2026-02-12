@@ -20,9 +20,7 @@ public class ConfigurationHolder internal constructor(
     }
 
     internal fun sendIntent(intent: ScreenIntent?) {
-        if (intent != null) {
-            intents.trySend(intent).getOrThrow()
-        }
+        if (intent != null) intents.trySend(intent).getOrThrow()
     }
 
     // Используем обычный класс вместо data class что бы не выставлять наружу copy метод.

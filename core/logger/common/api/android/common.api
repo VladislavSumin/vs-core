@@ -6,7 +6,6 @@ public final class ru/vladislavsumin/core/logger/common/LogLevel : java/lang/Enu
 	public static final field NONE Lru/vladislavsumin/core/logger/common/LogLevel;
 	public static final field TRACE Lru/vladislavsumin/core/logger/common/LogLevel;
 	public static final field WARN Lru/vladislavsumin/core/logger/common/LogLevel;
-	public final fun allowLog (Lru/vladislavsumin/core/logger/common/LogLevel;)Z
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun merge (Lru/vladislavsumin/core/logger/common/LogLevel;)Lru/vladislavsumin/core/logger/common/LogLevel;
 	public static fun valueOf (Ljava/lang/String;)Lru/vladislavsumin/core/logger/common/LogLevel;
@@ -15,8 +14,6 @@ public final class ru/vladislavsumin/core/logger/common/LogLevel : java/lang/Enu
 
 public abstract class ru/vladislavsumin/core/logger/common/Logger {
 	public fun <init> ()V
-	public final fun accessLogInternal (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/String;)V
-	public final fun accessLogInternal (Lru/vladislavsumin/core/logger/common/LogLevel;Ljava/lang/Throwable;Ljava/lang/String;)V
 	public final fun d (Ljava/lang/String;)V
 	public final fun d (Ljava/lang/Throwable;Ljava/lang/String;)V
 	public final fun d (Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V

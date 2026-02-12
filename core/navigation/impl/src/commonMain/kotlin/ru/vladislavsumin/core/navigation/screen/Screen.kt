@@ -84,8 +84,8 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
         for (event in navigationChannel) {
             when (event) {
                 is NavigationViewModel.NavigationEvent.Open -> navigator.open(
-                    event.screenParams as IntentScreenParams<ScreenIntent>,
-                    event.intent as ScreenIntent?,
+                    screenParams = event.screenParams as IntentScreenParams<ScreenIntent>,
+                    intent = event.intent,
                 )
 
                 is NavigationViewModel.NavigationEvent.Close -> navigator.close(event.screenParams)

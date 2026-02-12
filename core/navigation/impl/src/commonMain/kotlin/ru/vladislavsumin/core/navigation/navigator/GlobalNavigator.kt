@@ -20,7 +20,7 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
     private val navigation: GenericNavigation<Ctx>,
 ) {
 
-    internal lateinit var rootNavigator: ScreenNavigator<Ctx>
+    internal lateinit var rootNavigator: ScreenNavigatorImpl<Ctx>
     private val relay = UnsafeRelay()
 
     /**

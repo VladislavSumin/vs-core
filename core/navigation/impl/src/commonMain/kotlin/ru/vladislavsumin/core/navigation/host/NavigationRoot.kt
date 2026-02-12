@@ -14,7 +14,7 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.GlobalNavigator
-import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
+import ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
@@ -55,7 +55,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
     // Lifecycle полученного компонента будет совпадать с родителем
     val childContext = childContext(key, lifecycle = extraLifecycle)
 
-    val rootScreenNavigator = ScreenNavigator(
+    val rootScreenNavigator = ScreenNavigatorImpl(
         globalNavigator = globalNavigator,
         parentNavigator = null,
         screenPath = ScreenPath(params),
@@ -125,7 +125,7 @@ private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
  */
 private fun handleNavigation(
     navigation: GenericNavigation<*>,
-    rootScreenNavigator: ScreenNavigator<*>,
+    rootScreenNavigator: ScreenNavigatorImpl<*>,
     scope: CoroutineScope,
 ) {
     scope.launch {

@@ -21,19 +21,19 @@ public abstract class NavigationViewModel : ViewModel() {
     }
 
     /**
-     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigator.open].
+     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl.open].
      */
     protected fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
         send(NavigationEvent.Open(screenParams, intent))
 
     /**
-     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigator.close].
+     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl.close].
      */
     protected fun close(screenParams: IntentScreenParams<*>): Unit =
         send(NavigationEvent.Close(screenParams))
 
     /**
-     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigator.close].
+     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl.close].
      */
     protected fun close(): Unit = send(NavigationEvent.CloseSelf)
 

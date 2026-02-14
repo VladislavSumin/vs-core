@@ -7,4 +7,5 @@ import ru.vladislavsumin.utils.fullName
  * Устанавливает группу проекта основываясь на его пути
  */
 
-group = "${project.projectConfiguration.basePackage}.${project.parent!!.fullName()}"
+val subgroup = project.parent?.let { ".${it.fullName()}" } ?: ""
+group = "${project.projectConfiguration.basePackage}$subgroup"

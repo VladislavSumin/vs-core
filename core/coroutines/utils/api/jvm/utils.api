@@ -5,6 +5,15 @@ public final class ru/vladislavsumin/core/coroutines/utils/CombineExtKt {
 	public static final fun combine (Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;Lkotlin/jvm/functions/Function10;)Lkotlinx/coroutines/flow/Flow;
 }
 
+public final class ru/vladislavsumin/core/coroutines/utils/LinkedFlow : kotlinx/coroutines/flow/Flow {
+	public fun <init> ()V
+	public fun collect (Lkotlinx/coroutines/flow/FlowCollector;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ru/vladislavsumin/core/coroutines/utils/LinkedFlowKt {
+	public static final fun linkTo (Lkotlinx/coroutines/flow/Flow;Lru/vladislavsumin/core/coroutines/utils/LinkedFlow;)V
+}
+
 public final class ru/vladislavsumin/core/coroutines/utils/StateFlowExtKt {
 	public static final fun mapState (Lkotlinx/coroutines/flow/StateFlow;Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/flow/StateFlow;
 }

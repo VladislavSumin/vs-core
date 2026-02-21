@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
  * дву направленную передачу данных между объектами.
  *
  * Обратите внимание, во избежание некорректного использования [LinkedFlow] может быть подписан только на один [Flow].
- * Попытка смены попытке вызовет ошибку.
+ * Попытка смены прикрепления вызовет ошибку.
  */
 public class LinkedFlow<T> : Flow<T> {
     private val link = MutableStateFlow<Flow<T>?>(null)

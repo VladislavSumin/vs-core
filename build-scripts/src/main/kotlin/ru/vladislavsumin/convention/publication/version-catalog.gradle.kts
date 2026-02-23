@@ -23,10 +23,9 @@ catalog {
     }
 }
 
-val publishName = "VS Version Catalog"
 mavenPublishing {
     pom {
-        name = publishName
+        name = "VS Version Catalog"
         description = "Gradle version catalog with all vs libs"
     }
 }

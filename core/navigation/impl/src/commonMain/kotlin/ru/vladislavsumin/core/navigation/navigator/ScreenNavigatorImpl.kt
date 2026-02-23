@@ -227,7 +227,8 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     ): ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *> {
         // Ищем среди локальных фабрик, потом, если не нашли, смотрим в глобальных фабриках.
         val factory = customFactories[screenKey]
-            ?: node.children.find { it.value.screenKey == screenKey }!!.value.factory
+            ?: node.children.find { it.value.screenKey == screenKey }?.value?.factory
+        check(factory != null) { "Factory for screen $screenKey not found" }
         return factory as ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *>
     }
 

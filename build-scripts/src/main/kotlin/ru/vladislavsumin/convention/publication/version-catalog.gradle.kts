@@ -1,5 +1,6 @@
 package ru.vladislavsumin.convention.publication
 
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.kotlin.dsl.`version-catalog`
 import ru.vladislavsumin.configuration.projectConfiguration
 
@@ -28,4 +29,10 @@ publishing {
             from(components["versionCatalog"])
         }
     }
+}
+
+// publishMavenPublicationToMavenCentralRepository not exists before evaluate.
+afterEvaluate {
+    val signTask = tasks.named("signVersionCatalogPublication")
+    tasks.named("publishMavenPublicationToMavenCentralRepository").dependsOn(signTask)
 }

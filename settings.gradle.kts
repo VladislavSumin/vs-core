@@ -46,6 +46,6 @@ include(":core:serialization:protobuf")
 include(":core:serialization:yaml")
 
 include(":core:session:client")
-include(":core:session:connector:scoket:client")
+include(":core:session:connector:socket:client")
 
 include(":core:uikit:graph")

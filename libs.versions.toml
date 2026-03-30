@@ -83,6 +83,7 @@ vs-core-serialization-protobuf = { module = "ru.vladislavsumin.core.serializatio
 vs-core-serialization-yaml = { module = "ru.vladislavsumin.core.serialization:yaml", version.ref = "vs-core" }
 
 vs-core-session-client = { module = "ru.vladislavsumin.core.session:client", version.ref = "vs-core" }
+vs-core-session-connector-socket-client = { module = "ru.vladislavsumin.core.session.connector.socket:client", version.ref = "vs-core" }
 
 vs-core-uikit-graph = { module = "ru.vladislavsumin.core.uikit:graph", version.ref = "vs-core" }
 

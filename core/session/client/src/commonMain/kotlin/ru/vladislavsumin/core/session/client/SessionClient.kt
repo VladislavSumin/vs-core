@@ -31,6 +31,17 @@ public interface SessionClient<S, R> {
     }
 }
 
+/**
+ * Создает реализацию [SessionClient].
+ *
+ * @param S тип отправляемых сообщений.
+ * @param R тип получаемых сообщений.
+ *
+ * @param connector фабрика для создания подключений.
+ * @param scope скоуп для работы клиента.
+ * @param allowConnection определяет разрешено ли открывать соединения в данный момент.
+ * @param logger логер для возможности переопределить поведение логирования.
+ */
 public fun <S, R> SessionClient(
     connector: SessionConnector<S, R>,
     scope: CoroutineScope,
@@ -80,7 +91,7 @@ internal class SessionClientImpl<S, R>(
                     // see [crateConnectedState] function
                     coroutineScope {
                         // Establish connection
-                        val connection = connector.connect()
+                        val connection = connector.connect(this)
                         connectionGlobal = connection
 
                         // Create connected state wrapper around connection

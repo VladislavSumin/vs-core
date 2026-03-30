@@ -82,6 +82,8 @@ vs-core-serialization-json = { module = "ru.vladislavsumin.core.serialization:js
 vs-core-serialization-protobuf = { module = "ru.vladislavsumin.core.serialization:protobuf", version.ref = "vs-core" }
 vs-core-serialization-yaml = { module = "ru.vladislavsumin.core.serialization:yaml", version.ref = "vs-core" }
 
+vs-core-session-client = { module = "ru.vladislavsumin.core.session:client", version.ref = "vs-core" }
+
 vs-core-uikit-graph = { module = "ru.vladislavsumin.core.uikit:graph", version.ref = "vs-core" }
 
 # Kotlin

@@ -21,6 +21,7 @@ protectFromDslAccessors {
                 dependencies {
                     implementation(kotlin("test-common"))
                     implementation(kotlin("test-annotations-common"))
+                    implementation(kotlin("test"))
                     implementation(vsCoreLibs.kotlin.coroutines.test)
                 }
             }

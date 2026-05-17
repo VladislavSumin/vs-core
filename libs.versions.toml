@@ -83,6 +83,7 @@ vs-core-serialization-protobuf = { module = "ru.vladislavsumin.core.serializatio
 vs-core-serialization-yaml = { module = "ru.vladislavsumin.core.serialization:yaml", version.ref = "vs-core" }
 
 vs-core-uikit-graph = { module = "ru.vladislavsumin.core.uikit:graph", version.ref = "vs-core" }
+vs-core-uikit-pieChart = { module = "ru.vladislavsumin.core.uikit:pie-chart", version.ref = "vs-core" }
 
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }

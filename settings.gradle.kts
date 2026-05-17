@@ -46,3 +46,4 @@ include(":core:serialization:protobuf")
 include(":core:serialization:yaml")
 
 include(":core:uikit:graph")
+include(":core:uikit:pie-chart")

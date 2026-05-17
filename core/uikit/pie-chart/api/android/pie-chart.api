@@ -1,0 +1,18 @@
+public final class ru/vladislavsumin/core/uikit/pieChart/PieChartKt {
+	public static final fun PieChart (Ljava/util/List;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class ru/vladislavsumin/core/uikit/pieChart/Slice {
+	public static final field $stable I
+	public synthetic fun <init> (FJLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2-0d7_KjU ()J
+	public final fun copy-4WTKRHQ (FJ)Lru/vladislavsumin/core/uikit/pieChart/Slice;
+	public static synthetic fun copy-4WTKRHQ$default (Lru/vladislavsumin/core/uikit/pieChart/Slice;FJILjava/lang/Object;)Lru/vladislavsumin/core/uikit/pieChart/Slice;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColor-0d7_KjU ()J
+	public final fun getFraction ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

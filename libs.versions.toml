@@ -15,6 +15,7 @@ kotlin-io = "0.8.2"
 gradlePlugins-android = "8.11.0"
 gradlePlugins-detekt = "1.23.8"
 gradlePlugins-checkUpdates = "0.51.0"
+gradlePlugins-kover = "0.9.8"
 gradlePlugins-mavenPublish = "0.34.0"
 
 # Other
@@ -43,6 +44,7 @@ gradlePlugins-jb-compose = { module = "org.jetbrains.compose:compose-gradle-plug
 gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
 gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
 gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradlePlugins-checkUpdates" }
+gradlePlugins-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "gradlePlugins-kover" }
 gradlePlugins-mavenPublish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "gradlePlugins-mavenPublish" }
 
 # VS Core

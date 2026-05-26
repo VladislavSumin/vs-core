@@ -18,5 +18,6 @@ dependencies {
     implementation(vsCoreLibs.gradlePlugins.android)
     implementation(vsCoreLibs.gradlePlugins.detekt)
     implementation(vsCoreLibs.gradlePlugins.checkUpdates)
+    implementation(vsCoreLibs.gradlePlugins.kover)
     implementation(vsCoreLibs.gradlePlugins.mavenPublish)
 }

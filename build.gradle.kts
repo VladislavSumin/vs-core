@@ -3,6 +3,7 @@ import ru.vladislavsumin.utils.registerExternalModuleDetektTask
 
 plugins {
     id("ru.vladislavsumin.convention.analyze.detekt-all")
+    id("ru.vladislavsumin.convention.analyze.kover-all")
     id("ru.vladislavsumin.convention.analyze.check-updates")
     id("ru.vladislavsumin.convention.publication.version-catalog")
 }

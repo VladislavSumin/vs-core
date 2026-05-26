@@ -6,7 +6,9 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import ru.vladislavsumin.core.ksp.test.kspSourceFileDirectory
 import ru.vladislavsumin.core.ksp.test.prepareCompilation
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCompilerApi::class)
@@ -59,6 +61,67 @@ class FactoryGeneratorSymbolProcessorTest {
         screen = TestSources.testAliasScreenWithCustomContext,
         factory = CUSTOM_CONTEXT_SCREEN_FACTORY,
     )
+
+    @Test
+    fun testScreenNotImplementingScreen() {
+        val result = prepareCompilation(
+            FactoryGeneratorSymbolProcessorProvider(),
+            TestSources.testScreenNotImplementingScreen,
+        )
+        assertNotEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        assertContains(
+            result.messages,
+            "NotAScreen.kt:4: @GenerateScreenFactory only applicable to classes implementing Screen",
+        )
+    }
+
+    @Test
+    fun testScreenWithoutPrimaryConstructor() {
+        val result = prepareCompilation(
+            FactoryGeneratorSymbolProcessorProvider(),
+            TestSources.testScreenWithoutPrimaryConstructor,
+        )
+        assertNotEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        assertContains(
+            result.messages,
+            "NoPrimaryScreen.kt:8: To generate screen factory screen class must have primary constructor",
+        )
+    }
+
+    @Test
+    fun testScreenWithMultipleScreenParams() {
+        val result = prepareCompilation(
+            FactoryGeneratorSymbolProcessorProvider(),
+            TestSources.testScreenWithMultipleScreenParams,
+        )
+        assertNotEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        assertContains(result.messages, "MultiParamsScreen.kt:16: Screen contains more than once screen params")
+    }
+
+    @Test
+    fun testScreenParamsWithWrongName() {
+        val result = prepareCompilation(
+            FactoryGeneratorSymbolProcessorProvider(),
+            TestSources.testScreenParamsWithIntent,
+            TestSources.testScreenParamsWithWrongName,
+        )
+        assertNotEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        assertContains(result.messages, "WrongNameScreen.kt:9: Screen params variable must be named \"params\"")
+    }
+
+    @Test
+    fun testScreenParamsAutoResolvedNotFound() {
+        val result = prepareCompilation(
+            FactoryGeneratorSymbolProcessorProvider(),
+            TestSources.testScreenParamsAutoResolvedNotFound,
+        )
+        assertNotEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        assertContains(
+            result.messages,
+            "OrphanScreen.kt:8: ScreenParams not found and automatically resolved as OrphanScreenParams, " +
+                "but screenParams with current type not exist",
+        )
+    }
 
     private fun assertScreenFactorySuccess(
         screenParams: SourceFile,

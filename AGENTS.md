@@ -27,6 +27,25 @@ CI runs all four checks above as separate jobs. Before pushing, at minimum run `
 
 After changing public API intentionally, update snapshots with `./gradlew apiDump` and commit the changed `.api` files.
 
+### Test coverage (Kover)
+
+Kover is applied globally via `convention.analyze.kover-all` on the root project, which auto-applies `convention.analyze.kover` to every subproject. No per-module setup needed.
+
+```sh
+./gradlew koverHtmlReport     # Combined HTML report for all modules → build/reports/kover/html/index.html
+./gradlew koverXmlReport      # Combined XML report (CI / tooling)  → build/reports/kover/report.xml
+./gradlew koverLog            # Print coverage summary to stdout
+./gradlew koverVerify         # Verify coverage thresholds (fails build if below)
+```
+
+Per-module / per-target reports are also available:
+```sh
+./gradlew :core:di:koverHtmlReportJvm          # JVM-only HTML report for a specific module
+./gradlew :core:navigation:impl:koverHtmlReport  # All targets for a module
+```
+
+HTML output path per module: `<module>/build/reports/kover/html/index.html`.
+
 ## Architecture
 
 ### Convention plugins (`build-scripts/`)

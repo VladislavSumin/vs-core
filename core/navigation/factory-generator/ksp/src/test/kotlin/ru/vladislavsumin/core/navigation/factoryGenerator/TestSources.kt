@@ -192,4 +192,98 @@ object TestSources {
             }
         """.trimIndent(),
     )
+
+    val testScreenNotImplementingScreen = SourceFile.kotlin(
+        name = "NotAScreen.kt",
+        contents = """
+            import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            
+            @GenerateScreenFactory
+            class NotAScreen(val x: String)
+        """.trimIndent(),
+    )
+
+    val testScreenWithoutPrimaryConstructor = SourceFile.kotlin(
+        name = "NoPrimaryScreen.kt",
+        contents = """
+            import com.arkivanov.decompose.ComponentContext
+            import ru.vladislavsumin.core.navigation.screen.Screen
+            import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
+            
+            @GenerateScreenFactory
+            class NoPrimaryScreen : Screen {
+                constructor(context: ComponentContext) : super(context)
+                
+                @Composable
+                override fun Render(modifier: Modifier){}
+            }
+        """.trimIndent(),
+    )
+
+    val testScreenWithMultipleScreenParams = SourceFile.kotlin(
+        name = "MultiParamsScreen.kt",
+        contents = """
+            import com.arkivanov.decompose.ComponentContext
+            import ru.vladislavsumin.core.navigation.screen.Screen
+            import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import ru.vladislavsumin.core.navigation.IntentScreenParams
+            import ru.vladislavsumin.core.navigation.ScreenIntent
+            import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
+            
+            data object FirstParams: IntentScreenParams<FirstIntent>
+            data object FirstIntent: ScreenIntent
+            data object SecondParams: IntentScreenParams<SecondIntent>
+            data object SecondIntent: ScreenIntent
+            
+            @GenerateScreenFactory
+            class MultiParamsScreen(
+                params1: FirstParams,
+                params2: SecondParams,
+                context: ComponentContext,
+            ): Screen(context) {
+                @Composable
+                override fun Render(modifier: Modifier){}
+            }
+        """.trimIndent(),
+    )
+
+    val testScreenParamsWithWrongName = SourceFile.kotlin(
+        name = "WrongNameScreen.kt",
+        contents = """
+            import com.arkivanov.decompose.ComponentContext
+            import ru.vladislavsumin.core.navigation.screen.Screen
+            import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
+            
+            @GenerateScreenFactory
+            class WrongNameScreen(
+                wrongName: TestScreenParams,
+                context: ComponentContext,
+            ): Screen(context) {
+                @Composable
+                override fun Render(modifier: Modifier){}
+            }
+        """.trimIndent(),
+    )
+
+    val testScreenParamsAutoResolvedNotFound = SourceFile.kotlin(
+        name = "OrphanScreen.kt",
+        contents = """
+            import com.arkivanov.decompose.ComponentContext
+            import ru.vladislavsumin.core.navigation.screen.Screen
+            import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+            import androidx.compose.runtime.Composable
+            import androidx.compose.ui.Modifier
+            
+            @GenerateScreenFactory
+            class OrphanScreen(context: ComponentContext): Screen(context) {
+                @Composable
+                override fun Render(modifier: Modifier){}
+            }
+        """.trimIndent(),
+    )
 }

@@ -1,6 +1,8 @@
 package ru.vladislavsumin.core.navigation.testData
 
 import kotlinx.serialization.Serializable
+import ru.vladislavsumin.core.navigation.IntentScreenParams
+import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
 
 @Serializable
@@ -11,3 +13,9 @@ data object ScreenB : ScreenParams
 
 @Serializable
 data object ScreenC : ScreenParams
+
+@Serializable
+data object TestIntent : ScreenIntent
+
+@Serializable
+data object ScreenWithIntent : IntentScreenParams<TestIntent>

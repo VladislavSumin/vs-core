@@ -60,7 +60,7 @@ abstract class Configuration(
             String::class -> rawProperty
             Boolean::class -> rawProperty.toBoolean()
             Integer::class -> rawProperty.toInt()
-            else -> Error("Unsupported cast to ${kClass.simpleName}")
+            else -> error("Unsupported cast to ${kClass.simpleName}")
         } as T
     }
 

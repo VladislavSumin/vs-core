@@ -45,13 +45,13 @@ public abstract class Logger {
         logInternal(level, throwable, msg)
 
     public fun log(level: LogLevel, msg: String) {
-        if (logLevel.allowLog(logLevel)) {
+        if (logLevel.allowLog(level)) {
             logInternal(level, msg)
         }
     }
 
     public fun log(level: LogLevel, throwable: Throwable, msg: String) {
-        if (logLevel.allowLog(logLevel)) {
+        if (logLevel.allowLog(level)) {
             logInternal(level, throwable, msg)
         }
     }

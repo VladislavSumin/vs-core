@@ -8,8 +8,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
-            // TODO Завязка на материал тут только ради одного цветового токена, возможно стоит от нее отказаться.
-            implementation(compose.material3)
+            implementation(compose.foundation)
             implementation(projects.core.collections.tree)
         }
     }

@@ -1,7 +1,6 @@
 package ru.vladislavsumin.core.uikit.graph
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +33,7 @@ public fun <T, N : TreeNode<T, N>> Tree(
     modifier: Modifier = Modifier,
     verticalSpace: Dp = 24.dp,
     horizontalSpace: Dp = 16.dp,
-    lineColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    lineColor: Color,
     lineWidth: Dp = 1.dp,
     content: @Composable (T) -> Unit,
 ) {
@@ -49,6 +48,8 @@ public fun <T, N : TreeNode<T, N>> Tree(
                     rootNode = it,
                     verticalSpace = verticalSpace,
                     horizontalSpace = horizontalSpace,
+                    lineColor = lineColor,
+                    lineWidth = lineWidth,
                     content = content,
                 )
             }

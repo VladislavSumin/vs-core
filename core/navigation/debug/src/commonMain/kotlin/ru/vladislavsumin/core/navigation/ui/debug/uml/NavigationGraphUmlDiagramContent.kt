@@ -4,6 +4,7 @@ import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ internal fun NavigationGraphUmlDiagramContent(
     ) {
         Tree(
             rootNode = viewModel.graph.root,
+            lineColor = MaterialTheme.colorScheme.outlineVariant,
             modifier = Modifier
                 .graphicsLayer(
                     scaleX = scale,

@@ -6,7 +6,6 @@ plugins {
 kotlin {
     sourceSets {
         jvmTest.dependencies {
-            // TODO вынести библиотеки для тестирования в convention плагин
             implementation(vsCoreLibs.testing.mockk)
         }
     }

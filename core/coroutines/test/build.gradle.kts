@@ -7,8 +7,8 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(kotlin("test"))
-            implementation(vsCoreLibs.decompose.core)
+            api(vsCoreLibs.kotlin.coroutines.core)
+            api(vsCoreLibs.kotlin.coroutines.test)
         }
     }
 }

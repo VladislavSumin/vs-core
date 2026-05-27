@@ -6,7 +6,9 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import ru.vladislavsumin.core.ksp.test.kspSourceFileDirectory
 import ru.vladislavsumin.core.ksp.test.prepareCompilation
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCompilerApi::class)
@@ -97,6 +99,19 @@ class FactoryGeneratorSymbolProcessorTest {
                 }
                 
             """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun testClassWithoutPrimaryConstructor() {
+        val result = prepareCompilation(
+            FactoryGeneratorSymbolProcessorProvider(),
+            TestSources.classWithoutPrimaryConstructor,
+        )
+        assertNotEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+        assertContains(
+            result.messages,
+            "NoPrimaryClass.kt:4: For generate factory class must have primary constructor",
         )
     }
 

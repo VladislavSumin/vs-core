@@ -64,4 +64,16 @@ object TestSources {
             )
         """.trimIndent(),
     )
+
+    val classWithoutPrimaryConstructor = SourceFile.kotlin(
+        name = "NoPrimaryClass.kt",
+        contents = """
+            import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+            
+            @GenerateFactory
+            class NoPrimaryClass {
+                constructor(value: String)
+            }
+        """.trimIndent(),
+    )
 }

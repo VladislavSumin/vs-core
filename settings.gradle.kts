@@ -9,6 +9,7 @@ rootProject.name = "vs-core"
 include(":core:collections:tree")
 
 include(":core:coroutines:dispatcher")
+include(":core:coroutines:test")
 include(":core:coroutines:utils")
 
 include(":core:decompose:components")

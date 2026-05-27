@@ -1,8 +1,8 @@
 package ru.vladislavsumin.core.decompose.components
 
 import kotlinx.coroutines.test.runTest
+import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.decompose.test.BaseComponentTest
-import ru.vladislavsumin.core.decompose.test.setMain
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals

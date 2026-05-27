@@ -2,8 +2,8 @@ package ru.vladislavsumin.core.decompose.components
 
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.test.runTest
+import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.decompose.test.BaseComponentTest
-import ru.vladislavsumin.core.decompose.test.setMain
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 

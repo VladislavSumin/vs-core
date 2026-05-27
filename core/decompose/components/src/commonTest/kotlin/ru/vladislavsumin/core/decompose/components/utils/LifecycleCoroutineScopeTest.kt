@@ -5,7 +5,7 @@ import com.arkivanov.essenty.lifecycle.create
 import com.arkivanov.essenty.lifecycle.destroy
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runTest
-import ru.vladislavsumin.core.decompose.test.setMain
+import ru.vladislavsumin.core.coroutines.test.setMain
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

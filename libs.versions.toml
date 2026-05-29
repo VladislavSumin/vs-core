@@ -16,7 +16,7 @@ gradlePlugins-android = "8.11.0"
 gradlePlugins-detekt = "1.23.8"
 gradlePlugins-checkUpdates = "0.51.0"
 gradlePlugins-kover = "0.9.8"
-gradlePlugins-mavenPublish = "0.34.0"
+gradlePlugins-mavenPublish = "0.34.0" # Внимание! Менять синхронно с build-scripts/build.gradle.kts
 
 # Other
 jb-compose = "1.9.3"

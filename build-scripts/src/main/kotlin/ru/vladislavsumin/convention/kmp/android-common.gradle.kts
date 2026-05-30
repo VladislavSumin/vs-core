@@ -2,7 +2,7 @@ package ru.vladislavsumin.convention.kmp
 
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import ru.vladislavsumin.configuration.projectConfiguration
-import ru.vladislavsumin.utils.fullName
+import ru.vladislavsumin.utils.fullNameAsNamespace
 import ru.vladislavsumin.utils.protectFromDslAccessors
 
 /**
@@ -20,7 +20,7 @@ val configuration = project.projectConfiguration
 protectFromDslAccessors {
     kotlin {
         android {
-            namespace = "${configuration.basePackage}.${project.fullName().replace("-", "_")}"
+            namespace = "${configuration.basePackage}.${project.fullNameAsNamespace()}"
             compileSdk = configuration.core.android.compileSdk
             minSdk = configuration.core.android.minSdk
 

@@ -13,11 +13,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
  * Записывает [TypeSpec] в файл создавая [FileSpec] по умолчанию.
  * Удобно когда в файл нужно записать только один тип.
  */
-public fun TypeSpec.writeTo(
-    codeGenerator: CodeGenerator,
-    packageName: String,
-    aggregating: Boolean = true,
-) {
+public fun TypeSpec.writeTo(codeGenerator: CodeGenerator, packageName: String, aggregating: Boolean = true) {
     FileSpec.builder(
         packageName,
         name!!,

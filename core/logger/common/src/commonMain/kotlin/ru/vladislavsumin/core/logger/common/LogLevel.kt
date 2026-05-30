@@ -18,14 +18,10 @@ public enum class LogLevel(private val rawLevel: Int) {
      * Проверяет допустимо ли на этом уровне логирования логировать [logLevel]
      */
     @PublishedApi
-    internal fun allowLog(logLevel: LogLevel): Boolean {
-        return this.rawLevel >= logLevel.rawLevel
-    }
+    internal fun allowLog(logLevel: LogLevel): Boolean = this.rawLevel >= logLevel.rawLevel
 
     /**
      * Объединяет два [LogLevel] возвращая уровень с меньшим уровнем (более узкий)
      */
-    public infix fun merge(logLevel: LogLevel): LogLevel {
-        return if (this.rawLevel <= logLevel.rawLevel) this else logLevel
-    }
+    public infix fun merge(logLevel: LogLevel): LogLevel = if (this.rawLevel <= logLevel.rawLevel) this else logLevel
 }

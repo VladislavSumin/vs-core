@@ -35,7 +35,5 @@ public class ConfigurationHolder internal constructor(
         return screenParams == other.screenParams
     }
 
-    override fun hashCode(): Int {
-        return screenParams.hashCode()
-    }
+    override fun hashCode(): Int = screenParams.hashCode()
 }

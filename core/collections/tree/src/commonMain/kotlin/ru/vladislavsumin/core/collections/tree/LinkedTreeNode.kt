@@ -24,19 +24,15 @@ public class LinkedTreeNodeImpl<T> internal constructor(
 public fun <T> linkedNodeOf(
     value: T,
     children: Collection<LinkedTreeNodeImpl<T>> = emptyList(),
-): LinkedTreeNodeImpl<T> {
-    return LinkedTreeNodeImpl(null, value, children).apply {
-        children.forEach { child -> child.parent = this }
-    }
+): LinkedTreeNodeImpl<T> = LinkedTreeNodeImpl(null, value, children).apply {
+    children.forEach { child -> child.parent = this }
 }
 
 /**
  * DSL для построения [LinkedTreeNode] деревьев.
  */
-public fun <T> linkedNodeOf(
-    value: T,
-    vararg children: LinkedTreeNodeImpl<T>,
-): LinkedTreeNodeImpl<T> = linkedNodeOf(value, children.toList())
+public fun <T> linkedNodeOf(value: T, vararg children: LinkedTreeNodeImpl<T>): LinkedTreeNodeImpl<T> =
+    linkedNodeOf(value, children.toList())
 
 /**
  * Итератор по всему дереву (включая ноды выше текущей), сначала итерируется по детям, как это делает обычный

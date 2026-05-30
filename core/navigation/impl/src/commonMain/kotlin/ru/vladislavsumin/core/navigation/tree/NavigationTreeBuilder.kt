@@ -87,11 +87,9 @@ internal class NavigationTreeBuilder<Ctx : GenericComponentContext<Ctx>>(
 /**
  * Форматирует последовательность в строку добавляя форматирование по умолчанию.
  */
-private fun <T> Iterable<T>.joinToStingFormatted(transform: ((T) -> CharSequence)? = null): String {
-    return joinToString(
-        prefix = "[\n\t",
-        postfix = "\n]",
-        separator = ",\n\t",
-        transform = transform,
-    )
-}
+private fun <T> Iterable<T>.joinToStingFormatted(transform: ((T) -> CharSequence)? = null): String = joinToString(
+    prefix = "[\n\t",
+    postfix = "\n]",
+    separator = ",\n\t",
+    transform = transform,
+)

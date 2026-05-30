@@ -11,9 +11,7 @@ internal interface YamlFactory {
     fun createDefault(): Yaml
 }
 
-internal class YamlFactoryImpl(
-    private val serializersModulesRepository: SerializersModulesRepository,
-) : YamlFactory {
+internal class YamlFactoryImpl(private val serializersModulesRepository: SerializersModulesRepository) : YamlFactory {
 
     override fun createDefault() = Yaml(
         serializersModule = serializersModulesRepository.serializerModule,

@@ -29,6 +29,7 @@ abstract class BaseComponentTest {
 
         val stateKeeperDispatcher = when (recreateContextType) {
             RecreateContextType.Full -> StateKeeperDispatcher()
+
             RecreateContextType.ProcessDeath,
             RecreateContextType.ConfigurationChange,
             -> {

@@ -16,9 +16,7 @@ import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 /**
  * Глобальный навигатор.
  */
-internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(
-    private val navigation: GenericNavigation<Ctx>,
-) {
+internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val navigation: GenericNavigation<Ctx>) {
 
     internal lateinit var rootNavigator: ScreenNavigatorImpl<Ctx>
     private val relay = UnsafeRelay()

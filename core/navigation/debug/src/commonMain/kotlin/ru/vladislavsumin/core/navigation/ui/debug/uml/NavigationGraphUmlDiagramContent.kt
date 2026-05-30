@@ -17,10 +17,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import ru.vladislavsumin.core.uikit.graph.Tree
 
 @Composable
-internal fun NavigationGraphUmlDiagramContent(
-    viewModel: NavigationGraphUmlDiagramViewModel,
-    modifier: Modifier,
-) {
+internal fun NavigationGraphUmlDiagramContent(viewModel: NavigationGraphUmlDiagramViewModel, modifier: Modifier) {
     // Текущее приближение графа.
     var scale by remember { mutableStateOf(1f) }
 

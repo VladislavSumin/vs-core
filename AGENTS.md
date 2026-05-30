@@ -97,3 +97,4 @@ dependencies {
 - **Compose function naming**: detekt allows uppercase-first function names for Compose.
 - Typesafe project accessors are enabled (`projects.core.di` not `project(":core:di")`).
 - Detekt also scans `build.gradle.kts` and `settings.gradle.kts` files, not just `src/`.
+- **Do not delete user comments** from code without a compelling reason. Comments left by developers must be preserved unless they are provably outdated, misleading, or harmful.

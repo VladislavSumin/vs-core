@@ -9,14 +9,10 @@ import kotlinx.coroutines.launch
 /**
  * Преобразует [StateFlow] в [Value].
  */
-public fun <T : Any> StateFlow<T>.asValue(scope: CoroutineScope): Value<T> {
-    return FlowAsValue(this, scope)
-}
+public fun <T : Any> StateFlow<T>.asValue(scope: CoroutineScope): Value<T> = FlowAsValue(this, scope)
 
-private class FlowAsValue<T : Any>(
-    private val parentFlow: StateFlow<T>,
-    private val scope: CoroutineScope,
-) : Value<T>() {
+private class FlowAsValue<T : Any>(private val parentFlow: StateFlow<T>, private val scope: CoroutineScope) :
+    Value<T>() {
     override val value: T get() = parentFlow.value
     override fun subscribe(observer: (T) -> Unit): Cancellation {
         val job = scope.launch { parentFlow.collect(observer) }

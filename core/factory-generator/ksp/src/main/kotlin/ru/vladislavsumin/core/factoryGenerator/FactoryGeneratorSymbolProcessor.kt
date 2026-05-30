@@ -50,10 +50,8 @@ internal class FactoryGeneratorSymbolProcessor(
      * @param instance инстанс который должна создавать фабрика
      */
     @OptIn(KspExperimental::class)
-    private fun generateFactory(
-        resolver: Resolver,
-        instance: KSClassDeclaration,
-    ) {
+    @Suppress("LongMethod")
+    private fun generateFactory(resolver: Resolver, instance: KSClassDeclaration) {
         val annotation: KSAnnotation = instance.getAnnotation<GenerateFactory>()
 
         // Я без понятия почему, но аргументы могут быть пустыми несмотря на default value. А могут и нет...
@@ -105,7 +103,9 @@ internal class FactoryGeneratorSymbolProcessor(
         val createFunction = FunSpec.builder("create")
             .apply {
                 functionParams.forEach { addParameter(it.name!!.getShortName(), it.type.toTypeName()) }
-                if (factoryInterface != null) { addModifiers(KModifier.OVERRIDE) }
+                if (factoryInterface != null) {
+                    addModifiers(KModifier.OVERRIDE)
+                }
             }
             .addCode(returnCodeBlock)
             .returns(instance.toClassName())
@@ -133,13 +133,15 @@ internal class FactoryGeneratorSymbolProcessor(
     }
 }
 
-private fun KSAnnotation.visibilityModifier(): PackageVisibility {
-    return (arguments.find { it.name?.asString() == "visibility" }?.value as? KSClassDeclaration)
-        ?.simpleName
-        ?.asString()
-        ?.let { visibility -> PackageVisibility.valueOf(visibility) }
-        ?: PackageVisibility.Internal
-}
+private fun KSAnnotation.visibilityModifier(): PackageVisibility = (
+    arguments.find {
+        it.name?.asString() == "visibility"
+    }?.value as? KSClassDeclaration
+    )
+    ?.simpleName
+    ?.asString()
+    ?.let { visibility -> PackageVisibility.valueOf(visibility) }
+    ?: PackageVisibility.Internal
 
 private fun PackageVisibility.toModifier(): KModifier = when (this) {
     PackageVisibility.Public -> KModifier.PUBLIC

@@ -240,10 +240,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         childScreenNavigators.values.forEach { it.delaySplashScreen() }
     }
 
-    fun createChildNavigator(
-        childScreenParams: IntentScreenParams<*>,
-        childContext: Ctx,
-    ): ScreenNavigatorImpl<Ctx> {
+    fun createChildNavigator(childScreenParams: IntentScreenParams<*>, childContext: Ctx): ScreenNavigatorImpl<Ctx> {
         val screenKey = ScreenKey(childScreenParams::class)
         val childNode = node.children.find { it.value.screenKey == screenKey }
         check(childNode != null) {
@@ -281,14 +278,13 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         targetScreenParams = (screenPath.last() as ScreenPath.PathElement.Params).screenParams,
     )
 
-    private fun findChildNavigator(childElement: ScreenPath.PathElement): ScreenNavigatorImpl<Ctx>? {
-        return when (childElement) {
+    private fun findChildNavigator(childElement: ScreenPath.PathElement): ScreenNavigatorImpl<Ctx>? =
+        when (childElement) {
             is ScreenPath.PathElement.Key -> childScreenNavigators.asSequence()
                 .firstOrNull { entry -> entry.key.asKey() == childElement.screenKey }?.value
 
             is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
         }
-    }
 
     private fun getChildHostNavigator(screenKey: ScreenKey): HostNavigator {
         val childNode = node.children.find { it.value.screenKey == screenKey }

@@ -4,16 +4,12 @@ import ru.vladislavsumin.core.logger.common.LogLevel
 import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.ExternalLoggerFactory
 
-internal actual fun createPlatformLoggerFactory(): ExternalLoggerFactory {
-    return ExternalLoggerFactory { tag ->
-        MacOsExternalLogger(tag)
-    }
+internal actual fun createPlatformLoggerFactory(): ExternalLoggerFactory = ExternalLoggerFactory { tag ->
+    MacOsExternalLogger(tag)
 }
 
 // TODO написать нормальные wasm логи
-private class MacOsExternalLogger(
-    private val tag: String,
-) : ExternalLogger {
+private class MacOsExternalLogger(private val tag: String) : ExternalLogger {
     override fun log(level: LogLevel, msg: String) {
         println("[$level] ($tag) $msg")
     }

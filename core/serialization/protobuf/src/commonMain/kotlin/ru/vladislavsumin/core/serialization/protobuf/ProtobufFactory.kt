@@ -11,9 +11,8 @@ internal interface ProtobufFactory {
     fun createDefault(): ProtoBuf
 }
 
-internal class ProtobufFactoryImpl(
-    private val serializersModulesRepository: SerializersModulesRepository,
-) : ProtobufFactory {
+internal class ProtobufFactoryImpl(private val serializersModulesRepository: SerializersModulesRepository) :
+    ProtobufFactory {
 
     override fun createDefault() = ProtoBuf {
         serializersModule = serializersModulesRepository.serializerModule

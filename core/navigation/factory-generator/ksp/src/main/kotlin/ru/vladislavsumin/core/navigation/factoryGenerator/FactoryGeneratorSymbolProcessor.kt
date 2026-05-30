@@ -55,10 +55,7 @@ internal class FactoryGeneratorSymbolProcessor(
      * @param instance инстанс который должна создавать фабрика
      */
     @Suppress("LongMethod")
-    private fun generateFactory(
-        instance: KSClassDeclaration,
-        resolver: Resolver,
-    ) {
+    private fun generateFactory(instance: KSClassDeclaration, resolver: Resolver) {
         // Имя будущей фабрики.
         val name = instance.simpleName.getShortName() + "Factory"
 
@@ -201,12 +198,11 @@ internal class FactoryGeneratorSymbolProcessor(
         return classDeclaration
     }
 
-    private fun resolveScreenIntentType(
-        screenParamsClassDeclaration: KSClassDeclaration,
-    ): TypeName = screenParamsClassDeclaration
-        // Сюда могут попасть только наследники IntentScreenParams поэтому find гарантированно найдет элемент.
-        .findParametrizedSuperTypeOrNull(SCREEN_PARAMS_CLASS)!!
-        .typeArguments.single() // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
+    private fun resolveScreenIntentType(screenParamsClassDeclaration: KSClassDeclaration): TypeName =
+        screenParamsClassDeclaration
+            // Сюда могут попасть только наследники IntentScreenParams поэтому find гарантированно найдет элемент.
+            .findParametrizedSuperTypeOrNull(SCREEN_PARAMS_CLASS)!!
+            .typeArguments.single() // у IntentScreenParams один параметр шаблона, ошибка вылетать не должна.
 
     companion object {
         private val SCREEN_CLASS = ClassName("ru.vladislavsumin.core.navigation.screen", "GenericScreen")

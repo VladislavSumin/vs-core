@@ -84,9 +84,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     return stack
 }
 
-private class StackHostNavigator(
-    private val stackNavigation: StackNavigation<ConfigurationHolder>,
-) : HostNavigator {
+private class StackHostNavigator(private val stackNavigation: StackNavigation<ConfigurationHolder>) : HostNavigator {
     override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
         // Если такого экрана еще нет в стеке, то открываем его.
         // Если же экран уже есть в стеке, то закрываем все экраны после него.

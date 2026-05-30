@@ -13,7 +13,7 @@ kotlin-io = "0.8.2"
 
 # Gradle
 gradlePlugins-android = "8.11.0"
-gradlePlugins-detekt = "1.23.8"
+gradlePlugins-detekt = "2.0.0-alpha.3"
 gradlePlugins-checkUpdates = "0.54.0"
 gradlePlugins-kover = "0.9.8"
 gradlePlugins-mavenPublish = "0.34.0" # Внимание! Менять синхронно с build-scripts/build.gradle.kts
@@ -42,7 +42,7 @@ gradlePlugins-kotlin-compose-compiler = { module = "org.jetbrains.kotlin:compose
 gradlePlugins-kotlin-binaryValidator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "kotlin-binaryValidator" }
 gradlePlugins-jb-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jb-compose" }
 gradlePlugins-android = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugins-android" }
-gradlePlugins-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
+gradlePlugins-detekt = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "gradlePlugins-detekt" }
 gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradlePlugins-checkUpdates" }
 gradlePlugins-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "gradlePlugins-kover" }
 gradlePlugins-mavenPublish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "gradlePlugins-mavenPublish" }
@@ -123,5 +123,5 @@ logging-log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", v
 logging-slf4j = { module = "org.slf4j:slf4j-api", version.ref = "logging-slf4j" }
 
 # Other
-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "gradlePlugins-detekt" }
+detekt-formatting = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "gradlePlugins-detekt" }
 scout-core = { module = "com.yandex.scout:scout-core", version.ref = "scout" }

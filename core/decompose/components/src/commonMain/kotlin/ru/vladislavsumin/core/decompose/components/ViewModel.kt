@@ -60,13 +60,11 @@ public abstract class ViewModel {
     protected fun <T> Flow<T>.stateIn(
         initialValue: T,
         started: SharingStarted = SharingStarted.Eagerly,
-    ): StateFlow<T> {
-        return stateIn(
-            scope = viewModelScope,
-            started = started,
-            initialValue = initialValue,
-        )
-    }
+    ): StateFlow<T> = stateIn(
+        scope = viewModelScope,
+        started = started,
+        initialValue = initialValue,
+    )
 
     /**
      * Укороченная версия [CoroutineScope.launch] использующая в качестве скоупа [viewModelScope].
@@ -90,18 +88,16 @@ public abstract class ViewModel {
      * После восстановления [uiLifecycle] обратно подпишется на вышестоящий [Flow] и будет пересылать все его события
      * вниз по цепочке.
      */
-    protected fun <T> Flow<T>.resubscribeOnUiLifecycle(lifecycleState: Lifecycle.State): Flow<T> {
-        return uiLifecycle
-            .map { it >= lifecycleState }
-            .distinctUntilChanged()
-            .flatMapLatest {
-                if (it) {
-                    this
-                } else {
-                    emptyFlow()
-                }
+    protected fun <T> Flow<T>.resubscribeOnUiLifecycle(lifecycleState: Lifecycle.State): Flow<T> = uiLifecycle
+        .map { it >= lifecycleState }
+        .distinctUntilChanged()
+        .flatMapLatest {
+            if (it) {
+                this
+            } else {
+                emptyFlow()
             }
-    }
+        }
 
     /**
      * Аналогична функции [resubscribeOnUiLifecycle] но для launch.
@@ -140,10 +136,8 @@ public abstract class ViewModel {
         return flow
     }
 
-    protected inline fun <reified T : Any> saveableStateFlow(
-        key: String,
-        initialValue: T,
-    ): MutableStateFlow<T> = saveableStateFlow(key) { initialValue }
+    protected inline fun <reified T : Any> saveableStateFlow(key: String, initialValue: T): MutableStateFlow<T> =
+        saveableStateFlow(key) { initialValue }
 
     /**
      * Вызывается при уничтожении экземпляра [ViewModel]. Закрывает [CoroutineScope].
@@ -163,9 +157,10 @@ public abstract class ViewModel {
     internal data class Holder<T : Any?>(val data: T)
 }
 
-internal class WrongViewModelUsageException : Exception(
-    """Wrong ViewModel usage. 
+internal class WrongViewModelUsageException :
+    Exception(
+        """Wrong ViewModel usage. 
         |ViewModel creation allowed only inside view model function in Component class. 
         |Only ONE view model can be create inside viewModel function at same time"""
-        .trimMargin(),
-)
+            .trimMargin(),
+    )

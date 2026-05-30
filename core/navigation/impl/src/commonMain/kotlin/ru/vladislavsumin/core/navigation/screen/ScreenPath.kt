@@ -13,9 +13,7 @@ internal data class ScreenPath(val path: List<PathElement>) : List<PathElement> 
 
     constructor(screenParams: IntentScreenParams<*>) : this(listOf(screenParams))
 
-    operator fun plus(screenParams: IntentScreenParams<*>): ScreenPath {
-        return ScreenPath(path + Params(screenParams))
-    }
+    operator fun plus(screenParams: IntentScreenParams<*>): ScreenPath = ScreenPath(path + Params(screenParams))
 
     fun parent() = ScreenPath(dropLast(1))
 

@@ -20,10 +20,8 @@ import ru.vladislavsumin.core.ksp.utils.Types
 import ru.vladislavsumin.core.ksp.utils.processAnnotated
 import ru.vladislavsumin.core.ksp.utils.writeTo
 
-internal class ScoutBindingSymbolProcessor(
-    private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger,
-) : SymbolProcessor {
+internal class ScoutBindingSymbolProcessor(private val codeGenerator: CodeGenerator, private val logger: KSPLogger) :
+    SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> =
         resolver.processAnnotated<GeneratedFactory> { processGeneratedFactoryAnnotation(it) }
 
@@ -40,9 +38,7 @@ internal class ScoutBindingSymbolProcessor(
     }
 
     @Suppress("CyclomaticComplexMethod", "LongMethod")
-    private fun generateScoutBinding(
-        instance: KSClassDeclaration,
-    ) {
+    private fun generateScoutBinding(instance: KSClassDeclaration) {
         // Ищем интерфейс от которого наследуется фабрика или, если его нет то берем саму фабрику
         val interfaceType = instance.superTypes.singleOrNull()
             ?.resolve()
@@ -64,7 +60,9 @@ internal class ScoutBindingSymbolProcessor(
                         val innerType = if (isLazy) typeName.typeArguments.single() else typeName
                         val innerTypeRaw = when (innerType) {
                             is ParameterizedTypeName -> innerType.rawType
+
                             is ClassName -> innerType
+
                             else -> {
                                 logger.error("Unexpected type $innerType", parameter)
                                 return
@@ -74,24 +72,31 @@ internal class ScoutBindingSymbolProcessor(
 
                         val getter = when {
                             isLazy && innerTypeRaw == Types.Kotlin.List && !isNullable -> "collectLazy()"
+
                             !isLazy && innerTypeRaw == Types.Kotlin.List && !isNullable -> "collect()"
+
                             innerTypeRaw == Types.Kotlin.List -> {
                                 logger.error("Nullable list not allowed", parameter)
                                 return
                             }
 
                             isLazy && innerTypeRaw == Types.Kotlin.Map && !isNullable -> "associateLazy()"
+
                             !isLazy && innerTypeRaw == Types.Kotlin.Map && !isNullable -> "associate()"
+
                             innerTypeRaw == Types.Kotlin.Map -> {
                                 logger.error("Nullable map not allowed", parameter)
                                 return
                             }
 
                             isLazy && !isNullable -> "getLazy()"
+
                             isLazy && isNullable -> "optLazy()"
 
                             isNullable -> "opt()"
+
                             !isNullable -> "get()"
+
                             else -> {
                                 logger.error("Unexpected parameter", parameter)
                                 return

@@ -11,9 +11,7 @@ internal interface JsonFactory {
     fun createDefault(): Json
 }
 
-internal class JsonFactoryImpl(
-    private val serializersModulesRepository: SerializersModulesRepository,
-) : JsonFactory {
+internal class JsonFactoryImpl(private val serializersModulesRepository: SerializersModulesRepository) : JsonFactory {
 
     override fun createDefault() = Json {
         serializersModule = serializersModulesRepository.serializerModule

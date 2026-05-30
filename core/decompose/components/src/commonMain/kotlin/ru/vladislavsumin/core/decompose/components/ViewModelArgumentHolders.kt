@@ -11,5 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
  * При этом хак является безопасным, так как [ViewModel] может создаваться только на главном потоке, следовательно, мы
  * исключаем вероятность гонки потоков.
  */
+@Suppress("PropertyName")
 internal var WhileConstructedViewModelStateKeeper: StateKeeper? = null
+
+@Suppress("PropertyName")
 internal var WhileConstructedViewModelUiLifecycle: StateFlow<Lifecycle.State>? = null

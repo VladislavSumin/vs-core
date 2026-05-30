@@ -13,10 +13,8 @@ public sealed interface NavigationGraphUmlNode {
 /**
  * Внешняя нода не являющаяся частью фреймворка навигации
  */
-public data class ExternalNavigationGraphUmlNode(
-    override val name: String,
-    override val description: String? = null,
-) : NavigationGraphUmlNode
+public data class ExternalNavigationGraphUmlNode(override val name: String, override val description: String? = null) :
+    NavigationGraphUmlNode
 
 /**
  * Внутренняя нода являющаяся частью графа навигации.

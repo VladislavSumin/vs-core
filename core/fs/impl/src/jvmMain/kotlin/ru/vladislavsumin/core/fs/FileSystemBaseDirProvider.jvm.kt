@@ -5,9 +5,8 @@ import org.kodein.di.DirectDI
 import ru.vladislavsumin.core.di.i
 import java.io.File
 
-private class FileSystemBaseDirProviderImpl(
-    private val fsApplicationMeta: FsApplicationMeta,
-) : FileSystemBaseDirProvider {
+private class FileSystemBaseDirProviderImpl(private val fsApplicationMeta: FsApplicationMeta) :
+    FileSystemBaseDirProvider {
     private val homeDir by lazy {
         val homePath = System.getProperty("user.home")
         File(homePath)
@@ -18,6 +17,5 @@ private class FileSystemBaseDirProviderImpl(
     override fun getAppFileDir(): Path = Path(appDir.absolutePath)
 }
 
-internal actual fun DirectDI.createFileSystemBaseDirProvider(): FileSystemBaseDirProvider {
-    return FileSystemBaseDirProviderImpl(i())
-}
+internal actual fun DirectDI.createFileSystemBaseDirProvider(): FileSystemBaseDirProvider =
+    FileSystemBaseDirProviderImpl(i())

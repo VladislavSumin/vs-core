@@ -122,11 +122,7 @@ public fun <T, N : TreeNode<T, N>> Tree(
  * Вспомогательная функция рисует линии соединяющие ноды на основе [points].
  */
 @Composable
-private fun Lines(
-    points: State<Points?>,
-    lineColor: Color,
-    lineWidth: Dp,
-) {
+private fun Lines(points: State<Points?>, lineColor: Color, lineWidth: Dp) {
     Canvas(Modifier) {
         val lineWidthPx = lineWidth.toPx()
         val state = points.value ?: return@Canvas
@@ -185,9 +181,4 @@ private fun Lines(
  * Вспомогательный класс для передачи координат точек необходимых для построения линий из фазы measure/layout в
  * фазу draw.
  */
-private data class Points(
-    val endRootY: Int,
-    val centerRootX: Int,
-    val startChildY: Int,
-    val childCentersX: List<Int>,
-)
+private data class Points(val endRootY: Int, val centerRootX: Int, val startChildY: Int, val childCentersX: List<Int>)

@@ -1,6 +1,6 @@
 package ru.vladislavsumin.convention.analyze
 
-import io.gitlab.arturbosch.detekt.Detekt
+import dev.detekt.gradle.Detekt
 import ru.vladislavsumin.utils.protectFromDslAccessors
 import ru.vladislavsumin.utils.vsCoreLibs
 
@@ -9,7 +9,7 @@ import ru.vladislavsumin.utils.vsCoreLibs
  */
 
 plugins {
-    id("io.gitlab.arturbosch.detekt")
+    id("dev.detekt")
 }
 
 // Почему важно разделять таски созданные плагином и таски созданные вручную?

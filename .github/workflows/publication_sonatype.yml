@@ -44,6 +44,7 @@ jobs:
             -Pru.vs.version=${{ env.VERSION }}
             -Pru.vs.signing.keyId=${{ vars.SONATYPE_GPG_KEY_ID }}
             -Pru.vs.signing.secretKeyRingFile=${{ github.workspace }}/sonatype.gpg
+            :build-scripts:publishToMavenCentral
             publishToMavenCentral
 
       - name: Generate changelog

@@ -26,6 +26,8 @@ mavenPublishing {
     }
 
     pom {
+        name = "VS Core Convention Plugins"
+        description = "Convention plugins for VS Core libraries"
         url = "https://github.com/VladislavSumin/vs-core"
         scm {
             url = "https://github.com/VladislavSumin/vs-core"

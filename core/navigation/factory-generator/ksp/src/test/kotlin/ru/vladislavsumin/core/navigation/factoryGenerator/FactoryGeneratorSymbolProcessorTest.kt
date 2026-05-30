@@ -123,11 +123,7 @@ class FactoryGeneratorSymbolProcessorTest {
         )
     }
 
-    private fun assertScreenFactorySuccess(
-        screenParams: SourceFile,
-        screen: SourceFile,
-        factory: String,
-    ) {
+    private fun assertScreenFactorySuccess(screenParams: SourceFile, screen: SourceFile, factory: String) {
         val compilationResult = prepareCompilation(FactoryGeneratorSymbolProcessorProvider(), screenParams, screen)
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.OK)
         val screenFile = compilationResult.kspSourceFileDirectory.listFiles().find { it.name == "TestScreenFactory.kt" }

@@ -218,10 +218,7 @@ class ScoutBindingSymbolProcessorTest {
         )
     }
 
-    private fun assertScreenFactoryFail(
-        source: SourceFile,
-        message: String,
-    ) {
+    private fun assertScreenFactoryFail(source: SourceFile, message: String) {
         val compilationResult = compile(source)
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.COMPILATION_ERROR)
         assertNotNull(
@@ -231,10 +228,7 @@ class ScoutBindingSymbolProcessorTest {
         ) { "Output not contains '$message', output:\n${compilationResult.diagnosticMessages}" }
     }
 
-    private fun assertScreenFactorySuccess(
-        source: SourceFile,
-        factory: String,
-    ) {
+    private fun assertScreenFactorySuccess(source: SourceFile, factory: String) {
         val compilationResult = compile(source)
         assertEquals(compilationResult.exitCode, KotlinCompilation.ExitCode.OK)
         val binderFile = compilationResult.kspSourceFileDirectory.listFiles().single {

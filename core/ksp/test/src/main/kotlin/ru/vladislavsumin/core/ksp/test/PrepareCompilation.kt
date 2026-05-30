@@ -17,19 +17,15 @@ import kotlin.collections.plus
 public fun prepareCompilation(
     symbolProcessorProviders: List<SymbolProcessorProvider>,
     vararg sourceFiles: SourceFile,
-): JvmCompilationResult {
-    return KotlinCompilation().apply {
-        useKsp2()
-        sources += sourceFiles
-        this.symbolProcessorProviders += symbolProcessorProviders
-        inheritClassPath = true
-    }.compile()
-}
+): JvmCompilationResult = KotlinCompilation().apply {
+    useKsp2()
+    sources += sourceFiles
+    this.symbolProcessorProviders += symbolProcessorProviders
+    inheritClassPath = true
+}.compile()
 
 @OptIn(ExperimentalCompilerApi::class)
 public fun prepareCompilation(
     symbolProcessorProvider: SymbolProcessorProvider,
     vararg sourceFiles: SourceFile,
-): JvmCompilationResult {
-    return prepareCompilation(listOf(symbolProcessorProvider), *sourceFiles)
-}
+): JvmCompilationResult = prepareCompilation(listOf(symbolProcessorProvider), *sourceFiles)

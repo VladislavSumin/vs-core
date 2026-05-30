@@ -8,4 +8,5 @@ import ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl
  * При этом хак является безопасным, так как [Screen] может создаваться только на главном потоке, следовательно, мы
  * исключаем вероятность гонки потоков.
  */
+@Suppress("PropertyName")
 internal var ScreenNavigatorHolder: ScreenNavigatorImpl<*>? = null

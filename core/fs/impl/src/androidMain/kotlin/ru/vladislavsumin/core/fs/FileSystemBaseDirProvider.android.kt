@@ -9,6 +9,5 @@ private class FileSystemBaseDirProviderImpl(private val context: Context) : File
     override fun getAppFileDir(): Path = Path(context.filesDir.absolutePath)
 }
 
-internal actual fun DirectDI.createFileSystemBaseDirProvider(): FileSystemBaseDirProvider {
-    return FileSystemBaseDirProviderImpl(i())
-}
+internal actual fun DirectDI.createFileSystemBaseDirProvider(): FileSystemBaseDirProvider =
+    FileSystemBaseDirProviderImpl(i())

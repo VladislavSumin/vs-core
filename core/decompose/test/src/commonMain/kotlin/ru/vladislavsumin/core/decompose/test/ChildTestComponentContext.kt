@@ -12,10 +12,7 @@ private var counter = 0
  * Обертка для тестирования дочерних элементов Decompose
  * @param data любые данные, необходимые для теста.
  */
-class ChildTestComponentContext<T : Any>(
-    val data: T,
-    context: ComponentContext,
-) : ComponentContext by context {
+class ChildTestComponentContext<T : Any>(val data: T, context: ComponentContext) : ComponentContext by context {
     /**
      * Уникальное число для проверки работы [InstanceKeeper]
      */

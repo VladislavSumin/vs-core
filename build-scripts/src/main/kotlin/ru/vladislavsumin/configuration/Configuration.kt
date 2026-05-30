@@ -65,14 +65,12 @@ abstract class Configuration(
     }
 
     @PublishedApi
-    internal inline fun <reified T : Any> fakeDefaultValue(): T {
-        return when (T::class) {
-            String::class -> ""
-            Boolean::class -> false
-            Integer::class -> 0
-            else -> Error("Unsupported cast to ${T::class.simpleName}")
-        } as T
-    }
+    internal inline fun <reified T : Any> fakeDefaultValue(): T = when (T::class) {
+        String::class -> ""
+        Boolean::class -> false
+        Integer::class -> 0
+        else -> Error("Unsupported cast to ${T::class.simpleName}")
+    } as T
 }
 
 fun interface PropertyProvider {

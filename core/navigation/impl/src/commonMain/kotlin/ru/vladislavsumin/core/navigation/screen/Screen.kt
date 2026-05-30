@@ -89,6 +89,7 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
                 )
 
                 is NavigationViewModel.NavigationEvent.Close -> navigator.close(event.screenParams)
+
                 NavigationViewModel.NavigationEvent.CloseSelf -> navigator.close()
             }
         }

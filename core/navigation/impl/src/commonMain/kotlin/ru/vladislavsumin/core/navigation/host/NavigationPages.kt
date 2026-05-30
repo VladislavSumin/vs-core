@@ -78,9 +78,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
 }
 
 @Suppress("EmptyFunctionBlock")
-private class PagesHostNavigator(
-    private val pagesNavigation: PagesNavigation<ConfigurationHolder>,
-) : HostNavigator {
+private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<ConfigurationHolder>) : HostNavigator {
     override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
         pagesNavigation.navigate(
             transformer = { pages ->
@@ -192,7 +190,4 @@ private class PagesHostNavigator(
 }
 
 @Serializable
-private class SerializablePages<T : IntentScreenParams<*>>(
-    val items: List<T>,
-    val selectedIndex: Int,
-)
+private class SerializablePages<T : IntentScreenParams<*>>(val items: List<T>, val selectedIndex: Int)

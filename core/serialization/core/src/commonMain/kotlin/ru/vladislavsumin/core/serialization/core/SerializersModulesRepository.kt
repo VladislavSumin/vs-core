@@ -11,9 +11,8 @@ public interface SerializersModulesRepository {
     public val serializerModule: SerializersModule
 }
 
-internal class SerializersModulesRepositoryImpl(
-    serializersModulesSet: Set<SerializersModule>,
-) : SerializersModulesRepository {
+internal class SerializersModulesRepositoryImpl(serializersModulesSet: Set<SerializersModule>) :
+    SerializersModulesRepository {
     override val serializerModule: SerializersModule by lazy {
         /**
          * Конкатенирует все [serializersModulesSet] в один [SerializersModule].

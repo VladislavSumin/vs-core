@@ -37,13 +37,11 @@ public class GenericNavigation<Ctx : GenericComponentContext<Ctx>> internal cons
      * **Внимание!** Названия параметров могут быть изменены при минимизации приложения, поэтому данный метод не будет
      * работать в релизе.
      */
-    public fun findDefaultScreenParamsByName(name: String): IntentScreenParams<*>? {
-        return navigationTree
-            .asSequence()
-            .map { it.value }
-            .find { it.screenKey.key.simpleName == name }
-            ?.defaultParams
-    }
+    public fun findDefaultScreenParamsByName(name: String): IntentScreenParams<*>? = navigationTree
+        .asSequence()
+        .map { it.value }
+        .find { it.screenKey.key.simpleName == name }
+        ?.defaultParams
 
     internal sealed interface NavigationEvent {
         data class Open(val screenParams: IntentScreenParams<*>, val intent: ScreenIntent?) : NavigationEvent

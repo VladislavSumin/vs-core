@@ -7,14 +7,9 @@ import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
-internal class NavigationGraphUmlDiagramViewModelFactory(
-    private val navigationProvider: () -> GenericNavigation<*>,
-) {
-    fun create(
-        navigationTreeInterceptor: NavigationTreeInterceptor,
-    ): NavigationGraphUmlDiagramViewModel {
-        return NavigationGraphUmlDiagramViewModel(navigationProvider(), navigationTreeInterceptor)
-    }
+internal class NavigationGraphUmlDiagramViewModelFactory(private val navigationProvider: () -> GenericNavigation<*>) {
+    fun create(navigationTreeInterceptor: NavigationTreeInterceptor): NavigationGraphUmlDiagramViewModel =
+        NavigationGraphUmlDiagramViewModel(navigationProvider(), navigationTreeInterceptor)
 }
 
 internal class NavigationGraphUmlDiagramViewModel(
@@ -33,8 +28,8 @@ internal class NavigationGraphUmlDiagramViewModel(
     /**
      * Переводит все [NavigationTree.Node] исходного графа навигации в граф [NavigationGraphUmlDiagramViewState.Node].
      */
-    private fun mapNodesRecursively(node: LinkedTreeNode<ScreenInfo<*>>): TreeNodeImpl<InternalNavigationGraphUmlNode> {
-        return node.map {
+    private fun mapNodesRecursively(node: LinkedTreeNode<ScreenInfo<*>>): TreeNodeImpl<InternalNavigationGraphUmlNode> =
+        node.map {
             InternalNavigationGraphUmlNode(
                 name = it.screenKey.key.simpleName!!,
                 hasDefaultParams = it.defaultParams != null,
@@ -42,5 +37,4 @@ internal class NavigationGraphUmlDiagramViewModel(
                 navigationHosts = it.navigationHosts,
             )
         }
-    }
 }

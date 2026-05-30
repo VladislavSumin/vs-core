@@ -8,18 +8,16 @@ public inline fun <reified T : Annotation> Resolver.processAnnotated(
 ): List<KSAnnotated> = processAnnotated(annotationName = T::class.qualifiedName!!, block)
 
 public fun Resolver.processAnnotated(annotationName: String, block: (KSAnnotated) -> Unit): List<KSAnnotated> {
-    fun processAnnotated(annotated: KSAnnotated): Boolean {
-        return try {
-            block(annotated)
-            true
-        } catch (e: IllegalArgumentException) {
-            if (e.message?.contains("is not resolvable in the current round of processing") == true) {
-                // We have cases when one generated factory using inside another generated factory,
-                // for these cases we need to processing sources with more than once iteration
-                false
-            } else {
-                throw e
-            }
+    fun processAnnotated(annotated: KSAnnotated): Boolean = try {
+        block(annotated)
+        true
+    } catch (e: IllegalArgumentException) {
+        if (e.message?.contains("is not resolvable in the current round of processing") == true) {
+            // We have cases when one generated factory using inside another generated factory,
+            // for these cases we need to processing sources with more than once iteration
+            false
+        } else {
+            throw e
         }
     }
 

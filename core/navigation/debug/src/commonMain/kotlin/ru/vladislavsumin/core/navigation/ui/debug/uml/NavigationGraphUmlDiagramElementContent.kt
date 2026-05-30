@@ -29,10 +29,7 @@ import ru.vladislavsumin.core.navigation.NavigationHost
  * Одиночный элемент узла дерева навигационного графа.
  */
 @Composable
-internal fun NavigationGraphUmlDiagramElementContent(
-    info: NavigationGraphUmlNode,
-    modifier: Modifier = Modifier,
-) {
+internal fun NavigationGraphUmlDiagramElementContent(info: NavigationGraphUmlNode, modifier: Modifier = Modifier) {
     val finalModifier = if (!info.isPartOfMainGraph) {
         modifier.dashedBorder(2.dp, MaterialTheme.colorScheme.outlineVariant, 12.dp)
     } else {

@@ -5,10 +5,8 @@ import ru.vladislavsumin.core.logger.common.LogLevel
 import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.ExternalLoggerFactory
 
-internal actual fun createPlatformLoggerFactory(): ExternalLoggerFactory {
-    return ExternalLoggerFactory { tag ->
-        LogcatExternalLogger(tag)
-    }
+internal actual fun createPlatformLoggerFactory(): ExternalLoggerFactory = ExternalLoggerFactory { tag ->
+    LogcatExternalLogger(tag)
 }
 
 private class LogcatExternalLogger(private val tag: String) : ExternalLogger {

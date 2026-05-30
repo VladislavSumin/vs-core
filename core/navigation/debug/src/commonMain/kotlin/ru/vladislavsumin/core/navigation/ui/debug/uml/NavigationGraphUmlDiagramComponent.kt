@@ -12,9 +12,7 @@ import ru.vladislavsumin.core.navigation.GenericNavigation
  * провайдера, так как данная фабрика может встраиваться в один из экранов собственно навигации и для избежания
  * зацикливания DI выбран именно такой способ предоставления зависимостей.
  */
-public class NavigationGraphUmlDiagramComponentFactory(
-    navigationProvider: () -> GenericNavigation<*>,
-) {
+public class NavigationGraphUmlDiagramComponentFactory(navigationProvider: () -> GenericNavigation<*>) {
     private val viewModelFactory = NavigationGraphUmlDiagramViewModelFactory(navigationProvider)
 
     /**
@@ -25,13 +23,11 @@ public class NavigationGraphUmlDiagramComponentFactory(
     public fun <Ctx : GenericComponentContext<Ctx>> create(
         context: Ctx,
         navigationTreeInterceptor: NavigationTreeInterceptor = NavigationTreeInterceptor { it },
-    ): ComposeComponent {
-        return NavigationGraphUmlDiagramComponent(
-            viewModelFactory,
-            context,
-            navigationTreeInterceptor,
-        )
-    }
+    ): ComposeComponent = NavigationGraphUmlDiagramComponent(
+        viewModelFactory,
+        context,
+        navigationTreeInterceptor,
+    )
 }
 
 /**
@@ -41,7 +37,8 @@ internal class NavigationGraphUmlDiagramComponent<Ctx : GenericComponentContext<
     viewModelFactory: NavigationGraphUmlDiagramViewModelFactory,
     context: Ctx,
     navigationTreeInterceptor: NavigationTreeInterceptor,
-) : GenericComponent<Ctx>(context), ComposeComponent {
+) : GenericComponent<Ctx>(context),
+    ComposeComponent {
     private val viewModel: NavigationGraphUmlDiagramViewModel = viewModel {
         viewModelFactory.create(navigationTreeInterceptor)
     }

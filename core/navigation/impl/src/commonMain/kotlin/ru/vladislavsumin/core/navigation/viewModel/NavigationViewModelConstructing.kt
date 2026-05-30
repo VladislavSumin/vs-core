@@ -5,4 +5,5 @@ package ru.vladislavsumin.core.navigation.viewModel
  * [ru.vladislavsumin.core.navigation.screen.Screen.viewModel]. Это используется только для проверки, что модель
  * создается правильно
  */
+@Suppress("PropertyName")
 internal var IsNavigationViewModelConstructing: Boolean = false

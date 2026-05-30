@@ -9,10 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-public fun PieChart(
-    pies: List<Slice>,
-    modifier: Modifier = Modifier,
-) {
+public fun PieChart(pies: List<Slice>, modifier: Modifier = Modifier) {
     val totalFraction by remember { derivedStateOf { pies.sumOf { it.fraction.toDouble() }.toFloat() } }
     Canvas(modifier) {
         var currentAngle = 0f

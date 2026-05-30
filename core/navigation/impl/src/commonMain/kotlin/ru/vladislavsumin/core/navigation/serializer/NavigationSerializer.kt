@@ -14,9 +14,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.reflect.KClass
 
-internal class NavigationSerializer(
-    repository: NavigationRepository<*>,
-) {
+internal class NavigationSerializer(repository: NavigationRepository<*>) {
     /**
      * Сериализатор для всех зарегистрированных [ScreenParams], используется внутри decompose для сохранения и
      * восстановления состояния приложения.

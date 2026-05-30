@@ -3,9 +3,7 @@ package ru.vladislavsumin.core.decompose.components
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 
-internal class StateFlowLifecycleCallbacks(
-    private val flow: MutableStateFlow<Lifecycle.State>,
-) : Lifecycle.Callbacks {
+internal class StateFlowLifecycleCallbacks(private val flow: MutableStateFlow<Lifecycle.State>) : Lifecycle.Callbacks {
     override fun onCreate() {
         flow.value = Lifecycle.State.CREATED
     }

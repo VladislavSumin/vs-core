@@ -19,10 +19,8 @@ public class TreeNodeImpl<T> internal constructor(
 /**
  * DSL для построения деревьев.
  */
-public fun <T> nodeOf(
-    value: T,
-    vararg children: TreeNodeImpl<T>,
-): TreeNodeImpl<T> = TreeNodeImpl(value, children.toList())
+public fun <T> nodeOf(value: T, vararg children: TreeNodeImpl<T>): TreeNodeImpl<T> =
+    TreeNodeImpl(value, children.toList())
 
 /**
  * Итератор по всем [TreeNode.children] начиная с детей и заканчивая внуками и далее.
@@ -73,9 +71,7 @@ public fun <T, K, N : TreeNode<T, N>> N.findByPath(path: List<K>, keySelector: (
     return node
 }
 
-public fun <T, V, N : TreeNode<T, N>> N.map(mapper: (T) -> V): TreeNodeImpl<V> {
-    return TreeNodeImpl(
-        value = mapper(value),
-        children = children.map { it.map(mapper) },
-    )
-}
+public fun <T, V, N : TreeNode<T, N>> N.map(mapper: (T) -> V): TreeNodeImpl<V> = TreeNodeImpl(
+    value = mapper(value),
+    children = children.map { it.map(mapper) },
+)

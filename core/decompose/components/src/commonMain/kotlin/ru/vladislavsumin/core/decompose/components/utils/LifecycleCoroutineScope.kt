@@ -14,10 +14,7 @@ import kotlin.coroutines.CoroutineContext
 public fun Lifecycle.createCoroutineScope(context: CoroutineContext = Dispatchers.Main.immediate): CoroutineScope =
     LifecycleCoroutineScope(context, this)
 
-private fun LifecycleCoroutineScope(
-    context: CoroutineContext,
-    lifecycle: Lifecycle,
-): CoroutineScope {
+private fun LifecycleCoroutineScope(context: CoroutineContext, lifecycle: Lifecycle): CoroutineScope {
     val scope = CoroutineScope(context)
     lifecycle.doOnDestroy(scope::cancel)
     return scope

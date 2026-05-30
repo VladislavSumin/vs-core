@@ -5,17 +5,17 @@ plugins {
 }
 
 group = "ru.vladislavsumin"
-version = System.getenv("ru.vs.version") ?: "0.0.1"
+version = System.getenv("ru.vs.version") ?: findProperty("ru.vs.version") as? String ?: "0.0.1"
 
-ext["signing.keyId"] = System.getenv("ru.vs.signing.keyId")
-ext["signing.password"] = System.getenv("ru.vs.signing.password")
-ext["signing.secretKeyRingFile"] = System.getenv("ru.vs.signing.secretKeyRingFile")
+ext["signing.keyId"] = System.getenv("ru.vs.signing.keyId") ?: findProperty("ru.vs.signing.keyId") as? String
+ext["signing.password"] = System.getenv("ru.vs.signing.password") ?: findProperty("ru.vs.signing.password") as? String
+ext["signing.secretKeyRingFile"] = System.getenv("ru.vs.signing.secretKeyRingFile") ?: findProperty("ru.vs.signing.secretKeyRingFile") as? String
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = false)
 
     // Проверка для возможности выкладывать библиотеки локально без обязательной подписи.
-    if (System.getenv("ru.vs.signing.secretKeyRingFile")?.isNotBlank() == true) {
+    if ((System.getenv("ru.vs.signing.secretKeyRingFile") ?: findProperty("ru.vs.signing.secretKeyRingFile") as? String)?.isNotBlank() == true) {
         signAllPublications()
     }
 

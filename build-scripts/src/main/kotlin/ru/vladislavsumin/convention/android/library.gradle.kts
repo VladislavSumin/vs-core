@@ -6,6 +6,6 @@ package ru.vladislavsumin.convention.android
 
 plugins {
     id("com.android.library")
-    id("ru.vladislavsumin.convention.android.base-kotlin")
+    id("ru.vladislavsumin.convention.android.base")
     id("ru.vladislavsumin.convention.android.default-namespace")
 }

@@ -23,3 +23,9 @@ fun Project.fullName(): String = pathSequence()
     .reversed()
     .drop(1) // отбрасываем root project
     .joinToString(separator = ".") { it.name }
+
+/**
+ * Возвращает полное имя проекта в формате подходящем для использования в качестве namespace,
+ * то есть с заменой "-" на "_".
+ */
+fun Project.fullNameAsNamespace(): String = fullName().replace("-", "_")

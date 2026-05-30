@@ -6,13 +6,15 @@ package ru.vladislavsumin.convention.kmp
 
 plugins {
     id("kotlin-multiplatform")
+    id("com.android.kotlin.multiplatform.library")
 }
 
 kotlin {
-    // Мы должны вызвать androidTarget() перед доступом к sourceSets, иначе нужные sourceSets созданы не будут.
-    androidTarget()
+    android {
+        withHostTest {}
+    }
     sourceSets {
-        named("androidUnitTest") {
+        named("androidHostTest") {
             dependencies {
                 implementation(kotlin("test-junit5"))
             }

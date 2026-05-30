@@ -12,17 +12,9 @@ val configuration = project.projectConfiguration
 
 protectFromDslAccessors {
     android {
-        setCompileSdkVersion(configuration.core.android.compileSdk)
-
-        defaultConfig {
-            minSdk = configuration.core.android.minSdk
-            targetSdk = configuration.core.android.targetSdk
-        }
-
-        compileOptions {
-            val version = JavaVersion.toVersion(configuration.core.jvmVersion)
-            sourceCompatibility = version
-            targetCompatibility = version
-        }
+        compileSdk = configuration.core.android.compileSdk
+        defaultConfig.minSdk = configuration.core.android.minSdk
+        compileOptions.sourceCompatibility = JavaVersion.toVersion(configuration.core.jvmVersion)
+        compileOptions.targetCompatibility = JavaVersion.toVersion(configuration.core.jvmVersion)
     }
 }

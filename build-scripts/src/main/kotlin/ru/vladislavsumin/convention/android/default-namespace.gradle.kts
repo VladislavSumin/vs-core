@@ -2,7 +2,7 @@ package ru.vladislavsumin.convention.android
 
 import ru.vladislavsumin.configuration.projectConfiguration
 import ru.vladislavsumin.utils.android
-import ru.vladislavsumin.utils.fullName
+import ru.vladislavsumin.utils.fullNameAsNamespace
 import ru.vladislavsumin.utils.protectFromDslAccessors
 
 /**
@@ -12,6 +12,6 @@ import ru.vladislavsumin.utils.protectFromDslAccessors
 
 protectFromDslAccessors {
     android {
-        namespace = "${project.projectConfiguration.basePackage}.${project.fullName().replace("-", "_")}"
+        namespace = "${project.projectConfiguration.basePackage}.${project.fullNameAsNamespace()}"
     }
 }

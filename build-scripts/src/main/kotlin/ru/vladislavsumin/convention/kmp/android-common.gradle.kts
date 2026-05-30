@@ -2,7 +2,8 @@ package ru.vladislavsumin.convention.kmp
 
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import ru.vladislavsumin.configuration.projectConfiguration
-import ru.vladislavsumin.utils.android
+import ru.vladislavsumin.utils.fullNameAsNamespace
+import ru.vladislavsumin.utils.protectFromDslAccessors
 
 /**
  * Базовая настройка android таргета для KMP (без привязки к library/application).
@@ -11,22 +12,23 @@ import ru.vladislavsumin.utils.android
 plugins {
     id("ru.vladislavsumin.convention.kmp.common")
     id("ru.vladislavsumin.convention.kmp.android-tests")
-    // мы не можем использовать ru.vs.convention.android.library здесь, поскольку этот плагин подключат kotlin плагин,
-    // а нам нужен kotlin-multiplatform плагин.
-    id("ru.vladislavsumin.convention.android.base")
-    id("ru.vladislavsumin.convention.android.default-namespace")
+    id("com.android.kotlin.multiplatform.library")
 }
 
-kotlin {
-    androidTarget {
-        // Настраиваем версию jvm для сборки андроид модулей.
-        compilerOptions {
-            jvmTarget.set(JvmTarget.fromTarget(project.projectConfiguration.core.jvmVersion))
+val configuration = project.projectConfiguration
+
+protectFromDslAccessors {
+    kotlin {
+        android {
+            namespace = "${configuration.basePackage}.${project.fullNameAsNamespace()}"
+            compileSdk = configuration.core.android.compileSdk
+            minSdk = configuration.core.android.minSdk
+
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(configuration.core.jvmVersion))
+            }
+
+            androidResources { enable = true }
         }
     }
-}
-
-android {
-    // Указываем директорию для поиска в ней AndroidManifest.xml.
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 }

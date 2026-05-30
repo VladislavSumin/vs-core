@@ -21,7 +21,7 @@ ext["signing.secretKeyRingFile"] = projectConfiguration.signing.secretKeyRingFil
 
 mavenPublishing {
     publishToMavenCentral(automaticRelease = false)
-    signAllPublications()
+    if (projectConfiguration.signing.secretKeyRingFile.isNotBlank()) signAllPublications()
 
     pom {
         url = "https://github.com/VladislavSumin/vs-core"

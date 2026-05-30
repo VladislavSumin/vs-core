@@ -12,7 +12,7 @@ kotlin-compileTesting = "0.11.1"
 kotlin-io = "0.8.2"
 
 # Gradle
-gradlePlugins-android = "8.11.0"
+gradlePlugins-android = "9.2.0"
 gradlePlugins-detekt = "2.0.0-alpha.3"
 gradlePlugins-checkUpdates = "0.54.0"
 gradlePlugins-kover = "0.9.8"

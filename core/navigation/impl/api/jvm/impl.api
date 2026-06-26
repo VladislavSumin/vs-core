@@ -19,8 +19,8 @@ public final class ru/vladislavsumin/core/navigation/host/ConfigurationHolder {
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationPagesKt {
-	public static final fun childNavigationPages (Lru/vladislavsumin/core/navigation/screen/GenericScreen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Lcom/arkivanov/essenty/lifecycle/Lifecycle;ZZ)Lcom/arkivanov/decompose/value/Value;
-	public static synthetic fun childNavigationPages$default (Lru/vladislavsumin/core/navigation/screen/GenericScreen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Lcom/arkivanov/essenty/lifecycle/Lifecycle;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
+	public static final fun childNavigationPages (Lru/vladislavsumin/core/navigation/screen/GenericScreen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lcom/arkivanov/essenty/lifecycle/Lifecycle;ZZ)Lcom/arkivanov/decompose/value/Value;
+	public static synthetic fun childNavigationPages$default (Lru/vladislavsumin/core/navigation/screen/GenericScreen;Lru/vladislavsumin/core/navigation/NavigationHost;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Lcom/arkivanov/essenty/lifecycle/Lifecycle;ZZILjava/lang/Object;)Lcom/arkivanov/decompose/value/Value;
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationRootKt {

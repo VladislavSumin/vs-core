@@ -2,6 +2,7 @@ package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.decompose.router.children.ChildNavState.Status
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
@@ -26,6 +27,7 @@ import ru.vladislavsumin.core.navigation.screen.asKey
  * @param navigationHost навигационный хост для возможности понять, какие экраны будут открываться в этой навигации.
  * @param initialPages начальный набор страниц.
  * @param key уникальный в пределах экрана ключ для навигации.
+ * @param pageStatus позволяет настраивать жизненный цикл страниц, см. оригинальное api Аркадия.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
@@ -33,6 +35,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     navigationHost: NavigationHost,
     initialPages: () -> Pages<IntentScreenParams<*>>,
     key: String = "pages_navigation",
+    pageStatus: (index: Int, Pages<*>) -> Status = ::getDefaultPageStatus,
     extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
@@ -71,6 +74,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
                 Pages(initial.items.map { ConfigurationHolder(it) }, initial.selectedIndex)
             }
         },
+        pageStatus = pageStatus,
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
     )
@@ -187,6 +191,16 @@ private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<Co
         )
         return isSuccess ?: error("Unreachable")
     }
+}
+
+/**
+ * Копия оригинального параметра по умолчанию из api Аркадия.
+ */
+@PublishedApi
+internal fun getDefaultPageStatus(index: Int, pages: Pages<*>): Status = when (index) {
+    pages.selectedIndex -> Status.RESUMED
+    in (pages.selectedIndex - 1)..(pages.selectedIndex + 1) -> Status.CREATED
+    else -> Status.DESTROYED
 }
 
 @Serializable

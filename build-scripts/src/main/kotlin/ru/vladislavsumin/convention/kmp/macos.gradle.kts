@@ -9,6 +9,5 @@ plugins {
 }
 
 kotlin {
-    macosX64()
     macosArm64()
 }

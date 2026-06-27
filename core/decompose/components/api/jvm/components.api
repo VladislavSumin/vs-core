@@ -43,3 +43,7 @@ public final class ru/vladislavsumin/core/decompose/components/utils/LifecycleCo
 	public static synthetic fun createCoroutineScope$default (Lcom/arkivanov/essenty/lifecycle/Lifecycle;Lkotlin/coroutines/CoroutineContext;ILjava/lang/Object;)Lkotlinx/coroutines/CoroutineScope;
 }
 
+public final class ru/vladislavsumin/core/decompose/components/utils/ValueUtilsKt {
+	public static final fun asStateFlow (Lcom/arkivanov/decompose/value/Value;)Lkotlinx/coroutines/flow/StateFlow;
+}
+

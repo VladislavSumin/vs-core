@@ -1,7 +1,7 @@
 plugins {
     `kotlin-dsl`
     // Внимание! Менять синхронно с libs.versions.toml
-    id("com.vanniktech.maven.publish") version "0.34.0"
+    id("com.vanniktech.maven.publish") version "0.37.0"
 }
 
 group = "ru.vladislavsumin"

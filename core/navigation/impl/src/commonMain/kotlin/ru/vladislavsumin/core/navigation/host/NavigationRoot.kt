@@ -27,6 +27,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenPathWithIntent
  * @param navigation граф навигации.
  * @param key уникальный в пределах компонента ключ дочернего компонента.
  * @param coroutineScope scope на котором будут запускаться асинхронные задачи навигации в этом экране.
+ * @param customRootScreenFactory позволяет передать фабрику для создания Root экрана
  * @param onContentReady если передано не нулевое значение, то будут вызваны методы
  * `Screen.delaySplashScreen` в цепочке открываемых экранов и после того как все вызовы
  * завершатся, будет вызван этот callback. Таким образом можно задерживать splash экран в обычных экранах.
@@ -35,12 +36,14 @@ public fun <Ctx : GenericComponentContext<Ctx>> Ctx.childNavigationRoot(
     navigation: GenericNavigation<Ctx>,
     key: String = "navigation-root",
     coroutineScope: CoroutineScope = lifecycle.createCoroutineScope(),
+    customRootScreenFactory: ScreenFactory<Ctx, IntentScreenParams<*>, *, GenericScreen<Ctx>>? = null,
     extraLifecycle: Lifecycle? = null,
     onContentReady: (() -> Unit)? = null,
 ): ComposeComponent {
     val node = navigation.navigationTree
     val params = node.value.defaultParams ?: error("Root screen must have default params")
-    val rootScreenFactory = node.value.factory as ScreenFactory<Ctx, IntentScreenParams<*>, *, *>?
+    val rootScreenFactory = customRootScreenFactory
+        ?: node.value.factory as ScreenFactory<Ctx, IntentScreenParams<*>, *, *>?
     check(rootScreenFactory != null) { "Factory for $params not found" }
 
     // Создаем рутовый навигатор.

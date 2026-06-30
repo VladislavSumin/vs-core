@@ -24,8 +24,8 @@ public final class ru/vladislavsumin/core/navigation/host/NavigationPagesKt {
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationRootKt {
-	public static final fun childNavigationRoot (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lcom/arkivanov/essenty/lifecycle/Lifecycle;Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
-	public static synthetic fun childNavigationRoot$default (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lcom/arkivanov/essenty/lifecycle/Lifecycle;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
+	public static final fun childNavigationRoot (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;Lcom/arkivanov/essenty/lifecycle/Lifecycle;Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
+	public static synthetic fun childNavigationRoot$default (Lcom/arkivanov/decompose/GenericComponentContext;Lru/vladislavsumin/core/navigation/GenericNavigation;Ljava/lang/String;Lkotlinx/coroutines/CoroutineScope;Lru/vladislavsumin/core/navigation/screen/ScreenFactory;Lcom/arkivanov/essenty/lifecycle/Lifecycle;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lru/vladislavsumin/core/decompose/compose/ComposeComponent;
 }
 
 public final class ru/vladislavsumin/core/navigation/host/NavigationSlotKt {

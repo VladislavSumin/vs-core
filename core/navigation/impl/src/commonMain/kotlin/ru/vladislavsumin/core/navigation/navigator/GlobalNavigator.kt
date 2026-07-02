@@ -35,6 +35,8 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
 
     /**
      * Ищет путь к экрану [targetScreenParams] начиная поиск от [startScreenPath].
+     *
+     * @param startScreenPath путь от корня навигации до экрана с которого было соверщено навигационное действие.
      */
     fun createOpenPath(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>): ScreenPath {
         val targetScreenKey = targetScreenParams.asKey()
@@ -50,16 +52,21 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
             .asSequenceUp()
             .first { node -> node.value.screenKey == targetScreenKey }
 
-        // Путь до искомой ноды.
         val destinationKeysPath: List<ScreenPath.PathElement> = destinationNode.path()
-            .map { node -> ScreenPath.PathElement.Key(node.value.screenKey) }
-        return ScreenPath(
-            destinationKeysPath
-                .drop(1) // Исключаем первый (рутовый) экран.
-                .dropLast(1) // Исключаем последний (целевой) экран.
-                // Добавляем целевой экран уже как параметр.
-                .plus(ScreenPath.PathElement.Params(targetScreenParams)),
-        )
+            .dropLast(1) // Исключаем последний (целевой) экран.
+            .mapIndexed { index, node ->
+                // Почему нужно по возможности заменять ноды в пути оригинальными?
+                // Потому что у нас может быть цепочка включающая экраны с параметрами для которых открыто более
+                // одного инстанса. Тогда потеряв информацию о инстансах экранов мы можем открыть искомый экран не
+                // в том экране в котором хотим.
+                val originalNode = startScreenPath.getOrNull(index)
+
+                originalNode ?: ScreenPath.PathElement.Key(node.value.screenKey)
+            }
+            .drop(1) // Исключаем первый (рутовый) экран.
+            // Добавляем целевой экран уже как параметр.
+            .plus(ScreenPath.PathElement.Params(targetScreenParams))
+        return ScreenPath(destinationKeysPath)
     }
 
     fun close(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>) {

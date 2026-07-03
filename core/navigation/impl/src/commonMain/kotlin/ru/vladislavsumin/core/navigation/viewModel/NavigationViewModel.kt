@@ -23,8 +23,11 @@ public abstract class NavigationViewModel : ViewModel() {
     /**
      * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl.open].
      */
-    protected fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
-        send(NavigationEvent.Open(screenParams, intent))
+    protected fun <S : IntentScreenParams<I>, I : ScreenIntent> open(
+        screenParams: S,
+        intent: I? = null,
+        hints: List<IntentScreenParams<*>> = emptyList(),
+    ): Unit = send(NavigationEvent.Open(screenParams, intent, hints))
 
     /**
      * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl.close].
@@ -41,7 +44,12 @@ public abstract class NavigationViewModel : ViewModel() {
     }
 
     internal sealed interface NavigationEvent {
-        data class Open(val screenParams: IntentScreenParams<*>, val intent: ScreenIntent?) : NavigationEvent
+        data class Open(
+            val screenParams: IntentScreenParams<*>,
+            val intent: ScreenIntent?,
+            val hints: List<IntentScreenParams<*>>,
+        ) : NavigationEvent
+
         data class Close(val screenParams: IntentScreenParams<*>) : NavigationEvent
         data object CloseSelf : NavigationEvent
     }

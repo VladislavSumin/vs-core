@@ -19,3 +19,18 @@ data object TestIntent : ScreenIntent
 
 @Serializable
 data object ScreenWithIntent : IntentScreenParams<TestIntent>
+
+@Serializable
+data object HintRoot : ScreenParams
+
+@Serializable
+data object HintBranchLeft : ScreenParams
+
+@Serializable
+data object HintBranchRight : ScreenParams
+
+@Serializable
+data class HintMiddle(val id: Int) : ScreenParams
+
+@Serializable
+data object HintTarget : ScreenParams

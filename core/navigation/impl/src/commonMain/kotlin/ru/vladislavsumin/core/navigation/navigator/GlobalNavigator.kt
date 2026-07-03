@@ -12,6 +12,7 @@ import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
+import kotlin.time.measureTimedValue
 
 /**
  * Глобальный навигатор.
@@ -24,12 +25,25 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
     /**
      * Открывает экран соответствующий переданным [targetScreenParams], при этом поиск пути производится относительно
      * переданного [startScreenPath]. (подробнее про поиск пути до экрана можно прочитать в документации).
+     *
+     * @param hints необязательный список подсказок — параметров экранов, которые должны встретиться среди предков
+     * открываемого экрана в виде упорядоченной подпоследовательности (в том же порядке, но не обязательно все и с
+     * возможными разрывами). Позволяет снять неоднозначность когда целевой экран зарегистрирован в нескольких местах
+     * графа, а так же закрепить конкретные инстансы родительских экранов.
      */
-    fun open(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>, intent: ScreenIntent?) {
+    fun open(
+        startScreenPath: ScreenPath,
+        targetScreenParams: IntentScreenParams<*>,
+        intent: ScreenIntent?,
+        hints: List<IntentScreenParams<*>>,
+    ) {
         NavigationLogger.i { "Open screen ${targetScreenParams::class.simpleName}" }
         relay.accept {
-            val screenPath = createOpenPath(startScreenPath, targetScreenParams)
-            rootNavigator.openChain(screenPath, intent)
+            val screenPath = measureTimedValue {
+                createOpenPath(startScreenPath, targetScreenParams, hints)
+            }
+            NavigationLogger.d { "Screen path calculated at ${screenPath.duration}" }
+            rootNavigator.openChain(screenPath.value, intent)
         }
     }
 
@@ -37,8 +51,13 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
      * Ищет путь к экрану [targetScreenParams] начиная поиск от [startScreenPath].
      *
      * @param startScreenPath путь от корня навигации до экрана с которого было соверщено навигационное действие.
+     * @param hints необязательный список подсказок, ограничивающих выбор пути (см. [open]).
      */
-    fun createOpenPath(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>): ScreenPath {
+    fun createOpenPath(
+        startScreenPath: ScreenPath,
+        targetScreenParams: IntentScreenParams<*>,
+        hints: List<IntentScreenParams<*>>,
+    ): ScreenPath {
         val targetScreenKey = targetScreenParams.asKey()
 
         // Нода в графе навигации соответствующая переданному пути.
@@ -47,26 +66,60 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
             keySelector = { it.screenKey },
         )!!
 
-        // Нода в графе навигации куда мы хотим перейти.
+        // Среди всех кандидатов (в порядке "вниз, потом вверх") выбираем первого, чей путь предков содержит подсказки
+        // в виде упорядоченной подпоследовательности.
+        var hintAlignment: Map<Int, IntentScreenParams<*>>? = null
         val destinationNode: LinkedTreeNode<ScreenInfo<Ctx>> = startSearchScreenNode
             .asSequenceUp()
-            .first { node -> node.value.screenKey == targetScreenKey }
+            .filter { node -> node.value.screenKey == targetScreenKey }
+            .firstOrNull { node ->
+                val alignment = matchHints(node.path().dropLast(1), hints)
+                if (alignment != null) hintAlignment = alignment
+                alignment != null
+            }
+            ?: throw NoScreenMatchingHintsException(targetScreenKey, hints)
+
+        val alignment = hintAlignment!!
 
         val destinationKeysPath: List<ScreenPath.PathElement> = destinationNode.path()
             .dropLast(1) // Исключаем последний (целевой) экран.
             .mapIndexed { index, node ->
+                // Приоритет: подсказка > оригинальный инстанс из текущего пути > ключ.
                 // Почему нужно по возможности заменять ноды в пути оригинальными?
                 // Потому что у нас может быть цепочка включающая экраны с параметрами для которых открыто более
                 // одного инстанса. Тогда потеряв информацию о инстансах экранов мы можем открыть искомый экран не
                 // в том экране в котором хотим.
-                val originalNode = startScreenPath.getOrNull(index)
-
-                originalNode ?: ScreenPath.PathElement.Key(node.value.screenKey)
+                alignment[index]?.let { ScreenPath.PathElement.Params(it) }
+                    ?: startScreenPath.getOrNull(index)
+                    ?: ScreenPath.PathElement.Key(node.value.screenKey)
             }
             .drop(1) // Исключаем первый (рутовый) экран.
             // Добавляем целевой экран уже как параметр.
             .plus(ScreenPath.PathElement.Params(targetScreenParams))
         return ScreenPath(destinationKeysPath)
+    }
+
+    /**
+     * Пытается сопоставить [hints] с [ancestors] (предками целевого экрана) как упорядоченную подпоследовательность
+     * (жадно, по первому совпадению).
+     *
+     * @return отображение "индекс предка -> параметры подсказки" если все подсказки найдены, иначе null.
+     */
+    private fun matchHints(
+        ancestors: List<LinkedTreeNode<ScreenInfo<Ctx>>>,
+        hints: List<IntentScreenParams<*>>,
+    ): Map<Int, IntentScreenParams<*>>? {
+        if (hints.isEmpty()) return emptyMap()
+        val alignment = mutableMapOf<Int, IntentScreenParams<*>>()
+        var hintIndex = 0
+        for ((ancestorIndex, node) in ancestors.withIndex()) {
+            if (hintIndex >= hints.size) break
+            if (node.value.screenKey == hints[hintIndex].asKey()) {
+                alignment[ancestorIndex] = hints[hintIndex]
+                hintIndex++
+            }
+        }
+        return if (hintIndex == hints.size) alignment else null
     }
 
     fun close(startScreenPath: ScreenPath, targetScreenParams: IntentScreenParams<*>) {

@@ -115,6 +115,7 @@ private fun <Ctx : GenericComponentContext<Ctx>> handleInitialNavigationEvent(
         is NavigationEvent.Open -> globalNavigator.createOpenPath(
             ScreenPath(rootScreenParams),
             initialNavigationParams.screenParams,
+            initialNavigationParams.hints,
         )
 
         null -> null
@@ -138,6 +139,7 @@ private fun handleNavigation(
                 is NavigationEvent.Open -> rootScreenNavigator.open(
                     screenParams = event.screenParams as IntentScreenParams<ScreenIntent>,
                     intent = event.intent,
+                    hints = event.hints,
                 )
 
                 is NavigationEvent.Close -> rootScreenNavigator.close(event.screenParams)

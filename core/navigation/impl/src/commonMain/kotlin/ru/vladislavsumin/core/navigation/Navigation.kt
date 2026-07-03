@@ -22,8 +22,11 @@ public class GenericNavigation<Ctx : GenericComponentContext<Ctx>> internal cons
 ) {
     internal val navigationChannel = Channel<NavigationEvent>(Channel.BUFFERED)
 
-    public fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I? = null): Unit =
-        send(NavigationEvent.Open(screenParams, intent))
+    public fun <S : IntentScreenParams<I>, I : ScreenIntent> open(
+        screenParams: S,
+        intent: I? = null,
+        hints: List<IntentScreenParams<*>> = emptyList(),
+    ): Unit = send(NavigationEvent.Open(screenParams, intent, hints))
 
     public fun close(screenParams: IntentScreenParams<ScreenIntent>): Unit = send(NavigationEvent.Close(screenParams))
 
@@ -44,7 +47,12 @@ public class GenericNavigation<Ctx : GenericComponentContext<Ctx>> internal cons
         ?.defaultParams
 
     internal sealed interface NavigationEvent {
-        data class Open(val screenParams: IntentScreenParams<*>, val intent: ScreenIntent?) : NavigationEvent
+        data class Open(
+            val screenParams: IntentScreenParams<*>,
+            val intent: ScreenIntent?,
+            val hints: List<IntentScreenParams<*>>,
+        ) : NavigationEvent
+
         data class Close(val screenParams: IntentScreenParams<*>) : NavigationEvent
     }
 

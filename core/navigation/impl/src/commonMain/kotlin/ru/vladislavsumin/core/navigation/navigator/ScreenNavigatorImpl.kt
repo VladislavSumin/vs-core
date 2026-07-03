@@ -267,8 +267,16 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         )
     }
 
-    override fun <S : IntentScreenParams<I>, I : ScreenIntent> open(screenParams: S, intent: I?): Unit =
-        globalNavigator.open(startScreenPath = screenPath, targetScreenParams = screenParams, intent)
+    override fun <S : IntentScreenParams<I>, I : ScreenIntent> open(
+        screenParams: S,
+        intent: I?,
+        hints: List<IntentScreenParams<*>>,
+    ): Unit = globalNavigator.open(
+        startScreenPath = screenPath,
+        targetScreenParams = screenParams,
+        intent = intent,
+        hints = hints,
+    )
 
     override fun close(screenParams: IntentScreenParams<*>): Unit =
         globalNavigator.close(startScreenPath = screenPath, targetScreenParams = screenParams)

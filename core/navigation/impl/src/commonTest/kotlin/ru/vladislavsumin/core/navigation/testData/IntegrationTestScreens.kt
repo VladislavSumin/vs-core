@@ -189,6 +189,10 @@ class StackRootScreen(
         navigator.open(screenParams, hints = hints)
     }
 
+    fun openWithIntent(screenParams: IntentLeafParams, intent: TestLeafIntent) {
+        navigator.open(screenParams, intent = intent)
+    }
+
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
     @Composable
@@ -207,6 +211,10 @@ class SlotRootScreen(context: ComponentContext, initial: IntentScreenParams<*>?)
 
     fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
         navigator.open(screenParams, hints = hints)
+    }
+
+    fun openWithIntent(screenParams: IntentLeafParams, intent: TestLeafIntent) {
+        navigator.open(screenParams, intent = intent)
     }
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)

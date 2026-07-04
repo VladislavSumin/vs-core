@@ -113,6 +113,57 @@ internal class NavigationGraphUmlDiagramContentScreenshotTest {
         }
     }
 
+    /**
+     * Витринный граф: структура экранов, приближенная к реальному приложению — с несколькими хостами навигации,
+     * вложенными табами, разделами настроек и модальными экранами.
+     */
+    @Suppress("LongMethod")
+    @Test
+    fun showcaseGraph() {
+        screenshot("uml_showcase", DpSize(1700.dp, 640.dp)) {
+            node(
+                internalNode("App", description = "Точка входа", navigationHosts = setOf(RootHost, ModalHost)),
+                node(
+                    internalNode(
+                        name = "Auth",
+                        description = "Авторизация",
+                        navigationHosts = setOf(AuthHost),
+                        hostInParent = RootHost,
+                    ),
+                    node(internalNode("Login", hostInParent = AuthHost)),
+                    node(internalNode("Register", hostInParent = AuthHost)),
+                    node(internalNode("ForgotPassword", hostInParent = AuthHost)),
+                ),
+                node(
+                    internalNode(
+                        "Main",
+                        description = "Нижняя навигация",
+                        navigationHosts = setOf(TabsHost),
+                        hostInParent = RootHost,
+                    ),
+                    node(
+                        internalNode("Feed", navigationHosts = setOf(FeedHost), hostInParent = TabsHost),
+                        node(internalNode("PostDetails", hostInParent = FeedHost)),
+                        node(internalNode("Comments", hostInParent = FeedHost)),
+                    ),
+                    node(internalNode("Search", hostInParent = TabsHost)),
+                    node(
+                        internalNode("Profile", navigationHosts = setOf(ProfileHost), hostInParent = TabsHost),
+                        node(internalNode("EditProfile", hostInParent = ProfileHost)),
+                        node(
+                            internalNode("Settings", navigationHosts = setOf(SettingsHost), hostInParent = ProfileHost),
+                            node(internalNode("Notifications", hostInParent = SettingsHost)),
+                            node(internalNode("Appearance", hostInParent = SettingsHost)),
+                            node(internalNode("About", hostInParent = SettingsHost)),
+                        ),
+                    ),
+                ),
+                node(internalNode("ShareSheet", description = "Поделиться", hostInParent = ModalHost)),
+                node(internalNode("RatingDialog", hostInParent = ModalHost)),
+            )
+        }
+    }
+
     private fun screenshot(goldenName: String, size: DpSize, graph: () -> TreeNodeImpl<NavigationGraphUmlNode>) {
         val root = graph()
         screenshotTest(goldenName = goldenName, size = size) {
@@ -154,4 +205,9 @@ internal class NavigationGraphUmlDiagramContentScreenshotTest {
     private object RootHost : NavigationHost
     private object ModalHost : NavigationHost
     private object DialogHost : NavigationHost
+    private object AuthHost : NavigationHost
+    private object TabsHost : NavigationHost
+    private object FeedHost : NavigationHost
+    private object ProfileHost : NavigationHost
+    private object SettingsHost : NavigationHost
 }

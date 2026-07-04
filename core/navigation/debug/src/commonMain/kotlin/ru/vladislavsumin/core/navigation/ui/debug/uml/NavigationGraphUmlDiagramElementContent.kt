@@ -1,9 +1,7 @@
 package ru.vladislavsumin.core.navigation.ui.debug.uml
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +19,7 @@ import ru.vladislavsumin.core.navigation.NavigationHost
  */
 @Composable
 internal fun NavigationNodeHeader(info: NavigationGraphUmlNode, modifier: Modifier = Modifier) {
-    Column(modifier.width(IntrinsicSize.Min)) {
+    Column(modifier) {
         Text(
             text = info.name,
             style = MaterialTheme.typography.titleMedium,

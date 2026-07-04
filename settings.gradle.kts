@@ -48,6 +48,3 @@ include(":core:serialization:yaml")
 
 include(":core:uikit:graph")
 include(":core:uikit:pie-chart")
-
-include(":core:custom-detekt:utils")
-include(":core:custom-detekt:rules")

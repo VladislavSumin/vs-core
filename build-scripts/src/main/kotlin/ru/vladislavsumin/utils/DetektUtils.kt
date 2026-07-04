@@ -44,6 +44,7 @@ fun Project.registerDetektBaseConfigTask(): TaskProvider<DefaultTask> {
     return tasks.register<DefaultTask>("resolveDetektBaseConfig") {
         val outputFile = layout.buildDirectory.file("tmp/detekt-base-config.yml")
         outputs.file(outputFile)
+        outputs.cacheIf { true }
 
         inputs.property("configContentHash") {
             resourceUrl.openStream().use { it.readBytes().contentHashCode() }
@@ -58,24 +59,3 @@ fun Project.registerDetektBaseConfigTask(): TaskProvider<DefaultTask> {
         }
     }
 }
-
-/**
- * Регистрирует таску [writeDetektCustomConfig] в корневом проекте, которая генерирует
- * YAML-конфиг для кастомных правил detekt с базовым пакетом проекта.
- * Таска будет up-to-date благодаря [outputs.file] и [inputs.property].
- */
-fun Project.registerDetektCustomConfigTask(basePackage: String): TaskProvider<DefaultTask> =
-    tasks.register<DefaultTask>("writeDetektCustomConfig") {
-        val outputFile = layout.buildDirectory.file("tmp/detekt-custom-config.yml")
-        outputs.file(outputFile)
-
-        inputs.property("basePackage", basePackage)
-
-        doLast {
-            val bp = basePackage
-            outputFile.get().asFile.apply {
-                parentFile.mkdirs()
-                writeText("custom:\n  ModuleRootPackage:\n    active: true\n    basePackage: $bp\n")
-            }
-        }
-    }

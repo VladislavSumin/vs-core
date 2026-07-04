@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import ru.vladislavsumin.core.collections.tree.TreeNodeImpl
-import ru.vladislavsumin.core.uikit.graph.Tree
+import ru.vladislavsumin.core.uikit.graph.CompactTree
 
 @Composable
 internal fun NavigationGraphUmlDiagramContent(viewModel: NavigationGraphUmlDiagramViewModel, modifier: Modifier) {
@@ -43,7 +43,7 @@ internal fun NavigationGraphUmlDiagramContent(root: TreeNodeImpl<out NavigationG
             .clipToBounds()
             .transformable(state = transformableState),
     ) {
-        Tree(
+        CompactTree(
             rootNode = root,
             lineColor = MaterialTheme.colorScheme.outlineVariant,
             modifier = Modifier

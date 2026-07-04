@@ -17,6 +17,7 @@ import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
+import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 
 /**
  * Навигация типа "стек", означает, что в ней одновременно может быть несколько экранов, но только последний из них
@@ -85,7 +86,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
 }
 
 private class StackHostNavigator(private val stackNavigation: StackNavigation<ConfigurationHolder>) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
+    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>?) {
         // Если такого экрана еще нет в стеке, то открываем его.
         // Если же экран уже есть в стеке, то закрываем все экраны после него.
         stackNavigation.navigate(
@@ -94,7 +95,7 @@ private class StackHostNavigator(private val stackNavigation: StackNavigation<Co
                 val newStack = if (indexOfScreen >= 0) {
                     stack.subList(0, indexOfScreen + 1)
                 } else {
-                    stack + ConfigurationHolder(params)
+                    stack + ConfigurationHolder(params, savedInstance = savedInstance)
                 }
                 newStack.last().sendIntent(intent)
                 newStack

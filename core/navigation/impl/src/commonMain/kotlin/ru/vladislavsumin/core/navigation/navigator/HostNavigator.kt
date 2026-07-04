@@ -3,6 +3,7 @@ package ru.vladislavsumin.core.navigation.navigator
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
+import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 
 /**
  * Навигатор, который может производить навигацию в пределах одного хоста навигации.
@@ -13,8 +14,9 @@ internal interface HostNavigator {
      * если такой экран уже открыт.
      *
      * @param params параметры экрана.
+     * @param savedInstance усыновляемый инстанс экрана (при переносе).
      */
-    fun open(params: IntentScreenParams<*>, intent: ScreenIntent?)
+    fun open(params: IntentScreenParams<*>, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>? = null)
 
     fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<*>)
 

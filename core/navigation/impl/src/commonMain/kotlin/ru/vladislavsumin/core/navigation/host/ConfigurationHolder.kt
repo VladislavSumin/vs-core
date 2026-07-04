@@ -11,6 +11,7 @@ import ru.vladislavsumin.core.navigation.ScreenIntent
 public class ConfigurationHolder internal constructor(
     public val screenParams: IntentScreenParams<*>,
     initialIntent: ScreenIntent? = null,
+    internal val savedInstance: Any? = null,
 ) {
     private val intents: Channel<ScreenIntent> = Channel(Channel.BUFFERED)
     internal val intentReceiveChannel: ReceiveChannel<ScreenIntent> = intents

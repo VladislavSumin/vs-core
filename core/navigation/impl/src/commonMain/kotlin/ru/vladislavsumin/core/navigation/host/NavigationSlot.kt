@@ -17,6 +17,7 @@ import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
+import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 
 /**
  * Навигация типа "слот", означает, что в ней одновременно может быть только один экран. Пред идущий экран при этом
@@ -86,14 +87,14 @@ private class SlotHostNavigator(
     private val slotNavigation: SlotNavigation<ConfigurationHolder>,
     private val allowCloseScreen: () -> Boolean,
 ) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
+    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>?) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
         slotNavigation.navigate { currentOpenedScreen ->
             val newConfig = if (currentOpenedScreen != null && currentOpenedScreen.screenParams == params) {
                 currentOpenedScreen
             } else {
-                ConfigurationHolder(params)
+                ConfigurationHolder(params, savedInstance = savedInstance)
             }
             newConfig.sendIntent(intent)
             newConfig

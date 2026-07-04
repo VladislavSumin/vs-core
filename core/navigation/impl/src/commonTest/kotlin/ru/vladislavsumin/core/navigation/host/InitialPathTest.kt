@@ -1,9 +1,12 @@
 package ru.vladislavsumin.core.navigation.host
 
+import com.arkivanov.decompose.ComponentContext
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
+import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.testData.IntentLeafParams
 import ru.vladislavsumin.core.navigation.testData.IntentLeafScreen
 import ru.vladislavsumin.core.navigation.testData.LeafParams
@@ -128,6 +131,21 @@ class InitialPathTest : NavigationIntegrationTestBase() {
         assertEquals(listOf(TestLeafIntent(42)), screen.receivedIntents)
     }
 
+    @Test
+    fun chainInitialPathDeliversIntentToFinalScreen() = runTest {
+        setMain()
+        val navigation = chainNavigation()
+        navigation.open(IntentLeafParams(7), intent = TestLeafIntent(99))
+        val root = mount(navigation) as NestedRootScreen
+        testScheduler.advanceUntilIdle()
+
+        val middle = root.pages.value.items[0].instance as MiddleScreen
+        val screen = middle.stack.value.items
+            .first { it.configuration.screenParams == IntentLeafParams(7) }
+            .instance as IntentLeafScreen
+        assertEquals(listOf(TestLeafIntent(99)), screen.receivedIntents)
+    }
+
     companion object {
         /**
          * Граф навигации аналогичен [nestedNavigation], но [MiddleParams] зарегистрирован с defaultParams,
@@ -145,9 +163,21 @@ class InitialPathTest : NavigationIntegrationTestBase() {
                     )
                     registerScreen<MiddleParams>(
                         defaultParams = MiddleParams(0),
-                        navigationHosts = { NavigationHostB opens setOf(LeafParams::class) },
+                        navigationHosts = {
+                            NavigationHostB opens setOf(LeafParams::class, IntentLeafParams::class)
+                        },
                     )
                     registerScreen<LeafParams>()
+                    registerScreen<IntentLeafParams, TestLeafIntent, IntentLeafScreen>(
+                        factory = object :
+                            ScreenFactory<ComponentContext, IntentLeafParams, TestLeafIntent, IntentLeafScreen> {
+                            override fun create(
+                                context: ComponentContext,
+                                params: IntentLeafParams,
+                                intents: ReceiveChannel<TestLeafIntent>,
+                            ): IntentLeafScreen = IntentLeafScreen(params, intents, context)
+                        },
+                    )
                 },
             ),
         )

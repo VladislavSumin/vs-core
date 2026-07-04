@@ -50,6 +50,9 @@ gradlePlugins-mavenPublish = { module = "com.vanniktech.maven.publish:com.vannik
 # VS Core
 vs-core-collections-tree = { module = "ru.vladislavsumin.core.collections:tree", version.ref = "vs-core" }
 
+vs-core-customDetekt-utils = { module = "ru.vladislavsumin.core.custom-detekt:utils", version.ref = "vs-core" }
+vs-core-customDetekt-rules = { module = "ru.vladislavsumin.core.custom-detekt:rules", version.ref = "vs-core" }
+
 vs-core-coroutines-dispatcher = { module = "ru.vladislavsumin.core.coroutines:dispatcher", version.ref = "vs-core" }
 vs-core-coroutines-utils = { module = "ru.vladislavsumin.core.coroutines:utils", version.ref = "vs-core" }
 
@@ -123,5 +126,7 @@ logging-log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", v
 logging-slf4j = { module = "org.slf4j:slf4j-api", version.ref = "logging-slf4j" }
 
 # Other
+detekt-api = { module = "dev.detekt:detekt-api", version.ref = "gradlePlugins-detekt" }
+detekt-cli = { module = "dev.detekt:detekt-cli", version.ref = "gradlePlugins-detekt" }
 detekt-formatting = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "gradlePlugins-detekt" }
 scout-core = { module = "com.yandex.scout:scout-core", version.ref = "scout" }

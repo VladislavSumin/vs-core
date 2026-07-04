@@ -19,13 +19,18 @@ plugins {
 // Конфигурируем на уровне тасок, а не на уровне плагина, так как таски созданные в ручную не подтягивают дефолтные
 // значения из конфигурации плагина, а мы хотим применить дефолтный конфиг ко всем таскам.
 val resolveConfigTask = rootProject.tasks.named("resolveDetektBaseConfig")
+val writeCustomConfigTask = rootProject.tasks.named("writeDetektCustomConfig")
 
 tasks.withType<Detekt>().configureEach {
     dependsOn(resolveConfigTask)
+    dependsOn(writeCustomConfigTask)
     autoCorrect = true
     parallel = true
     buildUponDefaultConfig = true
-    config.setFrom(rootProject.layout.buildDirectory.file("tmp/detekt-base-config.yml"))
+    config.setFrom(
+        rootProject.layout.buildDirectory.file("tmp/detekt-base-config.yml"),
+        rootProject.layout.buildDirectory.file("tmp/detekt-custom-config.yml"),
+    )
 }
 
 // Дефолтные пути по которым detekt ищет файлы нас не устраивают, поэтому вручную проставляем пути для тасок с
@@ -42,5 +47,14 @@ protectFromDslAccessors {
     dependencies {
         // Добавляет проверку форматирования кода.
         detektPlugins(vsCoreLibs.detekt.formatting)
+
+        // Кастомные правила detekt. Внутри vs-core используется project-зависимость,
+        // в потребляющих проектах — version catalog с авто-подстановкой через includeBuild.
+        val customRulesProject = rootProject.findProject(":core:custom-detekt:rules")
+        if (customRulesProject != null) {
+            detektPlugins(customRulesProject)
+        } else {
+            detektPlugins(vsCoreLibs.vs.core.customDetekt.rules)
+        }
     }
 }

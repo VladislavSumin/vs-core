@@ -71,6 +71,13 @@ private const val DASH_OFF_PX = 8f
 private const val CONTOUR_STEP = 4
 
 /**
+ * Минимальный вертикальный запас между нодами соседних поддеревьев. При укладке по контурам содержимое,
+ * находящееся в пределах этого запаса по вертикали, считается пересекающимся, поэтому диагонально соседствующие
+ * ноды дополнительно разъезжаются по горизонтали и не теснятся друг к другу.
+ */
+private val CONTOUR_VERTICAL_MARGIN = 12.dp
+
+/**
  * Отрисовывает навигационный граф с группировкой дочерних экранов по [NavigationHost].
  *
  * Каждая нода рисуется как карточка, внутри которой находится заголовок экрана и карточки его хостов навигации.
@@ -183,6 +190,7 @@ private fun MeasureScope.computeNodeLayout(
     dashed: Boolean,
 ): NodeLayout {
     val padV = CARD_PADDING_V.roundToPx()
+    val verticalMarginBands = CONTOUR_VERTICAL_MARGIN.roundToPx() / CONTOUR_STEP
     val childrenByGroup = sliceByGroups(children, groups)
     val contoursByGroup = sliceByGroups(childContours, groups)
     val cardCentersByGroup = sliceByGroups(childCardCenters, groups)
@@ -194,6 +202,7 @@ private fun MeasureScope.computeNodeLayout(
             meta.vertical,
             HORIZONTAL_SPACE.roundToPx(),
             CHILD_INDENT.roundToPx(),
+            verticalMarginBands,
         )
     }
     val slots = groups.mapIndexed { i, meta ->
@@ -218,7 +227,7 @@ private fun MeasureScope.computeNodeLayout(
             childrenTop - hostRowY,
         )
     }
-    val slotLeft = packSlots(slotContours, HOST_SPACING.roundToPx())
+    val slotLeft = packSlots(slotContours, HOST_SPACING.roundToPx(), verticalMarginBands)
 
     val hostPositions = hosts.indices.map { hi ->
         val gi = groups.indexOfFirst { it.hostIndex == hi }
@@ -279,11 +288,11 @@ private fun hostHeightOf(hosts: List<Placeable>, meta: GroupMeta): Int =
 /**
  * Раскладывает слоты хостов слева направо, разнося их по контурам (силуэтам), а не по прямоугольным габаритам.
  */
-private fun packSlots(slotContours: List<Contour>, spacing: Int): IntArray {
+private fun packSlots(slotContours: List<Contour>, spacing: Int, verticalMarginBands: Int): IntArray {
     val result = IntArray(slotContours.size)
     var running = IntArray(0)
     slotContours.forEachIndexed { i, contour ->
-        val dx = separation(running, contour, spacing)
+        val dx = separation(running, contour, spacing, verticalMarginBands)
         result[i] = dx
         running = mergeRight(running, contour, dx)
     }
@@ -432,6 +441,7 @@ private fun buildChildBlock(
     vertical: Boolean,
     horizontalSpace: Int,
     childIndent: Int,
+    verticalMarginBands: Int,
 ): ChildBlock {
     if (children.isEmpty()) {
         return ChildBlock(false, 0, 0, emptyList(), emptyList(), emptyList(), 0, EMPTY_CONTOUR)
@@ -439,7 +449,7 @@ private fun buildChildBlock(
     return if (vertical) {
         buildVerticalBlock(children, contours, horizontalSpace, childIndent)
     } else {
-        buildHorizontalBlock(children, contours, cardCenters, horizontalSpace)
+        buildHorizontalBlock(children, contours, cardCenters, horizontalSpace, verticalMarginBands)
     }
 }
 
@@ -448,6 +458,7 @@ private fun buildHorizontalBlock(
     contours: List<Contour>,
     cardCenters: List<Int>,
     horizontalSpace: Int,
+    verticalMarginBands: Int,
 ): ChildBlock {
     val offsets = ArrayList<IntOffset>(children.size)
     val connectXs = ArrayList<Int>(children.size)
@@ -455,7 +466,7 @@ private fun buildHorizontalBlock(
     var maxRight = 0
     var maxHeight = 0
     children.forEachIndexed { i, placeable ->
-        val dx = separation(running, contours[i], horizontalSpace)
+        val dx = separation(running, contours[i], horizontalSpace, verticalMarginBands)
         offsets += IntOffset(dx, 0)
         // Соединяемся с реальным центром карточки ребёнка, а не с центром его бокса.
         connectXs += dx + cardCenters[i]
@@ -572,13 +583,24 @@ private fun buildNodeContour(
 /**
  * Минимальный сдвиг вправо для контура [next], при котором его левый силуэт не пересекается с правым силуэтом уже
  * разложенных элементов [running] (плюс зазор [spacing]).
+ *
+ * Правый силуэт [running] дополнительно «раздувается» по вертикали на [verticalMarginBands] полос: содержимое,
+ * находящееся в пределах этого запаса по вертикали, тоже учитывается. Благодаря этому диагонально соседствующие
+ * ноды получают горизонтальный отступ и не теснятся друг к другу.
  */
-private fun separation(running: IntArray, next: Contour, spacing: Int): Int {
+private fun separation(running: IntArray, next: Contour, spacing: Int, verticalMarginBands: Int): Int {
     var dx = 0
-    val bands = minOf(running.size, next.left.size)
-    for (b in 0 until bands) {
-        if (running[b] != Int.MIN_VALUE && next.left[b] != Int.MAX_VALUE) {
-            val need = running[b] - next.left[b] + spacing
+    for (b in next.left.indices) {
+        val nextLeft = next.left[b]
+        if (nextLeft == Int.MAX_VALUE) continue
+        val from = (b - verticalMarginBands).coerceAtLeast(0)
+        val to = (b + verticalMarginBands).coerceAtMost(running.size - 1)
+        var runningRight = Int.MIN_VALUE
+        for (rb in from..to) {
+            if (running[rb] > runningRight) runningRight = running[rb]
+        }
+        if (runningRight != Int.MIN_VALUE) {
+            val need = runningRight - nextLeft + spacing
             if (need > dx) dx = need
         }
     }

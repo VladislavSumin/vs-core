@@ -32,7 +32,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     val globalNavigator: GlobalNavigator<Ctx>,
     val parentNavigator: ScreenNavigatorImpl<Ctx>?,
     val screenPath: ScreenPath,
-    val initialPath: ScreenPathWithIntent?,
+    var initialPath: ScreenPathWithIntent?,
     val node: LinkedTreeNode<ScreenInfo<Ctx>>,
     val serializer: KSerializer<IntentScreenParams<*>>,
     private val lifecycle: Lifecycle,
@@ -91,7 +91,8 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
      * deepLink и нам нужно показать другую иерархию экранов.
      */
     fun getInitialParamsFor(navigationHost: NavigationHost): ScreenParamsWithIntent? {
-        val element = initialPath?.screenPath?.first() ?: return null
+        val ip = initialPath ?: return null
+        val element = ip.screenPath.first()
         val screenKey = element.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }?.value
             ?: error("Child node with screenKey=$screenKey not found")
@@ -104,8 +105,8 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             null
         }
         return screenParams?.let {
-            val intent = if (initialPath.screenPath.size == 1) {
-                initialPath.intent
+            val intent = if (ip.screenPath.size == 1) {
+                ip.intent
             } else {
                 null
             }
@@ -247,10 +248,16 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             "Screen ${childScreenParams.asKey()} is not a child for screen ${childScreenParams.asKey()}"
         }
 
-        val newInitialPath = initialPath?.screenPath?.let { path ->
-            val newPath = path.drop(1)
-            if (newPath.isNotEmpty()) {
-                ScreenPath(newPath)
+        val childInitialPath: ScreenPathWithIntent? = initialPath?.let { ip ->
+            if (ip.screenPath.first().asScreenKey() == screenKey) {
+                val intent = ip.intent
+                initialPath = null
+                val tail = ip.screenPath.drop(1)
+                if (tail.isNotEmpty()) {
+                    ScreenPathWithIntent(ScreenPath(tail), intent)
+                } else {
+                    null
+                }
             } else {
                 null
             }
@@ -263,7 +270,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             node = childNode,
             serializer = serializer,
             lifecycle = childContext.lifecycle,
-            initialPath = newInitialPath?.let { ScreenPathWithIntent(it, initialPath.intent) },
+            initialPath = childInitialPath,
         )
     }
 

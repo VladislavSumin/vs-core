@@ -99,6 +99,22 @@ class InitialPathTest : NavigationIntegrationTestBase() {
     }
 
     @Test
+    fun staleInitialPathDoesNotAffectSubsequentNavigation() = runTest {
+        setMain()
+        val navigation = chainNavigation()
+        navigation.open(LeafParams(42))
+        val root = mount(navigation) as NestedRootScreen
+
+        root.open(MiddleParams(1))
+        root.close(MiddleParams(0))
+
+        val middle1 = root.pages.value.items
+            .first { it.configuration.screenParams == MiddleParams(1) }
+            .instance as MiddleScreen
+        assertEquals(listOf(LeafParams(0)), middle1.stack.value.paramsList)
+    }
+
+    @Test
     fun initialPathDeliversIntent() = runTest {
         setMain()
         val navigation = pagesNavigation(initial = listOf(LeafParams(0)))

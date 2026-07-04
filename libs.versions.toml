@@ -79,6 +79,9 @@ vs-core-navigation-di = { module = "ru.vladislavsumin.core.navigation:di", versi
 vs-core-navigation-factoryGenerator-api = { module = "ru.vladislavsumin.core.navigation.factory-generator:api", version.ref = "vs-core" }
 vs-core-navigation-factoryGenerator-ksp = { module = "ru.vladislavsumin.core.navigation.factory-generator:ksp", version.ref = "vs-core" }
 
+vs-core-recreateSafety-api = { module = "ru.vladislavsumin.core.recreate-safety:api", version.ref = "vs-core" }
+vs-core-recreateSafety-plugin = { module = "ru.vladislavsumin.core.recreate-safety:plugin", version.ref = "vs-core" }
+
 vs-core-serialization-api = { module = "ru.vladislavsumin.core.serialization:api", version.ref = "vs-core" }
 vs-core-serialization-json = { module = "ru.vladislavsumin.core.serialization:json", version.ref = "vs-core" }
 vs-core-serialization-protobuf = { module = "ru.vladislavsumin.core.serialization:protobuf", version.ref = "vs-core" }

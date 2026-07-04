@@ -41,6 +41,9 @@ include(":core:navigation:impl")
 include(":core:navigation:factory-generator:api")
 include(":core:navigation:factory-generator:ksp")
 
+include(":core:recreate-safety:api")
+include(":core:recreate-safety:plugin")
+
 include(":core:serialization:core")
 include(":core:serialization:json")
 include(":core:serialization:protobuf")

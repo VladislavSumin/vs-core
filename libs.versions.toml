@@ -31,6 +31,7 @@ logging-slf4j = "2.0.18"
 
 # Testing
 testing-mockk = "1.14.11"
+testing-roborazzi = "1.65.0"
 
 [libraries]
 
@@ -46,6 +47,7 @@ gradlePlugins-detekt = { module = "dev.detekt:detekt-gradle-plugin", version.ref
 gradlePlugins-checkUpdates = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "gradlePlugins-checkUpdates" }
 gradlePlugins-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "gradlePlugins-kover" }
 gradlePlugins-mavenPublish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "gradlePlugins-mavenPublish" }
+gradlePlugins-roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "testing-roborazzi" }
 
 # VS Core
 vs-core-collections-tree = { module = "ru.vladislavsumin.core.collections:tree", version.ref = "vs-core" }
@@ -86,6 +88,7 @@ vs-core-serialization-yaml = { module = "ru.vladislavsumin.core.serialization:ya
 
 vs-core-uikit-graph = { module = "ru.vladislavsumin.core.uikit:graph", version.ref = "vs-core" }
 vs-core-uikit-pieChart = { module = "ru.vladislavsumin.core.uikit:pie-chart", version.ref = "vs-core" }
+vs-core-uikit-screenshotTest = { module = "ru.vladislavsumin.core.uikit:screenshot-test", version.ref = "vs-core" }
 
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
@@ -115,6 +118,7 @@ kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlin
 
 # Testing
 testing-mockk = { module = "io.mockk:mockk", version.ref = "testing-mockk" }
+testing-roborazzi-composeDesktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "testing-roborazzi" }
 
 # Logging
 logging-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "logging-log4j" }

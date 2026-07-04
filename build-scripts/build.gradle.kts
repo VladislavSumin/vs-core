@@ -64,4 +64,5 @@ dependencies {
     implementation(vsCoreLibs.gradlePlugins.checkUpdates)
     implementation(vsCoreLibs.gradlePlugins.kover)
     implementation(vsCoreLibs.gradlePlugins.mavenPublish)
+    implementation(vsCoreLibs.gradlePlugins.roborazzi)
 }

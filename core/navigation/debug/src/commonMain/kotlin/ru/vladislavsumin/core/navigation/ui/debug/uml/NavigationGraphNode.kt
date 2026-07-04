@@ -61,6 +61,9 @@ private val BORDER_WIDTH = 1.dp
 /** Толщина пунктирной рамки карточки внешней ноды. */
 private val DASH_BORDER_WIDTH = 2.dp
 
+/** Радиус точки в месте соединения линии с хостом или дочерней нодой. */
+private val DOT_RADIUS = 3.dp
+
 private const val DASH_ON_PX = 16f
 private const val DASH_OFF_PX = 8f
 
@@ -184,7 +187,7 @@ private fun MeasureScope.computeNodeLayout(
 
     val half = max(card.center - placed.minX, placed.maxX - card.center)
     val shiftX = half - card.center
-    val segments =
+    val connectors =
         buildSegments(groups, blocks, slots, slotLeft, hosts, hostRowY, cardBottom, card.center, childrenTop, shiftX)
 
     return NodeLayout(
@@ -199,7 +202,8 @@ private fun MeasureScope.computeNodeLayout(
             cardRight = (card.right + shiftX).toFloat(),
             cardBottom = cardBottom.toFloat(),
             dashed = dashed,
-            segments = segments,
+            segments = connectors.segments,
+            dots = connectors.dots,
         ),
     )
 }
@@ -283,7 +287,7 @@ private fun placeChildren(
 }
 
 /**
- * Строит сегменты соединительных линий (уже со сдвигом [shiftX]) от хостов к их детям.
+ * Строит сегменты соединительных линий и точки соединения (уже со сдвигом [shiftX]) от хостов к их детям.
  */
 @Suppress("LongParameterList")
 private fun buildSegments(
@@ -297,20 +301,23 @@ private fun buildSegments(
     cardCenter: Int,
     childrenTop: Int,
     shiftX: Int,
-): List<Pair<Offset, Offset>> {
-    val out = ArrayList<Pair<Offset, Offset>>()
+): Connectors {
+    val segments = ArrayList<Pair<Offset, Offset>>()
+    val dots = ArrayList<Offset>()
     groups.forEachIndexed { gi, meta ->
         val block = blocks[gi]
         if (block.width == 0) return@forEachIndexed
         val base = slotLeft[gi] + slots[gi].blockLeftInSlot
         val originX = if (meta.hostIndex >= 0) slotLeft[gi] + slots[gi].anchorXInSlot else cardCenter
         val originY = if (meta.hostIndex >= 0) hostRowY + hosts[meta.hostIndex].height else cardBottom
-        groupSegments(block.vertical, originX, originY, base, block, childrenTop, shiftX, out)
+        // Точка в месте соединения линии с хостом навигации.
+        if (meta.hostIndex >= 0) dots += Offset((originX + shiftX).toFloat(), originY.toFloat())
+        groupSegments(block.vertical, originX, originY, base, block, childrenTop, shiftX, segments, dots)
     }
-    return out
+    return Connectors(segments, dots)
 }
 
-/** Сегменты линий одной группы: вертикальная шина слева для листьев, либо классический "уголок" для строки. */
+/** Сегменты и точки одной группы: вертикальная шина слева для листьев, либо классический "уголок" для строки. */
 @Suppress("LongParameterList")
 private fun groupSegments(
     vertical: Boolean,
@@ -321,20 +328,26 @@ private fun groupSegments(
     childrenTop: Int,
     dx: Int,
     out: MutableList<Pair<Offset, Offset>>,
+    dots: MutableList<Offset>,
 ) {
     if (vertical) {
         val lastCenterY = childrenTop + block.connectYs.last()
         out += seg(originX, originY, originX, lastCenterY, dx)
         block.connectYs.forEachIndexed { i, cy ->
             val y = childrenTop + cy
-            out += seg(originX, y, childLeftBase + block.connectXs[i], y, dx)
+            val childX = childLeftBase + block.connectXs[i]
+            out += seg(originX, y, childX, y, dx)
+            dots += Offset((childX + dx).toFloat(), y.toFloat())
         }
     } else {
         val midY = (originY + childrenTop) / 2
         val xs = block.connectXs.map { childLeftBase + it }
         out += seg(originX, originY, originX, midY, dx)
         out += seg(minOf(originX, xs.first()), midY, maxOf(originX, xs.last()), midY, dx)
-        xs.forEach { out += seg(it, midY, it, childrenTop, dx) }
+        xs.forEach {
+            out += seg(it, midY, it, childrenTop, dx)
+            dots += Offset((it + dx).toFloat(), childrenTop.toFloat())
+        }
     }
 }
 
@@ -439,6 +452,8 @@ private fun NavGraphCanvas(state: State<NodeLines?>, lineColor: Color, lineWidth
         spec.segments.forEach { (start, end) ->
             drawLine(color = lineColor, start = start, end = end, strokeWidth = strokeWidthPx, cap = StrokeCap.Round)
         }
+        val dotRadius = DOT_RADIUS.toPx()
+        spec.dots.forEach { center -> drawCircle(color = lineColor, radius = dotRadius, center = center) }
     }
 }
 
@@ -476,4 +491,7 @@ private class NodeLines(
     val cardBottom: Float,
     val dashed: Boolean,
     val segments: List<Pair<Offset, Offset>>,
+    val dots: List<Offset>,
 )
+
+private class Connectors(val segments: List<Pair<Offset, Offset>>, val dots: List<Offset>)

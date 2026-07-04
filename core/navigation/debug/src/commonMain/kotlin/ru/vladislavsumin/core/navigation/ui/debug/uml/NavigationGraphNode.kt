@@ -67,6 +67,9 @@ private val DOT_RADIUS = 3.dp
 private const val DASH_ON_PX = 16f
 private const val DASH_OFF_PX = 8f
 
+/** Шаг дискретизации силуэта (контура) поддерева по вертикали, в пикселях. */
+private const val CONTOUR_STEP = 4
+
 /**
  * Отрисовывает навигационный граф с группировкой дочерних экранов по [NavigationHost].
  *
@@ -75,6 +78,10 @@ private const val DASH_OFF_PX = 8f
  * и располагаются под соответствующим хостом. Соединительные линии идут от конкретной карточки хоста к его дочерним
  * экранам. Если все дети одного хоста — листья, они укладываются компактно вертикально (как в [CompactTree]),
  * иначе горизонтально в строку.
+ *
+ * Для плотной укладки соседние поддеревья разносятся не по ширине их прямоугольных габаритов, а по силуэтам
+ * (контурам): узкое неглубокое поддерево "вкладывается" в свободное место рядом с широким ветвистым соседом.
+ * Контур поддерева вычисляется на этапе measure и передаётся вверх родителю через [contourSink].
  */
 @Composable
 internal fun NavigationGraphNode(
@@ -82,26 +89,23 @@ internal fun NavigationGraphNode(
     lineColor: Color,
     modifier: Modifier = Modifier,
     lineWidth: Dp = 1.dp,
+    contourSink: ContourSink? = null,
 ) {
     val info = node.value
     val hosts = (info as? InternalNavigationGraphUmlNode)?.navigationHosts?.toList().orEmpty()
     val children = node.children.toList()
     val groups = buildGroups(hosts, children)
+    val orderedChildren = groups.flatMap { it.nodes }
     val drawState = remember { mutableStateOf<NodeLines?>(null) }
+    val childSinks = remember(node) { List(orderedChildren.size) { ContourSink() } }
 
     Layout(
         content = {
             NavGraphCanvas(drawState, lineColor, lineWidth)
             NavigationNodeHeader(info)
             hosts.forEach { NavigationHostCard(it) }
-            groups.forEach { group ->
-                group.nodes.forEach {
-                    NavigationGraphNode(
-                        it,
-                        lineColor,
-                        lineWidth = lineWidth,
-                    )
-                }
+            orderedChildren.forEachIndexed { i, child ->
+                NavigationGraphNode(child, lineColor, lineWidth = lineWidth, contourSink = childSinks[i])
             }
         },
         modifier = modifier,
@@ -110,11 +114,26 @@ internal fun NavigationGraphNode(
             val header = measurables[1].measure(infinite)
             val hostPlaceables = hosts.indices.map { measurables[2 + it].measure(infinite) }
             val childPlaceables = measurables.drop(2 + hosts.size).map { it.measure(infinite) }
+            val childContours = childSinks.map { it.contour }
+            val childCardCenters = childSinks.map { it.cardCenterX }
             val metas = groups.map { it.toMeta() }
 
-            val layout = computeNodeLayout(header, hostPlaceables, childPlaceables, metas, !info.isPartOfMainGraph)
+            val layout =
+                computeNodeLayout(
+                    header,
+                    hostPlaceables,
+                    childPlaceables,
+                    childContours,
+                    childCardCenters,
+                    metas,
+                    !info.isPartOfMainGraph,
+                )
             val canvas = measurables[0].measure(Constraints.fixed(layout.width, layout.height))
             drawState.value = layout.lines
+            contourSink?.let {
+                it.contour = layout.contour
+                it.cardCenterX = layout.cardCenterX
+            }
 
             layout(layout.width, layout.height) {
                 canvas.place(0, 0)
@@ -151,51 +170,88 @@ private class ChildGroup(val hostIndex: Int, val nodes: List<UmlTreeNode>) {
 private class GroupMeta(val hostIndex: Int, val count: Int, val vertical: Boolean)
 
 /**
- * Вычисляет полный layout ноды: размеры, позиции заголовка/хостов/детей и геометрию линий.
+ * Вычисляет полный layout ноды: размеры, позиции заголовка/хостов/детей, геометрию линий и контур поддерева.
  */
+@Suppress("LongMethod")
 private fun MeasureScope.computeNodeLayout(
     header: Placeable,
     hosts: List<Placeable>,
     children: List<Placeable>,
+    childContours: List<Contour>,
+    childCardCenters: List<Int>,
     groups: List<GroupMeta>,
     dashed: Boolean,
 ): NodeLayout {
-    val padH = CARD_PADDING_H.roundToPx()
     val padV = CARD_PADDING_V.roundToPx()
-    val gap = HEADER_TO_HOSTS_GAP.roundToPx()
-    val hostSpacing = HOST_SPACING.roundToPx()
     val childrenByGroup = sliceByGroups(children, groups)
+    val contoursByGroup = sliceByGroups(childContours, groups)
+    val cardCentersByGroup = sliceByGroups(childCardCenters, groups)
     val blocks = groups.mapIndexed { i, meta ->
-        buildChildBlock(childrenByGroup[i], meta.vertical, HORIZONTAL_SPACE.roundToPx(), CHILD_INDENT.roundToPx())
+        buildChildBlock(
+            childrenByGroup[i],
+            contoursByGroup[i],
+            cardCentersByGroup[i],
+            meta.vertical,
+            HORIZONTAL_SPACE.roundToPx(),
+            CHILD_INDENT.roundToPx(),
+        )
     }
     val slots = groups.mapIndexed { i, meta ->
-        buildGroupSlot(blocks[i], hostWidthOf(hosts, meta), CONNECTOR_INSET.roundToPx())
+        buildGroupSlot(
+            blocks[i],
+            hostWidthOf(hosts, meta),
+            CONNECTOR_INSET.roundToPx(),
+        )
     }
-    val slotLeft = slotLefts(slots, hostSpacing)
 
-    val hostRowY = padV + header.height + gap
+    val hostRowY = padV + header.height + HEADER_TO_HOSTS_GAP.roundToPx()
+    val hostBottom = hosts.indices.maxOfOrNull { hostRowY + hosts[it].height } ?: (padV + header.height)
+    val cardBottom = if (hosts.isNotEmpty()) hostBottom + padV else padV + header.height + padV
+    val childrenTop = cardBottom + VERTICAL_SPACE.roundToPx()
+
+    val slotContours = groups.mapIndexed { i, meta ->
+        buildSlotContour(
+            slots[i],
+            blocks[i],
+            hostHeightOf(hosts, meta),
+            hostWidthOf(hosts, meta),
+            childrenTop - hostRowY,
+        )
+    }
+    val slotLeft = packSlots(slotContours, HOST_SPACING.roundToPx())
+
     val hostPositions = hosts.indices.map { hi ->
         val gi = groups.indexOfFirst { it.hostIndex == hi }
         IntOffset(slotLeft[gi] + slots[gi].hostXInSlot, hostRowY)
     }
-    val hostBottom = hosts.indices.maxOfOrNull { hostRowY + hosts[it].height } ?: (padV + header.height)
-    val cardBottom = if (hosts.isNotEmpty()) hostBottom + padV else padV + header.height + padV
-
-    val card = cardBounds(header, hosts, hostPositions, slots, slotLeft, groups, padH)
-    val childrenTop = cardBottom + VERTICAL_SPACE.roundToPx()
+    val card = cardBounds(header, hosts, hostPositions, slots, slotLeft, groups, CARD_PADDING_H.roundToPx())
     val placed = placeChildren(childrenByGroup, blocks, slots, slotLeft, childrenTop, card, cardBottom)
 
-    val half = max(card.center - placed.minX, placed.maxX - card.center)
-    val shiftX = half - card.center
+    // Бокс = точные габариты контента (без симметричного центрирования): экономит ширину. Родитель соединяется
+    // с реальным центром карточки ребёнка через выставляемый cardCenterX, а не с центром бокса.
+    val shiftX = -placed.minX
+    val width = placed.maxX - placed.minX
+    val childPositions = placed.positions.map { IntOffset(it.x + shiftX, it.y) }
     val connectors =
         buildSegments(groups, blocks, slots, slotLeft, hosts, hostRowY, cardBottom, card.center, childrenTop, shiftX)
+    val contour =
+        buildNodeContour(
+            card.left + shiftX,
+            card.right + shiftX,
+            cardBottom,
+            childPositions,
+            childContours,
+            connectors.segments,
+            placed.maxBottom,
+        )
 
     return NodeLayout(
-        width = 2 * half,
+        width = width,
         height = placed.maxBottom,
+        cardCenterX = card.center + shiftX,
         headerPosition = IntOffset(card.center - header.width / 2 + shiftX, padV),
         hostPositions = hostPositions.map { IntOffset(it.x + shiftX, it.y) },
-        childPositions = placed.positions.map { IntOffset(it.x + shiftX, it.y) },
+        childPositions = childPositions,
         lines = NodeLines(
             cardLeft = (card.left + shiftX).toFloat(),
             cardTop = 0f,
@@ -205,23 +261,31 @@ private fun MeasureScope.computeNodeLayout(
             segments = connectors.segments,
             dots = connectors.dots,
         ),
+        contour = contour,
     )
 }
 
-private fun sliceByGroups(children: List<Placeable>, groups: List<GroupMeta>): List<List<Placeable>> {
+private fun <T> sliceByGroups(items: List<T>, groups: List<GroupMeta>): List<List<T>> {
     var index = 0
-    return groups.map { meta -> children.subList(index, index + meta.count).also { index += meta.count } }
+    return groups.map { meta -> items.subList(index, index + meta.count).also { index += meta.count } }
 }
 
 private fun hostWidthOf(hosts: List<Placeable>, meta: GroupMeta): Int =
     if (meta.hostIndex >= 0) hosts[meta.hostIndex].width else 0
 
-private fun slotLefts(slots: List<GroupSlot>, hostSpacing: Int): IntArray {
-    val result = IntArray(slots.size)
-    var x = 0
-    slots.forEachIndexed { i, slot ->
-        result[i] = x
-        x += slot.width + hostSpacing
+private fun hostHeightOf(hosts: List<Placeable>, meta: GroupMeta): Int =
+    if (meta.hostIndex >= 0) hosts[meta.hostIndex].height else 0
+
+/**
+ * Раскладывает слоты хостов слева направо, разнося их по контурам (силуэтам), а не по прямоугольным габаритам.
+ */
+private fun packSlots(slotContours: List<Contour>, spacing: Int): IntArray {
+    val result = IntArray(slotContours.size)
+    var running = IntArray(0)
+    slotContours.forEachIndexed { i, contour ->
+        val dx = separation(running, contour, spacing)
+        result[i] = dx
+        running = mergeRight(running, contour, dx)
     }
     return result
 }
@@ -355,54 +419,90 @@ private fun seg(ax: Int, ay: Int, bx: Int, by: Int, dx: Int): Pair<Offset, Offse
     Offset((ax + dx).toFloat(), ay.toFloat()) to Offset((bx + dx).toFloat(), by.toFloat())
 
 /**
- * Раскладка детей одной группы. Для вертикальной укладки [anchorXInBlock] указывает на линию-шину (левый край),
- * [connectXs] — на левые края детей; для горизонтальной [anchorXInBlock] — центр блока, [connectXs] — центры детей.
+ * Раскладка детей одной группы: горизонтально (соседи разносятся по контурам) либо вертикально (листья столбцом).
+ *
+ * Для вертикальной укладки [ChildBlock.anchorXInBlock] указывает на линию-шину (левый край), [ChildBlock.connectXs] —
+ * на левые края детей; для горизонтальной [ChildBlock.anchorXInBlock] — точка привязки хоста, [ChildBlock.connectXs] —
+ * центры детей.
  */
 private fun buildChildBlock(
     children: List<Placeable>,
+    contours: List<Contour>,
+    cardCenters: List<Int>,
     vertical: Boolean,
     horizontalSpace: Int,
     childIndent: Int,
 ): ChildBlock {
-    if (children.isEmpty()) return ChildBlock(false, 0, 0, emptyList(), emptyList(), emptyList(), 0)
+    if (children.isEmpty()) {
+        return ChildBlock(false, 0, 0, emptyList(), emptyList(), emptyList(), 0, EMPTY_CONTOUR)
+    }
     return if (vertical) {
-        val offsets = ArrayList<IntOffset>(children.size)
-        val connectXs = ArrayList<Int>(children.size)
-        val connectYs = ArrayList<Int>(children.size)
-        var y = 0
-        children.forEach {
-            offsets += IntOffset(childIndent, y)
-            connectXs += childIndent
-            connectYs += y + it.height / 2
-            y += it.height + horizontalSpace
-        }
-        ChildBlock(
-            true,
-            childIndent + children.maxOf { it.width },
-            y - horizontalSpace,
-            offsets,
-            connectXs,
-            connectYs,
-            0,
-        )
+        buildVerticalBlock(children, contours, horizontalSpace, childIndent)
     } else {
-        val offsets = ArrayList<IntOffset>(children.size)
-        val connectXs = ArrayList<Int>(children.size)
-        var x = 0
-        var maxHeight = 0
-        children.forEach {
-            offsets += IntOffset(x, 0)
-            connectXs += x + it.width / 2
-            x += it.width + horizontalSpace
-            maxHeight = max(maxHeight, it.height)
-        }
-        val width = x - horizontalSpace
-        ChildBlock(false, width, maxHeight, offsets, connectXs, List(children.size) { 0 }, width / 2)
+        buildHorizontalBlock(children, contours, cardCenters, horizontalSpace)
     }
 }
 
+private fun buildHorizontalBlock(
+    children: List<Placeable>,
+    contours: List<Contour>,
+    cardCenters: List<Int>,
+    horizontalSpace: Int,
+): ChildBlock {
+    val offsets = ArrayList<IntOffset>(children.size)
+    val connectXs = ArrayList<Int>(children.size)
+    var running = IntArray(0)
+    var maxRight = 0
+    var maxHeight = 0
+    children.forEachIndexed { i, placeable ->
+        val dx = separation(running, contours[i], horizontalSpace)
+        offsets += IntOffset(dx, 0)
+        // Соединяемся с реальным центром карточки ребёнка, а не с центром его бокса.
+        connectXs += dx + cardCenters[i]
+        running = mergeRight(running, contours[i], dx)
+        maxRight = max(maxRight, dx + placeable.width)
+        maxHeight = max(maxHeight, placeable.height)
+    }
+    val builder = ContourBuilder(maxHeight)
+    offsets.forEachIndexed { i, offset -> builder.stampContour(contours[i], offset.x, offset.y) }
+    val anchor = (connectXs.first() + connectXs.last()) / 2
+    return ChildBlock(
+        false,
+        maxRight,
+        maxHeight,
+        offsets,
+        connectXs,
+        List(children.size) { 0 },
+        anchor,
+        builder.build(),
+    )
+}
+
+private fun buildVerticalBlock(
+    children: List<Placeable>,
+    contours: List<Contour>,
+    horizontalSpace: Int,
+    childIndent: Int,
+): ChildBlock {
+    val offsets = ArrayList<IntOffset>(children.size)
+    val connectXs = ArrayList<Int>(children.size)
+    val connectYs = ArrayList<Int>(children.size)
+    var y = 0
+    children.forEach {
+        offsets += IntOffset(childIndent, y)
+        connectXs += childIndent
+        connectYs += y + it.height / 2
+        y += it.height + horizontalSpace
+    }
+    val height = y - horizontalSpace
+    val width = childIndent + children.maxOf { it.width }
+    val builder = ContourBuilder(height)
+    offsets.forEachIndexed { i, offset -> builder.stampContour(contours[i], offset.x, offset.y) }
+    return ChildBlock(true, width, height, offsets, connectXs, connectYs, 0, builder.build())
+}
+
 /**
- * Слот группы — прямоугольная область, вмещающая карточку хоста и блок его детей, с их взаимным выравниванием.
+ * Слот группы — область, вмещающая карточку хоста и блок его детей, с их взаимным выравниванием.
  */
 private fun buildGroupSlot(block: ChildBlock, hostWidth: Int, inset: Int): GroupSlot {
     if (block.width == 0) {
@@ -426,6 +526,75 @@ private fun buildGroupSlot(block: ChildBlock, hostWidth: Int, inset: Int): Group
             anchorXInSlot = blockLeft + anchor,
         )
     }
+}
+
+/** Контур слота: силуэт карточки хоста плюс силуэт блока его детей ниже. */
+private fun buildSlotContour(
+    slot: GroupSlot,
+    block: ChildBlock,
+    hostHeight: Int,
+    hostWidth: Int,
+    blockTopInSlot: Int,
+): Contour {
+    val height = max(if (hostWidth > 0) hostHeight else 0, blockTopInSlot + block.height)
+    val builder = ContourBuilder(height)
+    if (hostWidth > 0) builder.stampRect(slot.hostXInSlot, 0, slot.hostXInSlot + hostWidth, hostHeight)
+    builder.stampContour(block.contour, slot.blockLeftInSlot, blockTopInSlot)
+    return builder.build()
+}
+
+/**
+ * Контур всего поддерева: силуэт своей карточки, силуэты дочерних поддеревьев на их местах и собственные
+ * соединительные линии (чтобы соседние поддеревья не наезжали на эти линии при укладке).
+ */
+private fun buildNodeContour(
+    cardLeft: Int,
+    cardRight: Int,
+    cardBottom: Int,
+    childPositions: List<IntOffset>,
+    childContours: List<Contour>,
+    segments: List<Pair<Offset, Offset>>,
+    height: Int,
+): Contour {
+    val builder = ContourBuilder(height)
+    builder.stampRect(cardLeft, 0, cardRight, cardBottom)
+    childContours.forEachIndexed { i, contour ->
+        builder.stampContour(
+            contour,
+            childPositions[i].x,
+            childPositions[i].y,
+        )
+    }
+    segments.forEach { (start, end) -> builder.stampSegment(start.x, start.y, end.x, end.y) }
+    return builder.build()
+}
+
+/**
+ * Минимальный сдвиг вправо для контура [next], при котором его левый силуэт не пересекается с правым силуэтом уже
+ * разложенных элементов [running] (плюс зазор [spacing]).
+ */
+private fun separation(running: IntArray, next: Contour, spacing: Int): Int {
+    var dx = 0
+    val bands = minOf(running.size, next.left.size)
+    for (b in 0 until bands) {
+        if (running[b] != Int.MIN_VALUE && next.left[b] != Int.MAX_VALUE) {
+            val need = running[b] - next.left[b] + spacing
+            if (need > dx) dx = need
+        }
+    }
+    return dx
+}
+
+/** Добавляет к правому силуэту [running] правый силуэт контура [next], размещённого со сдвигом [dx]. */
+private fun mergeRight(running: IntArray, next: Contour, dx: Int): IntArray {
+    val size = maxOf(running.size, next.right.size)
+    val result = IntArray(size) { if (it < running.size) running[it] else Int.MIN_VALUE }
+    next.right.indices.forEach { b ->
+        if (next.right[b] == Int.MIN_VALUE) return@forEach
+        val value = next.right[b] + dx
+        if (value > result[b]) result[b] = value
+    }
+    return result
 }
 
 @Composable
@@ -457,6 +626,66 @@ private fun NavGraphCanvas(state: State<NodeLines?>, lineColor: Color, lineWidth
     }
 }
 
+/**
+ * Силуэт (контур) поддерева относительно его бокса. [left]/[right] — крайние x на каждой горизонтальной полосе
+ * высотой [CONTOUR_STEP]; пустые полосы помечены [Int.MAX_VALUE]/[Int.MIN_VALUE].
+ */
+internal class Contour(val left: IntArray, val right: IntArray)
+
+private val EMPTY_CONTOUR = Contour(IntArray(0), IntArray(0))
+
+/** Приёмник контура: заполняется дочерней нодой на этапе measure и читается родителем. */
+internal class ContourSink {
+    var contour: Contour = EMPTY_CONTOUR
+    var cardCenterX: Int = 0
+}
+
+/** Построитель контура: "штампует" в него прямоугольники и вложенные контуры. */
+private class ContourBuilder(heightPx: Int) {
+    private val bandCount = if (heightPx <= 0) 0 else (heightPx + CONTOUR_STEP - 1) / CONTOUR_STEP
+    private val left = IntArray(bandCount) { Int.MAX_VALUE }
+    private val right = IntArray(bandCount) { Int.MIN_VALUE }
+
+    fun stampRect(xLeft: Int, yTop: Int, xRight: Int, yBottom: Int) {
+        forBands(yTop, yBottom) { b ->
+            if (xLeft < left[b]) left[b] = xLeft
+            if (xRight > right[b]) right[b] = xRight
+        }
+    }
+
+    /** Штампует отрезок соединительной линии (в тех же координатах, что и контур) как тонкий прямоугольник. */
+    fun stampSegment(ax: Float, ay: Float, bx: Float, by: Float) {
+        val xLeft = minOf(ax, bx).toInt()
+        val xRight = maxOf(ax, bx).toInt()
+        val yTop = minOf(ay, by).toInt()
+        // +1, чтобы горизонтальный отрезок (нулевой высоты) попал хотя бы в одну полосу дискретизации.
+        val yBottom = maxOf(ay, by).toInt() + 1
+        stampRect(xLeft, yTop, xRight, yBottom)
+    }
+
+    fun stampContour(contour: Contour, dx: Int, dy: Int) {
+        contour.left.indices.forEach { b ->
+            if (contour.left[b] == Int.MAX_VALUE) return@forEach
+            val newLeft = contour.left[b] + dx
+            val newRight = contour.right[b] + dx
+            val yTop = dy + b * CONTOUR_STEP
+            forBands(yTop, yTop + CONTOUR_STEP) { tb ->
+                if (newLeft < left[tb]) left[tb] = newLeft
+                if (newRight > right[tb]) right[tb] = newRight
+            }
+        }
+    }
+
+    fun build(): Contour = Contour(left, right)
+
+    private inline fun forBands(yTop: Int, yBottom: Int, action: (Int) -> Unit) {
+        if (bandCount == 0) return
+        val first = (yTop / CONTOUR_STEP).coerceIn(0, bandCount - 1)
+        val last = ((yBottom - 1) / CONTOUR_STEP).coerceIn(0, bandCount - 1)
+        for (b in first..last) action(b)
+    }
+}
+
 private class ChildBlock(
     val vertical: Boolean,
     val width: Int,
@@ -465,6 +694,7 @@ private class ChildBlock(
     val connectXs: List<Int>,
     val connectYs: List<Int>,
     val anchorXInBlock: Int,
+    val contour: Contour,
 )
 
 private class GroupSlot(val width: Int, val hostXInSlot: Int, val blockLeftInSlot: Int, val anchorXInSlot: Int)
@@ -478,10 +708,12 @@ private class PlacedChildren(val positions: List<IntOffset>, val minX: Int, val 
 private class NodeLayout(
     val width: Int,
     val height: Int,
+    val cardCenterX: Int,
     val headerPosition: IntOffset,
     val hostPositions: List<IntOffset>,
     val childPositions: List<IntOffset>,
     val lines: NodeLines,
+    val contour: Contour,
 )
 
 private class NodeLines(

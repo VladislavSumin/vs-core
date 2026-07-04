@@ -120,7 +120,7 @@ internal class NavigationGraphUmlDiagramContentScreenshotTest {
     @Suppress("LongMethod")
     @Test
     fun showcaseGraph() {
-        screenshot("uml_showcase", DpSize(1700.dp, 640.dp)) {
+        screenshot("uml_showcase", DpSize(760.dp, 640.dp)) {
             node(
                 internalNode("App", description = "Точка входа", navigationHosts = setOf(RootHost, ModalHost)),
                 node(

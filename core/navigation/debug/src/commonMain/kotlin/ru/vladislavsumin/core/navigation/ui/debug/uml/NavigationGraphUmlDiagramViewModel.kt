@@ -35,6 +35,7 @@ internal class NavigationGraphUmlDiagramViewModel(
                 hasDefaultParams = it.defaultParams != null,
                 description = it.description,
                 navigationHosts = it.navigationHosts,
+                hostInParent = it.hostInParent,
             )
         }
 }

@@ -23,6 +23,8 @@ public data class ExternalNavigationGraphUmlNode(override val name: String, over
  * @param hasDefaultParams есть ли у экрана параметры по умолчанию.
  * @param description любое дополнительное описание на ваше усмотрение.
  * @param navigationHosts хосты навигации, обрабатываемые данным экраном
+ * @param hostInParent хост родительского экрана, внутри которого располагается этот экран, null для рут экрана
+ * или для нод, добавленных вне графа навигации.
  */
 @ConsistentCopyVisibility
 public data class InternalNavigationGraphUmlNode internal constructor(
@@ -30,6 +32,7 @@ public data class InternalNavigationGraphUmlNode internal constructor(
     override val description: String? = null,
     internal val hasDefaultParams: Boolean,
     internal val navigationHosts: Set<NavigationHost> = emptySet(),
+    internal val hostInParent: NavigationHost? = null,
 ) : NavigationGraphUmlNode {
 
     /**

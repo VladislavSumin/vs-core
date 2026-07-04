@@ -74,7 +74,27 @@ internal class NavigationGraphUmlDiagramContentScreenshotTest {
                     description = "Стартовый экран",
                     navigationHosts = setOf(RootHost, ModalHost),
                 ),
-                node(internalNode("Details", description = "Детали экрана")),
+                node(internalNode("Details", description = "Детали экрана", hostInParent = RootHost)),
+            )
+        }
+    }
+
+    /**
+     * Дочерние экраны разделены по принадлежности к хостам навигации: листья одного хоста укладываются
+     * компактно вертикально, а ветвящийся дочерний экран другого хоста — горизонтально.
+     */
+    @Test
+    fun hostGroupedGraph() {
+        screenshot("uml_host_grouped_graph", DpSize(680.dp, 460.dp)) {
+            node(
+                internalNode("Root", navigationHosts = setOf(RootHost, ModalHost)),
+                node(internalNode("Home", hostInParent = RootHost)),
+                node(internalNode("Profile", hostInParent = RootHost)),
+                node(internalNode("Settings", hostInParent = RootHost)),
+                node(
+                    internalNode("Dialog", navigationHosts = setOf(DialogHost), hostInParent = ModalHost),
+                    node(internalNode("Confirm", hostInParent = DialogHost)),
+                ),
             )
         }
     }
@@ -122,13 +142,16 @@ internal class NavigationGraphUmlDiagramContentScreenshotTest {
         hasDefaultParams: Boolean = true,
         description: String? = null,
         navigationHosts: Set<NavigationHost> = emptySet(),
+        hostInParent: NavigationHost? = null,
     ): NavigationGraphUmlNode = InternalNavigationGraphUmlNode(
         name = name,
         description = description,
         hasDefaultParams = hasDefaultParams,
         navigationHosts = navigationHosts,
+        hostInParent = hostInParent,
     )
 
     private object RootHost : NavigationHost
     private object ModalHost : NavigationHost
+    private object DialogHost : NavigationHost
 }

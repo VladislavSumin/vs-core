@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.dropbox.differ.SimpleImageComparator
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.RoborazziOptions
+import com.github.takahirom.roborazzi.roborazziSystemPropertyTaskType
 import io.github.takahirom.roborazzi.captureRoboImage
 
 /**
@@ -73,7 +74,9 @@ public val defaultScreenshotRoborazziOptions: RoborazziOptions = RoborazziOption
  * - `verifyRoborazziJvm` (или `-Proborazzi.test.verify=true`) — упасть при отличии от эталона.
  * - `compareRoborazziJvm` — сгенерировать diff изображение без падения теста.
  *
- * Без этих флагов [captureRoboImage] является no-op, поэтому обычный прогон unit тестов не трогает эталоны.
+ * Если ни одна из roborazzi задач не активна (например обычный прогон `test allTests`), тест является полным no-op:
+ * skiko не грузится и рендер не выполняется. Это позволяет запускать общие unit тесты в том числе на окружениях,
+ * где нативный skiko недоступен (например CI на Linux).
  *
  * @param goldenName имя эталонного файла без расширения.
  * @param size размер снимаемого контента.
@@ -86,6 +89,9 @@ public fun screenshotTest(
     roborazziOptions: RoborazziOptions = defaultScreenshotRoborazziOptions,
     content: @Composable () -> Unit,
 ) {
+    // Рендерим (и грузим нативный skiko) только когда активна одна из roborazzi задач record/compare/verify.
+    if (!roborazziSystemPropertyTaskType().isEnabled()) return
+
     runDesktopComposeUiTest {
         setContent {
             Box(

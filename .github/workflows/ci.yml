@@ -91,3 +91,35 @@ jobs:
         uses: ./.github/actions/run_gradle
         with:
           gradle_command: assemble
+
+  screenshot-tests:
+    name: Screenshot tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Setup java
+        uses: ./.github/actions/setup_java
+
+      - name: Gradle cache
+        uses: ./.github/actions/gradle_cache
+        with:
+          key: "screenshot-tests"
+
+      - name: Run gradle
+        uses: ./.github/actions/run_gradle
+        with:
+          gradle_command: verifyRoborazziJvm
+
+      - name: Upload screenshot diff report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-diff
+          path: |
+            **/build/reports/roborazzi
+            **/build/outputs/roborazzi
+          retention-days: 7
+

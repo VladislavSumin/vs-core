@@ -23,5 +23,11 @@ kotlin {
             implementation(vsCoreLibs.kotlin.coroutines.core)
             implementation(vsCoreLibs.kotlin.serialization.json)
         }
+
+        commonTest.dependencies {
+            implementation(projects.core.coroutines.test)
+            implementation(projects.core.decompose.test)
+            implementation(projects.core.logger.internal)
+        }
     }
 }

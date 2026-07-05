@@ -5,6 +5,8 @@ public abstract class ru/vladislavsumin/core/decompose/components/GenericCompone
 	protected final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
 	protected final fun launch (Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun launch$default (Lru/vladislavsumin/core/decompose/components/GenericComponent;Lkotlin/coroutines/CoroutineContext;Lkotlinx/coroutines/CoroutineStart;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+	protected final fun relaunchOnUiLifecycle (Lcom/arkivanov/essenty/lifecycle/Lifecycle$State;Lkotlin/jvm/functions/Function1;)V
+	protected final fun resubscribeOnUiLifecycle (Lkotlinx/coroutines/flow/Flow;Lcom/arkivanov/essenty/lifecycle/Lifecycle$State;)Lkotlinx/coroutines/flow/Flow;
 	protected fun viewModel (Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/decompose/components/ViewModel;
 }
 

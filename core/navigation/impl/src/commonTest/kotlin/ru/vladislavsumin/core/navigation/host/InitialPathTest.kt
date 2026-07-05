@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.pages.Pages
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
@@ -91,6 +92,37 @@ class InitialPathTest : NavigationIntegrationTestBase() {
     }
 
     @Test
+    fun pagesDefaultPagesPlacesTargetAtCustomIndex() = runTest {
+        setMain()
+        val navigation = pagesNavigation(
+            defaultPages = { params -> Pages(listOf(LeafParams(0), params, LeafParams(2)), 1) },
+        )
+        navigation.open(LeafParams(5))
+        val root = mount(navigation) as PagesRootScreen
+
+        assertEquals(listOf(LeafParams(0), LeafParams(5), LeafParams(2)), root.pages.value.paramsList)
+        assertEquals(1, root.pages.value.selectedIndex)
+    }
+
+    @Test
+    fun pagesDefaultPagesDeliversIntentToPlacedScreen() = runTest {
+        setMain()
+        val navigation = pagesNavigation(
+            defaultPages = { params -> Pages(listOf(LeafParams(0), params, LeafParams(2)), 1) },
+        )
+        navigation.open(IntentLeafParams(7), intent = TestLeafIntent(99))
+        val root = mount(navigation) as PagesRootScreen
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(listOf(LeafParams(0), IntentLeafParams(7), LeafParams(2)), root.pages.value.paramsList)
+        assertEquals(1, root.pages.value.selectedIndex)
+        val screen = root.pages.value.items
+            .first { it.configuration.screenParams == IntentLeafParams(7) }
+            .instance as IntentLeafScreen
+        assertEquals(listOf(TestLeafIntent(99)), screen.receivedIntents)
+    }
+
+    @Test
     fun nestedInitialPathOpensDeepChain() = runTest {
         setMain()
         val navigation = chainNavigation()
@@ -125,6 +157,8 @@ class InitialPathTest : NavigationIntegrationTestBase() {
         val root = mount(navigation) as PagesRootScreen
         testScheduler.advanceUntilIdle()
 
+        assertEquals(listOf(IntentLeafParams(5)), root.pages.value.paramsList)
+        assertEquals(0, root.pages.value.selectedIndex)
         val screen = root.pages.value.items
             .first { it.configuration.screenParams == IntentLeafParams(5) }
             .instance as IntentLeafScreen

@@ -140,6 +140,8 @@ class PagesRootScreen(
     keepInactive: Boolean,
     initial: List<IntentScreenParams<*>>,
     selectedIndex: Int,
+    defaultPages: (params: IntentScreenParams<*>) -> Pages<IntentScreenParams<*>> =
+        { params -> Pages(listOf(params), 0) },
 ) : Screen(context) {
     init {
         registerCustomFactory<LeafParams, NoIntent, LeafScreen> { ctx, params, _ -> LeafScreen(params, ctx) }
@@ -158,6 +160,7 @@ class PagesRootScreen(
             }
         },
         initialPages = { Pages(items = initial, selectedIndex = selectedIndex) },
+        defaultPages = defaultPages,
     )
 
     fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
@@ -296,12 +299,14 @@ class PagesRootFactory(
     private val keepInactive: Boolean,
     private val initial: List<IntentScreenParams<*>>,
     private val selectedIndex: Int,
+    private val defaultPages: (params: IntentScreenParams<*>) -> Pages<IntentScreenParams<*>> =
+        { params -> Pages(listOf(params), 0) },
 ) : ScreenFactory<ComponentContext, PagesRootParams, NoIntent, PagesRootScreen> {
     override fun create(
         context: ComponentContext,
         params: PagesRootParams,
         intents: ReceiveChannel<NoIntent>,
-    ): PagesRootScreen = PagesRootScreen(context, keepInactive, initial, selectedIndex)
+    ): PagesRootScreen = PagesRootScreen(context, keepInactive, initial, selectedIndex, defaultPages)
 }
 
 class StackRootFactory(
@@ -336,12 +341,14 @@ fun pagesNavigation(
     keepInactive: Boolean = true,
     initial: List<IntentScreenParams<*>> = listOf(LeafParams(0)),
     selectedIndex: Int = 0,
+    defaultPages: (params: IntentScreenParams<*>) -> Pages<IntentScreenParams<*>> =
+        { params -> Pages(listOf(params), 0) },
 ): Navigation = Navigation(
     setOf(
         GenericNavigationRegistrar {
             registerScreen(
                 defaultParams = PagesRootParams,
-                factory = PagesRootFactory(keepInactive, initial, selectedIndex),
+                factory = PagesRootFactory(keepInactive, initial, selectedIndex, defaultPages),
                 navigationHosts = { NavigationHostA opens setOf(LeafParams::class, IntentLeafParams::class) },
             )
             registerScreen<LeafParams>()

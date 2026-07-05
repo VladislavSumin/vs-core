@@ -27,6 +27,11 @@ import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
  *
  * @param navigationHost навигационный хост для возможности понять, какие экраны будут открываться в этой навигации.
  * @param initialPages начальный набор страниц.
+ * @param defaultPages набор страниц по умолчанию, используется, когда в навигации задан инициализирующий экран
+ * (например через deep-link / initialPath). В отличие от [childNavigationStack], где целевой экран всегда добавляется
+ * поверх стека, здесь целевой экран передаётся в лямбду параметром, чтобы его можно было разместить в любом удобном
+ * месте страниц и указать выбранную страницу. Intent целевого экрана доставляется автоматически той странице, чьи
+ * параметры совпадают с переданным экраном, поэтому доступ к intent в лямбде не требуется.
  * @param key уникальный в пределах экрана ключ для навигации.
  * @param pageStatus позволяет настраивать жизненный цикл страниц, см. оригинальное api Аркадия.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
@@ -35,6 +40,7 @@ import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigationPages(
     navigationHost: NavigationHost,
     initialPages: () -> Pages<IntentScreenParams<*>>,
+    defaultPages: (params: IntentScreenParams<*>) -> Pages<IntentScreenParams<*>> = ::getDefaultInitialPages,
     key: String = "pages_navigation",
     pageStatus: (index: Int, Pages<*>) -> Status = ::getDefaultPageStatus,
     extraLifecycle: Lifecycle? = null,
@@ -68,8 +74,10 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         initialPages = {
             val initial = internalNavigator.getInitialParamsFor(navigationHost)
             if (initial != null) {
-                val holder = ConfigurationHolder(initial.screenParams, initial.intent)
-                Pages(listOf(holder), 0)
+                val pages = defaultPages(initial.screenParams)
+                val holders = pages.items.map { ConfigurationHolder(it) }
+                holders.firstOrNull { it.screenParams == initial.screenParams }?.sendIntent(initial.intent)
+                Pages(holders, pages.selectedIndex)
             } else {
                 val initial = initialPages()
                 Pages(initial.items.map { ConfigurationHolder(it) }, initial.selectedIndex)
@@ -207,6 +215,14 @@ internal fun getDefaultPageStatus(index: Int, pages: Pages<*>): Status = when (i
     in (pages.selectedIndex - 1)..(pages.selectedIndex + 1) -> Status.CREATED
     else -> Status.DESTROYED
 }
+
+/**
+ * Значение по умолчанию для параметра `defaultPages` в [childNavigationPages]. Размещает целевой экран единственной
+ * выбранной страницей, повторяя поведение, которое было до появления параметра `defaultPages`.
+ */
+@PublishedApi
+internal fun getDefaultInitialPages(params: IntentScreenParams<*>): Pages<IntentScreenParams<*>> =
+    Pages(listOf(params), 0)
 
 @Serializable
 private class SerializablePages<T : IntentScreenParams<*>>(val items: List<T>, val selectedIndex: Int)

@@ -4,13 +4,20 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.instancekeeper.getOrCreate
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.utils.asValue
 import ru.vladislavsumin.core.decompose.components.utils.createCoroutineScope
@@ -24,6 +31,13 @@ public typealias Component = GenericComponent<ComponentContext>
  */
 public abstract class GenericComponent<Ctx : GenericComponentContext<Ctx>>(protected val context: Ctx) {
     protected val scope: CoroutineScope = context.lifecycle.createCoroutineScope()
+
+    /**
+     * Жизненный цикл текущего компонента в виде [StateFlow].
+     */
+    private val uiLifecycle: StateFlow<Lifecycle.State> = MutableStateFlow(context.lifecycle.state).also {
+        context.lifecycle.subscribe(StateFlowLifecycleCallbacks(it))
+    }
 
     /**
      * Укороченная версия [CoroutineScope.launch] использующая в качестве скоупа [scope].
@@ -45,6 +59,39 @@ public abstract class GenericComponent<Ctx : GenericComponentContext<Ctx>>(prote
      * Подписка на [StateFlow] через [asValue] с использованием локального scope компонента.
      */
     protected fun <T : Any> StateFlow<T>.asValue(): Value<T> = asValue(scope)
+
+    /**
+     * Остается подписанным на вышестоящий [Flow] пока [uiLifecycle] удовлетворяет переданному [lifecycleState].
+     * При изменении [uiLifecycle] на более низкий, отписывается от вышестоящего [Flow], но не закрывает нижестоящий.
+     * После восстановления [uiLifecycle] обратно подпишется на вышестоящий [Flow] и будет пересылать все его события
+     * вниз по цепочке.
+     */
+    protected fun <T> Flow<T>.resubscribeOnUiLifecycle(lifecycleState: Lifecycle.State): Flow<T> = uiLifecycle
+        .map { it >= lifecycleState }
+        .distinctUntilChanged()
+        .flatMapLatest {
+            if (it) {
+                this
+            } else {
+                emptyFlow()
+            }
+        }
+
+    /**
+     * Аналогична функции [resubscribeOnUiLifecycle] но для launch.
+     */
+    protected fun relaunchOnUiLifecycle(lifecycleState: Lifecycle.State, block: suspend () -> Unit) {
+        launch {
+            uiLifecycle
+                .map { it >= lifecycleState }
+                .distinctUntilChanged()
+                .collectLatest {
+                    if (it) {
+                        block()
+                    }
+                }
+        }
+    }
 
     /**
      * Создает или возвращает созданную ранее [ViewModel] используя для этого [instanceKeeper].

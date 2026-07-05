@@ -31,4 +31,20 @@ public interface ScreenNavigator {
      * Закрывает этот экран.
      */
     public fun close()
+
+    /**
+     * Переносит уже открытый экран [screenParams] в другую локацию графа навигации,
+     * определяемую с помощью [hints] (и стандартного резолвинга пути).
+     *
+     * При переносе сохраняется состояние viewModel и Compose-состояние экрана (rememberSaveable).
+     * Сам экран пересоздаётся заново — в его конструктор инжектятся свежие зависимости
+     * (window-специфичные сервисы), а viewModel переиспользуется из сохранённого instanceKeeper.
+     *
+     * Для корректной работы экран должен быть открыт в момент переноса,
+     * а целевая локация должна отличаться от текущей.
+     */
+    public fun <S : IntentScreenParams<I>, I : ScreenIntent> transfer(
+        screenParams: S,
+        hints: List<IntentScreenParams<*>>,
+    )
 }

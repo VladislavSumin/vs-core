@@ -19,6 +19,7 @@ import ru.vladislavsumin.core.navigation.navigator.HostNavigator
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.asKey
+import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 
 /**
  * Навигация типа "страницы", означает, что в ней одновременно может быть несколько экранов, но только один из них
@@ -83,7 +84,11 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
 
 @Suppress("EmptyFunctionBlock")
 private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<ConfigurationHolder>) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?) {
+    override fun open(
+        params: IntentScreenParams<*>,
+        intent: ScreenIntent?,
+        savedInstance: TransferableScreenHolder<*>?,
+    ) {
         pagesNavigation.navigate(
             transformer = { pages ->
                 val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }
@@ -91,7 +96,7 @@ private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<Co
                     pages.items[indexOfScreen].sendIntent(intent)
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
-                    val newItem = ConfigurationHolder(params)
+                    val newItem = ConfigurationHolder(params, savedInstance = savedInstance)
                     newItem.sendIntent(intent)
                     val newItems = pages.items + newItem
                     Pages(newItems, newItems.size - 1)

@@ -11,6 +11,7 @@ import ru.vladislavsumin.core.navigation.NavigationLogger
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.asKey
+import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 import kotlin.time.measureTimedValue
 
@@ -142,10 +143,58 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
                     (ScreenPath(path) + targetScreenParams).reachFrom(startScreenPath)
                 }
             for (path in finalPaths) {
-                if (rootNavigator.closeChain(ScreenPath(path.drop(1)))) {
+                if (rootNavigator.closeChain(ScreenPath(path.drop(1))).closed) {
                     return@accept
                 }
             }
+        }
+    }
+
+    /**
+     * Переносит уже открытый экран [targetScreenParams] из текущей локации (относительно [startScreenPath])
+     * в новую, определяемую [hints] и стандартным резолвингом пути.
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun transfer(
+        startScreenPath: ScreenPath,
+        targetScreenParams: IntentScreenParams<*>,
+        hints: List<IntentScreenParams<*>>,
+    ) {
+        NavigationLogger.i { "Transfer screen ${targetScreenParams::class.simpleName}" }
+        relay.accept {
+            val currentNode = navigation.navigationTree.findByPath(
+                path = startScreenPath.map { it.asScreenKey() },
+                keySelector = { it.screenKey },
+            )!!
+
+            val sourcePaths = currentNode.asSequenceUp()
+                .filter { it.value.screenKey == targetScreenParams.asKey() }
+                .map { node ->
+                    val path = node.path()
+                        .dropLast(1)
+                        .map { it.value.screenKey }
+                        .map { ScreenPath.PathElement.Key(it) }
+                    (ScreenPath(path) + targetScreenParams).reachFrom(startScreenPath)
+                }
+
+            val sourcePath = ScreenPath(sourcePaths.firstOrNull()?.drop(1) ?: return@accept)
+
+            // Пре-валидация целевого пути
+            val targetPath = createOpenPath(startScreenPath, targetScreenParams, hints)
+
+            // Гвард: перенос в ту же локацию
+            if (targetPath == sourcePath) return@accept
+
+            // Закрываем источник с сохранением инстанса
+            val closeResult = rootNavigator.closeChain(sourcePath, keepInstance = true)
+            val holder = closeResult.holder as? TransferableScreenHolder<Ctx> ?: return@accept
+
+            // Открываем в цели с усыновленным инстансом
+            rootNavigator.openChain(
+                screenPath = targetPath,
+                intent = null,
+                savedInstance = holder,
+            )
         }
     }
 

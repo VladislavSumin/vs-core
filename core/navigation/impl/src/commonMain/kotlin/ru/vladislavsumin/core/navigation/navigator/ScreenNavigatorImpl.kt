@@ -1,10 +1,8 @@
 package ru.vladislavsumin.core.navigation.navigator
 
-import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnCreate
-import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.serialization.KSerializer
 import ru.vladislavsumin.core.collections.tree.LinkedTreeNode
 import ru.vladislavsumin.core.navigation.IntentScreenParams
@@ -17,6 +15,7 @@ import ru.vladislavsumin.core.navigation.screen.ScreenKey
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
 import ru.vladislavsumin.core.navigation.screen.ScreenPathWithIntent
 import ru.vladislavsumin.core.navigation.screen.asKey
+import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 
 /**
@@ -30,13 +29,18 @@ import ru.vladislavsumin.core.navigation.tree.ScreenInfo
 @PublishedApi
 internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     val globalNavigator: GlobalNavigator<Ctx>,
-    val parentNavigator: ScreenNavigatorImpl<Ctx>?,
-    val screenPath: ScreenPath,
+    var parentNavigator: ScreenNavigatorImpl<Ctx>?,
+    var screenPath: ScreenPath,
     var initialPath: ScreenPathWithIntent?,
     val node: LinkedTreeNode<ScreenInfo<Ctx>>,
     val serializer: KSerializer<IntentScreenParams<*>>,
     private val lifecycle: Lifecycle,
 ) : ScreenNavigator {
+    /**
+     * Обратная ссылка на holder, если навигатор построен на управляемом контексте.
+     */
+    internal var holder: TransferableScreenHolder<Ctx>? = null
+
     /**
      * Список зарегистрированных на этом экране [HostNavigator].
      */
@@ -52,7 +56,8 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
      */
     private val childScreenNavigators = mutableMapOf<IntentScreenParams<*>, ScreenNavigatorImpl<Ctx>>()
 
-    val screenParams = (screenPath.last() as ScreenPath.PathElement.Params).screenParams
+    val screenParams: IntentScreenParams<*>
+        get() = (screenPath.last() as ScreenPath.PathElement.Params).screenParams
 
     /**
      * Экран в контексте которого существует данный навигатор.
@@ -60,8 +65,10 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     lateinit var screen: GenericScreen<Ctx>
 
     init {
-        // Регистрируем этот навигатор в родительском.
-        parentNavigator?.registerScreenNavigator(this, lifecycle)
+        // Регистрируем этот навигатор в родительском через явный механизм
+        // (не lifecycle-bound, т.к. lifecycle теперь — это lifecycle holder'а,
+        //  который переживает перенос и не уходит в DESTROYED при удалении mount'а).
+        parentNavigator?.registerScreenNavigatorDirect(this)
 
         lifecycle.doOnCreate {
             // Проверяем что экран зарегистрировал кастомные фабрики для всех дочерних экранов которые требуют таковых.
@@ -81,6 +88,42 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
                 "Actual host registration doesn't match expected. Actual:$actualHosts, expected:$expectedHosts"
             }
         }
+    }
+
+    /**
+     * Рекурсивно обновляет [screenPath] и [parentNavigator] для этого навигатора и всего его поддерева.
+     */
+    fun rebase(newParent: ScreenNavigatorImpl<Ctx>?, newScreenPath: ScreenPath) {
+        parentNavigator = newParent
+        screenPath = newScreenPath
+        childScreenNavigators.forEach { (params, child) ->
+            child.rebase(this, screenPath + params)
+        }
+    }
+
+    /**
+     * Убирает этот навигатор из родительского [childScreenNavigators] без вызова destroy.
+     */
+    fun detachFromParent() {
+        parentNavigator?.unregisterScreenNavigatorDirect(this)
+    }
+
+    /**
+     * Регистрирует навигатор в родительском [childScreenNavigators] без привязки к lifecycle.
+     */
+    internal fun registerScreenNavigatorDirect(navigator: ScreenNavigatorImpl<Ctx>) {
+        val oldScreenNavigator = childScreenNavigators.put(navigator.screenParams, navigator)
+        check(oldScreenNavigator == null) {
+            "Screen navigator for ${navigator.screenPath} already registered"
+        }
+    }
+
+    /**
+     * Убирает навигатор из [childScreenNavigators] без вызова destroy.
+     * Идемпотентно — если навигатора нет в карте, ничего не делает.
+     */
+    internal fun unregisterScreenNavigatorDirect(navigator: ScreenNavigatorImpl<Ctx>) {
+        childScreenNavigators.remove(navigator.screenParams)
     }
 
     /**
@@ -115,18 +158,9 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     }
 
     /**
-     * Регистрирует [screenNavigator] с учетом жизненного цикла [ComponentContext].
+     * Результат закрытия экрана.
      */
-    fun registerScreenNavigator(screenNavigator: ScreenNavigatorImpl<Ctx>, lifecycle: Lifecycle) {
-        val oldScreenNavigator = childScreenNavigators.put(screenNavigator.screenParams, screenNavigator)
-        check(oldScreenNavigator == null) {
-            "Screen navigator for ${screenNavigator.screenPath} already registered"
-        }
-        lifecycle.doOnDestroy {
-            val navigator = childScreenNavigators.remove(screenNavigator.screenParams)
-            check(navigator != null) { "Screen navigator for ${screenNavigator.screenPath} not found" }
-        }
-    }
+    internal class CloseResult(val closed: Boolean, val holder: TransferableScreenHolder<*>?)
 
     /**
      * Регистрирует [HostNavigator] для [NavigationHost] навигации. Учитывает lifecycle [ScreenContext].
@@ -160,20 +194,24 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
      */
     // TODO после закрепления поведения тестами хочется избавиться тут от пересоздания screenPath на каждый хоп
     // что бы уменьшить количество алокаций памяти, а так же снизить алгоритмическую сложность.
-    fun openChain(screenPath: ScreenPath, intent: ScreenIntent?) {
+    fun openChain(screenPath: ScreenPath, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>? = null) {
         NavigationLogger.t {
             "ScreenNavigator(screenParams=$screenParams).openInsideThisScreen(screenPath=$screenPath)"
         }
 
         // Открываем первый требуемый экран внутри текущего.
-        openInsideThisScreen(screenPath.first(), intent?.takeIf { screenPath.size == 1 })
+        openInsideThisScreen(
+            screen = screenPath.first(),
+            intent = intent?.takeIf { screenPath.size == 1 },
+            savedInstance = savedInstance?.takeIf { screenPath.size == 1 },
+        )
 
         // Если требуется открыть более одного экрана за раз, то передаем управление дальше, навигатору экрана
         // который только что открыли шагом выше.
         val childPath = ScreenPath(screenPath.drop(1))
         if (childPath.isNotEmpty()) {
             val childNavigator = findChildNavigator(childElement = screenPath.first())
-            childNavigator!!.openChain(screenPath = childPath, intent = intent)
+            childNavigator!!.openChain(screenPath = childPath, intent = intent, savedInstance = savedInstance)
         }
     }
 
@@ -182,41 +220,58 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
      * который должен находится в одном из [NavigationHost] этого экрана.
      * @return был ли фактически закрыт экран.
      */
-    fun closeChain(screenPath: ScreenPath): Boolean {
+    fun closeChain(screenPath: ScreenPath, keepInstance: Boolean = false): CloseResult {
         NavigationLogger.t {
             "ScreenNavigator(screenParams=$screenParams).closeInsideThisScreen(screenPath=$screenPath)"
         }
         return if (screenPath.size == 1) {
             // Если в цепочке один экран, то пробуем закрыть его.
-            closeInsideThisScreen((screenPath.first() as ScreenPath.PathElement.Params).screenParams)
+            closeInsideThisScreen((screenPath.first() as ScreenPath.PathElement.Params).screenParams, keepInstance)
         } else {
             val childNavigator = findChildNavigator(childElement = screenPath.first())
-            childNavigator?.closeChain(ScreenPath(screenPath.drop(1))) ?: false
+            childNavigator?.closeChain(ScreenPath(screenPath.drop(1)), keepInstance)
+                ?: CloseResult(false, null)
         }
     }
 
     /**
      * Ищет [NavigationHost] который может открыть данный [screen] и открывает его опционально передавая туда [intent].
      */
-    private fun openInsideThisScreen(screen: ScreenPath.PathElement, intent: ScreenIntent?) {
+    private fun openInsideThisScreen(
+        screen: ScreenPath.PathElement,
+        intent: ScreenIntent?,
+        savedInstance: TransferableScreenHolder<*>? = null,
+    ) {
         val screenKey = screen.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }
             ?: error("Child node with screenKey=$screenKey not found")
         val hostNavigator = getChildHostNavigator(screenKey)
         when (screen) {
             is ScreenPath.PathElement.Key -> hostNavigator.open(screen.screenKey) { childNode.value.defaultParams!! }
-            is ScreenPath.PathElement.Params -> hostNavigator.open(screen.screenParams, intent)
+            is ScreenPath.PathElement.Params -> hostNavigator.open(screen.screenParams, intent, savedInstance)
         }
     }
 
     /**
      * Ищет [NavigationHost] который может закрыть данный [screen] и пробует закрыть его.
      *
-     * @return был ли фактически закрыт экран.
+     * @return результат закрытия. Если [keepInstance] — пытается сохранить инстанс экрана.
      */
-    private fun closeInsideThisScreen(screenParams: IntentScreenParams<*>): Boolean {
-        val hostNavigator = getChildHostNavigator(screenParams.asKey())
-        return hostNavigator.close(screenParams)
+    @Suppress("UNCHECKED_CAST")
+    private fun closeInsideThisScreen(screenParams: IntentScreenParams<*>, keepInstance: Boolean = false): CloseResult {
+        val screenKey = screenParams.asKey()
+        val hostNavigator = getChildHostNavigator(screenKey)
+        val childNavigator = childScreenNavigators[screenParams]
+        val holder = if (keepInstance) {
+            childNavigator?.holder?.also { h ->
+                h.navigator.detachFromParent()
+                h.unbind()
+            }
+        } else {
+            null
+        }
+        val closed = hostNavigator.close(screenParams)
+        return CloseResult(closed, holder as TransferableScreenHolder<Ctx>?)
     }
 
     /**
@@ -291,6 +346,15 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     override fun close(): Unit = globalNavigator.close(
         startScreenPath = screenPath,
         targetScreenParams = (screenPath.last() as ScreenPath.PathElement.Params).screenParams,
+    )
+
+    override fun <S : IntentScreenParams<I>, I : ScreenIntent> transfer(
+        screenParams: S,
+        hints: List<IntentScreenParams<*>>,
+    ): Unit = globalNavigator.transfer(
+        startScreenPath = screenPath,
+        targetScreenParams = screenParams,
+        hints = hints,
     )
 
     private fun findChildNavigator(childElement: ScreenPath.PathElement): ScreenNavigatorImpl<Ctx>? =

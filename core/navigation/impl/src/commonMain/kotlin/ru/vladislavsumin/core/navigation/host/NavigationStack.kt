@@ -31,6 +31,7 @@ import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
  * @param initialStack стек, который открывается при обычном (не deep-link) старте навигации. По умолчанию совпадает
  * с [defaultStack]. Обратите внимание: стек должен содержать как минимум один элемент.
  * @param key уникальный в пределах экрана ключ для навигации.
+ * @param closeParentWhenEmpty закрывает родительский экран при попытке закрыть последний оставшийся экран в этом стеке.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
@@ -39,13 +40,21 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     defaultStack: () -> List<IntentScreenParams<*>> = { emptyList() },
     initialStack: () -> List<IntentScreenParams<*>> = defaultStack,
     key: String = "stack_navigation",
+    closeParentWhenEmpty: Boolean = false,
     extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
 ): Value<ChildStack<ConfigurationHolder, GenericScreen<Ctx>>> {
     val source = StackNavigation<ConfigurationHolder>()
 
-    val hostNavigator = StackHostNavigator(source)
+    val hostNavigator = StackHostNavigator(source) {
+        if (closeParentWhenEmpty) {
+            internalNavigator.close()
+            true
+        } else {
+            false
+        }
+    }
     internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val context = if (extraLifecycle != null) internalContext.childContext(key, extraLifecycle) else internalContext
@@ -91,7 +100,14 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     return stack
 }
 
-private class StackHostNavigator(private val stackNavigation: StackNavigation<ConfigurationHolder>) : HostNavigator {
+private class StackHostNavigator(
+    private val stackNavigation: StackNavigation<ConfigurationHolder>,
+    /**
+     * Пытается закрыть родительский экран когда закрывается последний оставшийся экран стека.
+     * @return `true` если родительский экран будет закрыт (в этом случае стек не нужно опустошать самостоятельно).
+     */
+    private val closeParentIfEmpty: () -> Boolean,
+) : HostNavigator {
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
@@ -135,6 +151,7 @@ private class StackHostNavigator(private val stackNavigation: StackNavigation<Co
         // хотя бы один экран.
         // Если закрываемый экран расположен вторым или далее, то закрываем этот экран и все после него.
         // Если закрываемого экрана нет в стеке, то ничего не делаем.
+        // Если закрывается последний оставшийся экран стека, то при [closeParentIfEmpty] закрываем родительский экран.
         var isSuccess: Boolean? = null
         stackNavigation.navigate(
             transformer = { stack ->
@@ -143,6 +160,11 @@ private class StackHostNavigator(private val stackNavigation: StackNavigation<Co
                     indexOfScreen > 0 -> {
                         isSuccess = true
                         stack.subList(0, indexOfScreen)
+                    }
+
+                    indexOfScreen == 0 && stack.size == 1 && closeParentIfEmpty() -> {
+                        isSuccess = true
+                        stack
                     }
 
                     indexOfScreen == 0 -> {
@@ -172,6 +194,11 @@ private class StackHostNavigator(private val stackNavigation: StackNavigation<Co
                     indexOfScreen > 0 -> {
                         isSuccess = true
                         stack.subList(0, indexOfScreen)
+                    }
+
+                    indexOfScreen == 0 && stack.size == 1 && closeParentIfEmpty() -> {
+                        isSuccess = true
+                        stack
                     }
 
                     indexOfScreen == 0 -> {

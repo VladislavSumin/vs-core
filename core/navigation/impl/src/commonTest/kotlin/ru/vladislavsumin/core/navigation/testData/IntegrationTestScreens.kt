@@ -170,18 +170,27 @@ class PagesRootScreen(
     override fun Render(modifier: Modifier) = Unit
 }
 
-class StackRootScreen(context: ComponentContext, initial: List<IntentScreenParams<*>>) : Screen(context) {
+class StackRootScreen(
+    context: ComponentContext,
+    private val defaultStack: List<IntentScreenParams<*>> = emptyList(),
+    initial: List<IntentScreenParams<*>>,
+) : Screen(context) {
     init {
         registerCustomFactory<LeafParams, NoIntent, LeafScreen> { ctx, params, _ -> LeafScreen(params, ctx) }
     }
 
     val stack: Value<ChildStack<ConfigurationHolder, Screen>> = childNavigationStack(
         navigationHost = NavigationHostA,
+        defaultStack = { defaultStack },
         initialStack = { initial },
     )
 
     fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
         navigator.open(screenParams, hints = hints)
+    }
+
+    fun openWithIntent(screenParams: IntentLeafParams, intent: TestLeafIntent) {
+        navigator.open(screenParams, intent = intent)
     }
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
@@ -202,6 +211,10 @@ class SlotRootScreen(context: ComponentContext, initial: IntentScreenParams<*>?)
 
     fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
         navigator.open(screenParams, hints = hints)
+    }
+
+    fun openWithIntent(screenParams: IntentLeafParams, intent: TestLeafIntent) {
+        navigator.open(screenParams, intent = intent)
     }
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
@@ -275,13 +288,15 @@ class PagesRootFactory(
     ): PagesRootScreen = PagesRootScreen(context, keepInactive, initial, selectedIndex)
 }
 
-class StackRootFactory(private val initial: List<IntentScreenParams<*>>) :
-    ScreenFactory<ComponentContext, StackRootParams, NoIntent, StackRootScreen> {
+class StackRootFactory(
+    private val initial: List<IntentScreenParams<*>>,
+    private val defaultStack: List<IntentScreenParams<*>> = emptyList(),
+) : ScreenFactory<ComponentContext, StackRootParams, NoIntent, StackRootScreen> {
     override fun create(
         context: ComponentContext,
         params: StackRootParams,
         intents: ReceiveChannel<NoIntent>,
-    ): StackRootScreen = StackRootScreen(context, initial)
+    ): StackRootScreen = StackRootScreen(context, defaultStack, initial)
 }
 
 class SlotRootFactory(private val initial: IntentScreenParams<*>?) :

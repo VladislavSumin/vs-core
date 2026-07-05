@@ -1,0 +1,6 @@
+public final class ru/vladislavsumin/core/uikit/screenshot/ScreenshotTestKt {
+	public static final fun getDefaultScreenshotRoborazziOptions ()Lcom/github/takahirom/roborazzi/RoborazziOptions;
+	public static final fun screenshotTest-NXuqAC8 (Ljava/lang/String;JLcom/github/takahirom/roborazzi/RoborazziOptions;Lkotlin/jvm/functions/Function2;)V
+	public static synthetic fun screenshotTest-NXuqAC8$default (Ljava/lang/String;JLcom/github/takahirom/roborazzi/RoborazziOptions;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+}
+

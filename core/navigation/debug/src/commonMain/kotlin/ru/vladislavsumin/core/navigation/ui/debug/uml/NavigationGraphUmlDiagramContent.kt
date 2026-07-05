@@ -14,10 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import ru.vladislavsumin.core.uikit.graph.Tree
+import ru.vladislavsumin.core.collections.tree.TreeNodeImpl
 
 @Composable
 internal fun NavigationGraphUmlDiagramContent(viewModel: NavigationGraphUmlDiagramViewModel, modifier: Modifier) {
+    NavigationGraphUmlDiagramContent(viewModel.graph.root, modifier)
+}
+
+@Composable
+internal fun NavigationGraphUmlDiagramContent(root: TreeNodeImpl<out NavigationGraphUmlNode>, modifier: Modifier) {
     // Текущее приближение графа.
     var scale by remember { mutableStateOf(1f) }
 
@@ -37,8 +42,8 @@ internal fun NavigationGraphUmlDiagramContent(viewModel: NavigationGraphUmlDiagr
             .clipToBounds()
             .transformable(state = transformableState),
     ) {
-        Tree(
-            rootNode = viewModel.graph.root,
+        NavigationGraphNode(
+            node = root,
             lineColor = MaterialTheme.colorScheme.outlineVariant,
             modifier = Modifier
                 .graphicsLayer(
@@ -48,8 +53,6 @@ internal fun NavigationGraphUmlDiagramContent(viewModel: NavigationGraphUmlDiagr
                     translationY = offset.y,
                 )
                 .fillMaxSize(),
-        ) {
-            NavigationGraphUmlDiagramElementContent(it)
-        }
+        )
     }
 }

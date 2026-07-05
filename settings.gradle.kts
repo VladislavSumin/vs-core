@@ -48,3 +48,4 @@ include(":core:serialization:yaml")
 
 include(":core:uikit:graph")
 include(":core:uikit:pie-chart")
+include(":core:uikit:screenshot-test")

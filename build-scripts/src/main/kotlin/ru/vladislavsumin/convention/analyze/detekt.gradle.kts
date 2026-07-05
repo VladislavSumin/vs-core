@@ -18,11 +18,14 @@ plugins {
 
 // Конфигурируем на уровне тасок, а не на уровне плагина, так как таски созданные в ручную не подтягивают дефолтные
 // значения из конфигурации плагина, а мы хотим применить дефолтный конфиг ко всем таскам.
+val resolveConfigTask = rootProject.tasks.named("resolveDetektBaseConfig")
+
 tasks.withType<Detekt>().configureEach {
+    dependsOn(resolveConfigTask)
     autoCorrect = true
     parallel = true
     buildUponDefaultConfig = true
-    config.setFrom(rootProject.layout.projectDirectory.file("config/analyze/detekt.yml"))
+    config.setFrom(rootProject.layout.buildDirectory.file("tmp/detekt-base-config.yml"))
 }
 
 // Дефолтные пути по которым detekt ищет файлы нас не устраивают, поэтому вручную проставляем пути для тасок с

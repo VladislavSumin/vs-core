@@ -199,18 +199,29 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             "ScreenNavigator(screenParams=$screenParams).openInsideThisScreen(screenPath=$screenPath)"
         }
 
+        val firstScreen = screenPath.first()
+        val childPath = ScreenPath(screenPath.drop(1))
+
+        // Если открываемый экран промежуточный (за ним в цепочке есть ещё экраны), его ещё нет и это не перенос
+        // (transfer), то создаём его через initialPath-механизм. Тогда его хосты используют default-лямбду
+        // (как при deep-link на старте), а не initial-лямбду, и оставшаяся цепочка развернётся сама.
+        if (childPath.isNotEmpty() && savedInstance == null && findChildNavigator(firstScreen) == null) {
+            initialPath = ScreenPathWithIntent(screenPath, intent)
+            openInsideThisScreen(screen = firstScreen, intent = null, savedInstance = null)
+            return
+        }
+
         // Открываем первый требуемый экран внутри текущего.
         openInsideThisScreen(
-            screen = screenPath.first(),
+            screen = firstScreen,
             intent = intent?.takeIf { screenPath.size == 1 },
             savedInstance = savedInstance?.takeIf { screenPath.size == 1 },
         )
 
         // Если требуется открыть более одного экрана за раз, то передаем управление дальше, навигатору экрана
         // который только что открыли шагом выше.
-        val childPath = ScreenPath(screenPath.drop(1))
         if (childPath.isNotEmpty()) {
-            val childNavigator = findChildNavigator(childElement = screenPath.first())
+            val childNavigator = findChildNavigator(childElement = firstScreen)
             childNavigator!!.openChain(screenPath = childPath, intent = intent, savedInstance = savedInstance)
         }
     }

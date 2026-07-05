@@ -103,6 +103,10 @@ class LeafScreen(val params: LeafParams, context: ComponentContext) : Screen(con
 
     fun closeScreen(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
+    fun transferScreen(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+        navigator.transfer(screenParams, hints = hints)
+    }
+
     fun closeSelf() = navigator.close()
 
     @Composable
@@ -165,6 +169,10 @@ class PagesRootScreen(
     }
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
+
+    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+        navigator.transfer(screenParams, hints = hints)
+    }
 
     @Composable
     override fun Render(modifier: Modifier) = Unit
@@ -245,6 +253,10 @@ class MiddleScreen(val params: MiddleParams, context: ComponentContext) : Screen
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
+    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+        navigator.transfer(screenParams, hints = hints)
+    }
+
     @Composable
     override fun Render(modifier: Modifier) = Unit
 }
@@ -267,6 +279,10 @@ class NestedRootScreen(context: ComponentContext) : Screen(context) {
     }
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
+
+    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+        navigator.transfer(screenParams, hints = hints)
+    }
 
     @Composable
     override fun Render(modifier: Modifier) = Unit

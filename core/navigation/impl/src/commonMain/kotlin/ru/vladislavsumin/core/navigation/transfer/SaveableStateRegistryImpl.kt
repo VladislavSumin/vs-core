@@ -35,10 +35,17 @@ internal class SaveableStateRegistryImpl(
         }
     }
 
-    override fun consumeRestored(key: String): Any? =
-        restored.remove(key)?.let { values ->
-            if (values.size == 1) values.single() else values
-        } ?: platform?.consumeRestored(key)
+    override fun consumeRestored(key: String): Any? {
+        val values = restored[key] ?: return platform?.consumeRestored(key)
+        if (values.isEmpty()) return null
+        val result = values[0]
+        if (values.size > 1) {
+            restored[key] = values.subList(1, values.size)
+        } else {
+            restored.remove(key)
+        }
+        return result
+    }
 
     override fun canBeSaved(value: Any): Boolean =
         platform?.canBeSaved(value) ?: true
@@ -49,23 +56,16 @@ internal class SaveableStateRegistryImpl(
         return Entry(key)
     }
 
-    override fun performSave(): Map<String, List<Any?>> {
-        val platformMap = platform?.performSave() ?: emptyMap()
-        val rawMap = rawMap()
-        return platformMap + rawMap
-    }
+    override fun performSave(): Map<String, List<Any?>> =
+        platform?.performSave() ?: emptyMap()
 
     /**
      * Захватывает «сырые» in-memory значения для передачи при transfer.
-     * Не требует сериализации.
+     * Формат хранения соответствует стандартному Compose [SaveableStateRegistry.performSave]:
+     * каждое значение провайдера оборачивается в [listOf] (без разворачивания).
      */
-    fun captureRaw(): Map<String, List<Any?>> = rawMap()
-
-    private fun rawMap(): Map<String, List<Any?>> =
-        providers.mapValues { (_, provider) ->
-            val value = provider()
-            if (value is List<*>) value as List<Any?> else listOf(value)
-        }
+    fun captureRaw(): Map<String, List<Any?>> =
+        providers.mapValues { (_, provider) -> listOf(provider()) }
 
     private inner class Entry(private val key: String) : SaveableStateRegistry.Entry {
         override fun unregister() {

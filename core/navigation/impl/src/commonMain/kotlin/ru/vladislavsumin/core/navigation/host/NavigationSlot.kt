@@ -71,7 +71,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         initialConfiguration = {
             val initial = internalNavigator.getInitialParamsFor(navigationHost)
             if (initial != null) {
-                ConfigurationHolder(initial.screenParams, initial.intent)
+                ConfigurationHolder(initial.screenParams, initial.intent, savedInstance = initial.savedInstance)
             } else {
                 initialConfiguration()?.let { ConfigurationHolder(it) }
             }

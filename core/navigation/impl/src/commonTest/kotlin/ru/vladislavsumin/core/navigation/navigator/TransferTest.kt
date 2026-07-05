@@ -203,14 +203,14 @@ class TransferTest : NavigationIntegrationTestBase() {
 
         // Middle(0) больше не содержит Leaf(5)
         assertEquals(listOf(LeafParams(0)), root.middle(0).stack.value.paramsList)
-        // Появился новый Middle(999) с Leaf(0) (стартовый стек) + Leaf(5) (перенесённый)
+        // Появился новый Middle(999)
         assertTrue(root.pages.value.items.any { it.configuration.screenParams == MiddleParams(999) })
-        // Граница этапа 1: при transfer промежуточный родитель по-прежнему использует initial-лямбду ([Leaf(0)]),
-        // а перенесённый экран добавляется поверх (default-механизм на transfer пока не распространяется).
+        // Middle(999) — новый промежуточный родитель, поэтому использует default-лямбду (у Middle он пустой),
+        // а перенесённый Leaf(5) усыновлён поверх. Итог: [Leaf(5)] (а не initial [Leaf(0)] + Leaf(5)).
         val middle999 = root.pages.value.items
             .first { it.configuration.screenParams == MiddleParams(999) }
             .instance as MiddleScreen
-        assertEquals(listOf(LeafParams(0), LeafParams(5)), middle999.stack.value.paramsList)
+        assertEquals(listOf(LeafParams(5)), middle999.stack.value.paramsList)
     }
 
     @Test

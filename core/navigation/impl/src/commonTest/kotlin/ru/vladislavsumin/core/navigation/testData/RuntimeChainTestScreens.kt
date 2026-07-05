@@ -120,8 +120,12 @@ class ChainRootScreen(
         navigator.open(screenParams, hints = hints)
     }
 
-    fun openWithIntent(screenParams: IntentLeafParams, intent: TestLeafIntent, hints: List<IntentScreenParams<*>>,) {
+    fun openWithIntent(screenParams: IntentLeafParams, intent: TestLeafIntent, hints: List<IntentScreenParams<*>>) {
         navigator.open(screenParams, intent = intent, hints = hints)
+    }
+
+    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>>) {
+        navigator.transfer(screenParams, hints = hints)
     }
 
     @Composable

@@ -6,6 +6,7 @@ import ru.vladislavsumin.core.navigation.testData.ChainRootScreen
 import ru.vladislavsumin.core.navigation.testData.IntentLeafParams
 import ru.vladislavsumin.core.navigation.testData.IntentLeafScreen
 import ru.vladislavsumin.core.navigation.testData.LeafParams
+import ru.vladislavsumin.core.navigation.testData.LeafScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationIntegrationTestBase
 import ru.vladislavsumin.core.navigation.testData.PagesMiddleParams
 import ru.vladislavsumin.core.navigation.testData.PagesMiddleScreen
@@ -16,6 +17,7 @@ import ru.vladislavsumin.core.navigation.testData.chainDefaultNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Тесты поведения runtime-цепочек (open уже после монтирования корня): промежуточные экраны, создаваемые по пути
@@ -108,5 +110,32 @@ class RuntimeChainDefaultTest : NavigationIntegrationTestBase() {
         root.open(LeafParams(9), hints = listOf(StackMiddleParams(0)))
 
         assertEquals(listOf(LeafParams(100), LeafParams(9)), root.stackMiddle(0).stack.value.paramsList)
+    }
+
+    @Test
+    fun transferIntoNewIntermediateUsesDefaultAndAdoptsInstance() = runTest {
+        setMain()
+        val root = mount(chainDefaultNavigation()) as ChainRootScreen
+
+        // В существующем StackMiddle(0) открываем Leaf(5) и запоминаем его VM.
+        root.open(LeafParams(5), hints = listOf(StackMiddleParams(0)))
+        val leafVm = root.stackMiddle(0).stack.value.items
+            .first { it.configuration.screenParams == LeafParams(5) }
+            .let { it.instance as LeafScreen }
+            .vm
+        leafVm.update(77)
+
+        // Переносим Leaf(5) в новую (ещё не существующую) вкладку StackMiddle(1) — она промежуточная.
+        root.transfer(LeafParams(5), hints = listOf(StackMiddleParams(1)))
+
+        // StackMiddle(1) собран через default-лямбду ([Leaf(200)]), перенесённый Leaf(5) усыновлён поверх.
+        assertEquals(listOf(LeafParams(200), LeafParams(5)), root.stackMiddle(1).stack.value.paramsList)
+        // Инстанс (viewModel) пережил перенос через default-механизм.
+        val transferredVm = root.stackMiddle(1).stack.value.items
+            .first { it.configuration.screenParams == LeafParams(5) }
+            .let { it.instance as LeafScreen }
+            .vm
+        assertTrue(transferredVm === leafVm)
+        assertEquals(77, transferredVm.value)
     }
 }

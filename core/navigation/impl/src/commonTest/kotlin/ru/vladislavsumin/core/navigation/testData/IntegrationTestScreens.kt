@@ -64,6 +64,15 @@ data object NestedRootParams : ScreenParams
 @Serializable
 data class MiddleParams(val id: Int) : ScreenParams
 
+@Serializable
+data object OuterSlotParams : ScreenParams
+
+@Serializable
+data class InnerStackParams(val closeParentWhenEmpty: Boolean) : ScreenParams
+
+@Serializable
+data class InnerPagesParams(val closeParentWhenEmpty: Boolean) : ScreenParams
+
 // endregion
 
 // region view model
@@ -293,6 +302,85 @@ class NestedRootScreen(context: ComponentContext) : Screen(context) {
 
 // endregion
 
+// region close-parent-when-empty screens
+
+/**
+ * Внешний экран со слот-host'ом, в который помещается вложенный стек/pages экран. Используется для проверки
+ * закрытия родительского экрана через `closeParentWhenEmpty`: когда вложенный экран закрывает сам себя, слот
+ * очищается (child становится null).
+ */
+class OuterSlotScreen(context: ComponentContext, initial: IntentScreenParams<*>) : Screen(context) {
+    init {
+        registerCustomFactory<InnerStackParams, NoIntent, InnerStackScreen> { ctx, params, _ ->
+            InnerStackScreen(ctx, params.closeParentWhenEmpty)
+        }
+        registerCustomFactory<InnerPagesParams, NoIntent, InnerPagesScreen> { ctx, params, _ ->
+            InnerPagesScreen(ctx, params.closeParentWhenEmpty)
+        }
+    }
+
+    val slot: Value<ChildSlot<ConfigurationHolder, Screen>> = childNavigationSlot(
+        navigationHost = NavigationHostA,
+        initialConfiguration = { initial },
+    )
+
+    @Composable
+    override fun Render(modifier: Modifier) = Unit
+}
+
+/**
+ * Вложенный экран со стек-host'ом, поддерживающий `closeParentWhenEmpty`.
+ */
+class InnerStackScreen(context: ComponentContext, closeParentWhenEmpty: Boolean) : Screen(context) {
+    val vm: CountingViewModel = viewModel { CountingViewModel() }
+
+    init {
+        registerCustomFactory<LeafParams, NoIntent, LeafScreen> { ctx, params, _ -> LeafScreen(params, ctx) }
+    }
+
+    val stack: Value<ChildStack<ConfigurationHolder, Screen>> = childNavigationStack(
+        navigationHost = NavigationHostB,
+        initialStack = { listOf(LeafParams(0)) },
+        closeParentWhenEmpty = closeParentWhenEmpty,
+    )
+
+    fun open(screenParams: IntentScreenParams<*>) = navigator.open(screenParams)
+
+    fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
+
+    @Composable
+    override fun Render(modifier: Modifier) = Unit
+}
+
+/**
+ * Вложенный экран с pages-host'ом, поддерживающий `closeParentWhenEmpty`.
+ */
+class InnerPagesScreen(context: ComponentContext, closeParentWhenEmpty: Boolean) : Screen(context) {
+    val vm: CountingViewModel = viewModel { CountingViewModel() }
+
+    init {
+        registerCustomFactory<LeafParams, NoIntent, LeafScreen> { ctx, params, _ -> LeafScreen(params, ctx) }
+    }
+
+    val pages: Value<ChildPages<ConfigurationHolder, Screen>> = childNavigationPages(
+        navigationHost = NavigationHostB,
+        pageStatus = { index, pagesState ->
+            if (index == pagesState.selectedIndex) ChildNavState.Status.RESUMED else ChildNavState.Status.CREATED
+        },
+        initialPages = { Pages(items = listOf(LeafParams(0)), selectedIndex = 0) },
+        closeParentWhenEmpty = closeParentWhenEmpty,
+    )
+
+    fun open(screenParams: IntentScreenParams<*>) = navigator.open(screenParams)
+
+    fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
+
+    @Composable
+    override fun Render(modifier: Modifier) = Unit
+}
+
+// endregion
+
 // region factories & navigation builders
 
 class PagesRootFactory(
@@ -335,6 +423,15 @@ class NestedRootFactory : ScreenFactory<ComponentContext, NestedRootParams, NoIn
         params: NestedRootParams,
         intents: ReceiveChannel<NoIntent>,
     ): NestedRootScreen = NestedRootScreen(context)
+}
+
+class OuterSlotFactory(private val initial: IntentScreenParams<*>) :
+    ScreenFactory<ComponentContext, OuterSlotParams, NoIntent, OuterSlotScreen> {
+    override fun create(
+        context: ComponentContext,
+        params: OuterSlotParams,
+        intents: ReceiveChannel<NoIntent>,
+    ): OuterSlotScreen = OuterSlotScreen(context, initial)
 }
 
 fun pagesNavigation(
@@ -392,6 +489,31 @@ fun nestedNavigation(): Navigation = Navigation(
                 navigationHosts = { NavigationHostA opens setOf(MiddleParams::class) },
             )
             registerScreen<MiddleParams>(
+                navigationHosts = { NavigationHostB opens setOf(LeafParams::class) },
+            )
+            registerScreen<LeafParams>()
+        },
+    ),
+)
+
+/**
+ * Граф для проверки `closeParentWhenEmpty`: OuterSlot (Slot, HostA) -> Inner(Stack|Pages) (HostB) -> Leaf.
+ * Внешний слот не закрывает родителя сам, поэтому при закрытии вложенным экраном самого себя слот просто опустеет.
+ */
+fun closeParentNavigation(inner: IntentScreenParams<*>): Navigation = Navigation(
+    setOf(
+        GenericNavigationRegistrar {
+            registerScreen(
+                defaultParams = OuterSlotParams,
+                factory = OuterSlotFactory(inner),
+                navigationHosts = {
+                    NavigationHostA opens setOf(InnerStackParams::class, InnerPagesParams::class)
+                },
+            )
+            registerScreen<InnerStackParams>(
+                navigationHosts = { NavigationHostB opens setOf(LeafParams::class) },
+            )
+            registerScreen<InnerPagesParams>(
                 navigationHosts = { NavigationHostB opens setOf(LeafParams::class) },
             )
             registerScreen<LeafParams>()

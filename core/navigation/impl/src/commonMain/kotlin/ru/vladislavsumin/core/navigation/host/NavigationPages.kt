@@ -34,6 +34,7 @@ import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
  * параметры совпадают с переданным экраном, поэтому доступ к intent в лямбде не требуется.
  * @param key уникальный в пределах экрана ключ для навигации.
  * @param pageStatus позволяет настраивать жизненный цикл страниц, см. оригинальное api Аркадия.
+ * @param closeParentWhenEmpty закрывает родительский экран при попытке закрыть последнюю оставшуюся страницу.
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
@@ -43,13 +44,21 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     defaultPages: (params: IntentScreenParams<*>) -> Pages<IntentScreenParams<*>> = ::getDefaultInitialPages,
     key: String = "pages_navigation",
     pageStatus: (index: Int, Pages<*>) -> Status = ::getDefaultPageStatus,
+    closeParentWhenEmpty: Boolean = false,
     extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
 ): Value<ChildPages<ConfigurationHolder, GenericScreen<Ctx>>> {
     val source = PagesNavigation<ConfigurationHolder>()
 
-    val hostNavigator = PagesHostNavigator(source)
+    val hostNavigator = PagesHostNavigator(source) {
+        if (closeParentWhenEmpty) {
+            internalNavigator.close()
+            true
+        } else {
+            false
+        }
+    }
     internalNavigator.registerHostNavigator(navigationHost, hostNavigator)
 
     val context = if (extraLifecycle != null) internalContext.childContext(key, extraLifecycle) else internalContext
@@ -97,7 +106,14 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
 }
 
 @Suppress("EmptyFunctionBlock")
-private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<ConfigurationHolder>) : HostNavigator {
+private class PagesHostNavigator(
+    private val pagesNavigation: PagesNavigation<ConfigurationHolder>,
+    /**
+     * Пытается закрыть родительский экран когда закрывается последняя оставшаяся страница.
+     * @return `true` если родительский экран будет закрыт (в этом случае страницы не нужно опустошать самостоятельно).
+     */
+    private val closeParentIfEmpty: () -> Boolean,
+) : HostNavigator {
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
@@ -148,24 +164,12 @@ private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<Co
                 val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }
                 if (indexOfScreen >= 0) {
                     isSuccess = true
-                    val newItems = pages.items.toMutableList()
-                    newItems.removeAt(indexOfScreen)
-                    val newIndex = if (indexOfScreen == pages.selectedIndex) {
-                        // Если мы закрываем текущую вкладку, то пробуем сначала индекс права, а если его нет, то слева.
-                        if (indexOfScreen == newItems.size) {
-                            pages.selectedIndex - 1
-                        } else {
-                            pages.selectedIndex
-                        }
+                    if (pages.items.size == 1 && closeParentIfEmpty()) {
+                        // Закрываем последнюю страницу — вместо опустошения навигации закрываем родительский экран.
+                        pages
                     } else {
-                        // Если мы удаляем не текущую открытую вкладку, то сохраняем новый индекс открытой вкладки
-                        if (indexOfScreen < pages.selectedIndex) {
-                            pages.selectedIndex - 1
-                        } else {
-                            pages.selectedIndex
-                        }
+                        removePageAt(pages, indexOfScreen)
                     }
-                    pages.copy(items = newItems, selectedIndex = newIndex)
                 } else {
                     isSuccess = false
                     pages
@@ -183,24 +187,12 @@ private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<Co
                 val indexOfScreen = pages.items.indexOfFirst { it.screenParams.asKey() == screenKey }
                 if (indexOfScreen >= 0) {
                     isSuccess = true
-                    val newItems = pages.items.toMutableList()
-                    newItems.removeAt(indexOfScreen)
-                    val newIndex = if (indexOfScreen == pages.selectedIndex) {
-                        // Если мы закрываем текущую вкладку, то пробуем сначала индекс права, а если его нет, то слева.
-                        if (indexOfScreen == newItems.size) {
-                            pages.selectedIndex - 1
-                        } else {
-                            pages.selectedIndex
-                        }
+                    if (pages.items.size == 1 && closeParentIfEmpty()) {
+                        // Закрываем последнюю страницу — вместо опустошения навигации закрываем родительский экран.
+                        pages
                     } else {
-                        // Если мы удаляем не текущую открытую вкладку, то сохраняем новый индекс открытой вкладки
-                        if (indexOfScreen < pages.selectedIndex) {
-                            pages.selectedIndex - 1
-                        } else {
-                            pages.selectedIndex
-                        }
+                        removePageAt(pages, indexOfScreen)
                     }
-                    pages.copy(items = newItems, selectedIndex = newIndex)
                 } else {
                     isSuccess = false
                     pages
@@ -209,6 +201,30 @@ private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<Co
             onComplete = { _, _ -> },
         )
         return isSuccess ?: error("Unreachable")
+    }
+
+    /**
+     * Удаляет страницу по индексу [indexOfScreen], пересчитывая выбранную страницу.
+     */
+    private fun removePageAt(pages: Pages<ConfigurationHolder>, indexOfScreen: Int): Pages<ConfigurationHolder> {
+        val newItems = pages.items.toMutableList()
+        newItems.removeAt(indexOfScreen)
+        val newIndex = if (indexOfScreen == pages.selectedIndex) {
+            // Если мы закрываем текущую вкладку, то пробуем сначала индекс права, а если его нет, то слева.
+            if (indexOfScreen == newItems.size) {
+                pages.selectedIndex - 1
+            } else {
+                pages.selectedIndex
+            }
+        } else {
+            // Если мы удаляем не текущую открытую вкладку, то сохраняем новый индекс открытой вкладки
+            if (indexOfScreen < pages.selectedIndex) {
+                pages.selectedIndex - 1
+            } else {
+                pages.selectedIndex
+            }
+        }
+        return pages.copy(items = newItems, selectedIndex = newIndex)
     }
 }
 

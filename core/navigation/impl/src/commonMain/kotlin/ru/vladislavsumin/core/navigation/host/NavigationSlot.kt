@@ -87,7 +87,11 @@ private class SlotHostNavigator(
     private val slotNavigation: SlotNavigation<ConfigurationHolder>,
     private val allowCloseScreen: () -> Boolean,
 ) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>?) {
+    override fun open(
+        params: IntentScreenParams<*>,
+        intent: ScreenIntent?,
+        savedInstance: TransferableScreenHolder<*>?,
+    ) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
         slotNavigation.navigate { currentOpenedScreen ->

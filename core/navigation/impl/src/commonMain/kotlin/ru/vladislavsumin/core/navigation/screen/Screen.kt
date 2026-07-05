@@ -1,11 +1,11 @@
 package ru.vladislavsumin.core.navigation.screen
 
-import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.GenericComponentContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.components.GenericComponent
 import ru.vladislavsumin.core.decompose.components.ViewModel

@@ -47,8 +47,7 @@ internal class SaveableStateRegistryImpl(
         return result
     }
 
-    override fun canBeSaved(value: Any): Boolean =
-        platform?.canBeSaved(value) ?: true
+    override fun canBeSaved(value: Any): Boolean = platform?.canBeSaved(value) ?: true
 
     override fun registerProvider(key: String, valueProvider: () -> Any?): SaveableStateRegistry.Entry {
         providers[key] = valueProvider
@@ -56,16 +55,14 @@ internal class SaveableStateRegistryImpl(
         return Entry(key)
     }
 
-    override fun performSave(): Map<String, List<Any?>> =
-        platform?.performSave() ?: emptyMap()
+    override fun performSave(): Map<String, List<Any?>> = platform?.performSave() ?: emptyMap()
 
     /**
      * Захватывает «сырые» in-memory значения для передачи при transfer.
      * Формат хранения соответствует стандартному Compose [SaveableStateRegistry.performSave]:
      * каждое значение провайдера оборачивается в [listOf] (без разворачивания).
      */
-    fun captureRaw(): Map<String, List<Any?>> =
-        providers.mapValues { (_, provider) -> listOf(provider()) }
+    fun captureRaw(): Map<String, List<Any?>> = providers.mapValues { (_, provider) -> listOf(provider()) }
 
     private inner class Entry(private val key: String) : SaveableStateRegistry.Entry {
         override fun unregister() {

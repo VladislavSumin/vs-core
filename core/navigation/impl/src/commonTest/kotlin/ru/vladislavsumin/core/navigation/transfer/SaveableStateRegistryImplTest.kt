@@ -10,8 +10,7 @@ import kotlin.test.assertTrue
 
 class SaveableStateRegistryImplTest {
 
-    private fun registry(restored: Map<String, List<Any?>> = emptyMap()) =
-        SaveableStateRegistryImpl(restored)
+    private fun registry(restored: Map<String, List<Any?>> = emptyMap()) = SaveableStateRegistryImpl(restored)
 
     private fun emptyPlatform() = SaveableStateRegistry(emptyMap()) { true }
 

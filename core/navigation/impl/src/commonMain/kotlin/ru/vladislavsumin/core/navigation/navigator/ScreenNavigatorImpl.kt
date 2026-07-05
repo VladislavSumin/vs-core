@@ -1,6 +1,5 @@
 package ru.vladislavsumin.core.navigation.navigator
 
-import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnCreate
@@ -161,10 +160,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     /**
      * Результат закрытия экрана.
      */
-    internal class CloseResult(
-        val closed: Boolean,
-        val holder: TransferableScreenHolder<*>?,
-    )
+    internal class CloseResult(val closed: Boolean, val holder: TransferableScreenHolder<*>?)
 
     /**
      * Регистрирует [HostNavigator] для [NavigationHost] навигации. Учитывает lifecycle [ScreenContext].

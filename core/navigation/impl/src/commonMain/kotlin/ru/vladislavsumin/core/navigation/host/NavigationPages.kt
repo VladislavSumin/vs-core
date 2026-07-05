@@ -84,7 +84,11 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
 
 @Suppress("EmptyFunctionBlock")
 private class PagesHostNavigator(private val pagesNavigation: PagesNavigation<ConfigurationHolder>) : HostNavigator {
-    override fun open(params: IntentScreenParams<*>, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>?) {
+    override fun open(
+        params: IntentScreenParams<*>,
+        intent: ScreenIntent?,
+        savedInstance: TransferableScreenHolder<*>?,
+    ) {
         pagesNavigation.navigate(
             transformer = { pages ->
                 val indexOfScreen = pages.items.indexOfFirst { it.screenParams == params }

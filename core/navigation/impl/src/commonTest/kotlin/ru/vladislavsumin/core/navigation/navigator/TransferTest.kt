@@ -14,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -27,11 +26,9 @@ class TransferTest : NavigationIntegrationTestBase() {
 
     private fun mountNested(): NestedRootScreen = mount(nestedNavigation())
 
-    private fun NestedRootScreen.middle(index: Int): MiddleScreen =
-        pages.value.items[index].instance as MiddleScreen
+    private fun NestedRootScreen.middle(index: Int): MiddleScreen = pages.value.items[index].instance as MiddleScreen
 
-    private fun MiddleScreen.leaf(index: Int): LeafScreen =
-        stack.value.items[index].instance as LeafScreen
+    private fun MiddleScreen.leaf(index: Int): LeafScreen = stack.value.items[index].instance as LeafScreen
 
     @Test
     fun `transfer moves screen between parent instances`() = runTest {

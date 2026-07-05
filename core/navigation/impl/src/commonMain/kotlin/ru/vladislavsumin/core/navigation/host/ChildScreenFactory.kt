@@ -44,7 +44,8 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         // Нормальное создание или восстановление после смены конфигурации.
         childScreenContext.instanceKeeper.getOrCreate<TransferableScreenHolder<Ctx>>(screenParams) {
             val savedState = childScreenContext.stateKeeper.consume(
-                stateKey, SerializableContainer.serializer(),
+                stateKey,
+                SerializableContainer.serializer(),
             )
             val h = TransferableScreenHolder<Ctx>(key = screenParams, savedState = savedState)
             buildScreen(h, childScreenContext, configuration)

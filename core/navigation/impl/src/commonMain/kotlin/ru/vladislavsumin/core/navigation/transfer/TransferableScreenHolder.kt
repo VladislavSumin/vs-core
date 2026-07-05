@@ -42,9 +42,8 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     private val mirror = HolderLifecycleMirror()
     private var stateKey: String = ""
 
-    fun createContext(
-        factory: com.arkivanov.decompose.ComponentContextFactory<Ctx>,
-    ): Ctx = factory(lifecycle, stateKeeper, instanceKeeper, backHandler)
+    fun createContext(factory: com.arkivanov.decompose.ComponentContextFactory<Ctx>): Ctx =
+        factory(lifecycle, stateKeeper, instanceKeeper, backHandler)
 
     fun bindTo(host: Ctx, stateKey: String) {
         this.stateKey = stateKey
@@ -106,6 +105,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         override fun onResume() = lifecycle.resume()
         override fun onPause() = lifecycle.pause()
         override fun onStop() = lifecycle.stop()
-        override fun onDestroy() {}
+        override fun onDestroy() { /* empty */ }
     }
 }

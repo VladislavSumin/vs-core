@@ -30,37 +30,14 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         // строим свежий экран на новом контексте — так window-зависимости инжектятся заново,
         // а viewModel выживает через общий instanceKeeper.
         val saved = configuration.savedInstance as TransferableScreenHolder<Ctx>
-        val savedState = saved.stateKeeper.save()
-        val savedSaveable = saved.saveableStateRegistry.captureRaw()
         val newHolder = TransferableScreenHolder<Ctx>(
             key = screenParams,
-            savedState = savedState,
+            savedState = saved.stateKeeper.save(),
             instanceKeeper = saved.instanceKeeper,
-            restoredSaveable = savedSaveable,
+            restoredSaveable = saved.saveableStateRegistry.captureRaw(),
         )
-        val holderContext = newHolder.createContext(childScreenContext.componentContextFactory)
-        val childNavigator = internalNavigator.createChildNavigator(
-            childScreenParams = screenParams,
-            childContext = holderContext,
-        )
-        childNavigator.holder = newHolder
-        newHolder.navigator = childNavigator
-
-        val screenFactory = internalNavigator.getChildScreenFactory(screenParams.asKey())
-        val screen = try {
-            ScreenNavigatorHolder = childNavigator
-            screenFactory.create(
-                context = holderContext,
-                params = screenParams as IntentScreenParams<ScreenIntent>,
-                intents = configuration.intentReceiveChannel,
-            )
-        } finally {
-            ScreenNavigatorHolder = null
-        }
-        childNavigator.screen = screen
-        newHolder.screen = screen
+        buildScreen(newHolder, childScreenContext, configuration)
         newHolder.bindTo(childScreenContext, stateKey)
-
         saved.destroyWithoutInstanceKeeper()
         newHolder
     } else {
@@ -70,27 +47,7 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
                 stateKey, SerializableContainer.serializer(),
             )
             val h = TransferableScreenHolder<Ctx>(key = screenParams, savedState = savedState)
-            val holderContext = h.createContext(childScreenContext.componentContextFactory)
-            val childNavigator = internalNavigator.createChildNavigator(
-                childScreenParams = screenParams,
-                childContext = holderContext,
-            )
-            childNavigator.holder = h
-            h.navigator = childNavigator
-
-            val screenFactory = internalNavigator.getChildScreenFactory(screenParams.asKey())
-            val screen = try {
-                ScreenNavigatorHolder = childNavigator
-                screenFactory.create(
-                    context = holderContext,
-                    params = screenParams as IntentScreenParams<ScreenIntent>,
-                    intents = configuration.intentReceiveChannel,
-                )
-            } finally {
-                ScreenNavigatorHolder = null
-            }
-            childNavigator.screen = screen
-            h.screen = screen
+            buildScreen(h, childScreenContext, configuration)
             h
         }.also { h ->
             h.bindTo(childScreenContext, stateKey)
@@ -98,6 +55,32 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
     }
 
     return holder.screen
+}
+
+private fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.buildScreen(
+    holder: TransferableScreenHolder<Ctx>,
+    childScreenContext: Ctx,
+    configuration: ConfigurationHolder,
+) {
+    val screenParams = configuration.screenParams
+    val holderContext = holder.createContext(childScreenContext.componentContextFactory)
+    val childNavigator = internalNavigator.createChildNavigator(screenParams, holderContext)
+    childNavigator.holder = holder
+    holder.navigator = childNavigator
+
+    val screenFactory = internalNavigator.getChildScreenFactory(screenParams.asKey())
+    val screen = try {
+        ScreenNavigatorHolder = childNavigator
+        screenFactory.create(
+            context = holderContext,
+            params = screenParams as IntentScreenParams<ScreenIntent>,
+            intents = configuration.intentReceiveChannel,
+        )
+    } finally {
+        ScreenNavigatorHolder = null
+    }
+    childNavigator.screen = screen
+    holder.screen = screen
 }
 
 private const val STATE_KEY = "saved_screen_holder"

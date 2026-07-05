@@ -213,4 +213,94 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         assertEquals(listOf(LeafParams(0)), root.pages.value.paramsList)
         assertFalse(leaf1.vm.isActive)
     }
+
+    @Test
+    fun reorderMovesItemForward() = runTest {
+        setMain()
+        val root = mountPages()
+        root.open(LeafParams(1))
+        root.open(LeafParams(2))
+        root.open(LeafParams(3))
+
+        root.pagesController.reorder(fromIndex = 1, toIndex = 3)
+
+        assertEquals(listOf(LeafParams(0), LeafParams(2), LeafParams(3), LeafParams(1)), root.pages.value.paramsList)
+    }
+
+    @Test
+    fun reorderMovesItemBackward() = runTest {
+        setMain()
+        val root = mountPages()
+        root.open(LeafParams(1))
+        root.open(LeafParams(2))
+        root.open(LeafParams(3))
+
+        root.pagesController.reorder(fromIndex = 3, toIndex = 0)
+
+        assertEquals(listOf(LeafParams(3), LeafParams(0), LeafParams(1), LeafParams(2)), root.pages.value.paramsList)
+    }
+
+    @Test
+    fun reorderFollowsSelectedTab() = runTest {
+        setMain()
+        val root = mountPages()
+        root.open(LeafParams(1))
+        root.open(LeafParams(2))
+        root.open(LeafParams(3)) // selected = 3
+
+        root.pagesController.reorder(fromIndex = 3, toIndex = 0)
+
+        assertEquals(0, root.pages.value.selectedIndex)
+        assertEquals(LeafParams(3), root.pages.value.paramsList[0])
+    }
+
+    @Test
+    fun reorderUpdatesSelectedIndexWhenMovingItemAcross() = runTest {
+        setMain()
+        val root = mountPages(
+            initial = listOf(LeafParams(0), LeafParams(1), LeafParams(2), LeafParams(3)),
+            selectedIndex = 1,
+        )
+
+        root.pagesController.reorder(fromIndex = 3, toIndex = 0)
+
+        assertEquals(2, root.pages.value.selectedIndex)
+        assertEquals(LeafParams(1), root.pages.value.paramsList[2])
+    }
+
+    @Test
+    fun reorderSameIndexIsNoOp() = runTest {
+        setMain()
+        val root = mountPages()
+        root.open(LeafParams(1))
+
+        root.pagesController.reorder(fromIndex = 0, toIndex = 0)
+
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        assertEquals(1, root.pages.value.selectedIndex)
+    }
+
+    @Test
+    fun reorderOutOfBoundsIsNoOp() = runTest {
+        setMain()
+        val root = mountPages()
+        root.open(LeafParams(1))
+
+        root.pagesController.reorder(fromIndex = 0, toIndex = 99)
+
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        assertEquals(1, root.pages.value.selectedIndex)
+    }
+
+    @Test
+    fun reorderNegativeIndexIsNoOp() = runTest {
+        setMain()
+        val root = mountPages()
+        root.open(LeafParams(1))
+
+        root.pagesController.reorder(fromIndex = -1, toIndex = 1)
+
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        assertEquals(1, root.pages.value.selectedIndex)
+    }
 }

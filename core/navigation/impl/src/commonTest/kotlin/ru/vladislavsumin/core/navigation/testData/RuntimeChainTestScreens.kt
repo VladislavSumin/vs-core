@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.children.ChildNavState
-import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
@@ -79,7 +78,7 @@ class PagesMiddleScreen(
         }
     }
 
-    val pages: Value<ChildPages<ConfigurationHolder, Screen>> = childNavigationPages(
+    private val pagesResult = childNavigationPages(
         navigationHost = NavigationHostB,
         pageStatus = { index, pagesState ->
             if (index == pagesState.selectedIndex) ChildNavState.Status.RESUMED else ChildNavState.Status.CREATED
@@ -87,6 +86,7 @@ class PagesMiddleScreen(
         initialPages = { initialPages },
         defaultPages = defaultPages,
     )
+    val pages = pagesResult.pages
 
     @Composable
     override fun Render(modifier: Modifier) = Unit
@@ -108,13 +108,14 @@ class ChainRootScreen(
         }
     }
 
-    val pages: Value<ChildPages<ConfigurationHolder, Screen>> = childNavigationPages(
+    private val pagesResult = childNavigationPages(
         navigationHost = NavigationHostA,
         pageStatus = { index, pagesState ->
             if (index == pagesState.selectedIndex) ChildNavState.Status.RESUMED else ChildNavState.Status.CREATED
         },
         initialPages = { Pages(items = listOf(StackMiddleParams(0)), selectedIndex = 0) },
     )
+    val pages = pagesResult.pages
 
     fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
         navigator.open(screenParams, hints = hints)

@@ -48,7 +48,7 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
     extraLifecycle: Lifecycle? = null,
     handleBackButton: Boolean = false,
     allowStateSave: Boolean = true,
-): Value<ChildPages<ConfigurationHolder, GenericScreen<Ctx>>> {
+): PagesNavigationResult<ConfigurationHolder, GenericScreen<Ctx>> {
     val source = PagesNavigation<ConfigurationHolder>()
 
     val hostNavigator = PagesHostNavigator(source) {
@@ -102,8 +102,17 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         handleBackButton = handleBackButton,
         childFactory = ::childScreenFactory,
     )
-    return pages
+    return PagesNavigationResult(pages, hostNavigator)
 }
+
+public interface PagesNavigationController {
+    public fun reorder(fromIndex: Int, toIndex: Int)
+}
+
+public data class PagesNavigationResult<Cfg : Any, Screen : Any>(
+    val pages: Value<ChildPages<Cfg, Screen>>,
+    val controller: PagesNavigationController,
+)
 
 @Suppress("EmptyFunctionBlock")
 private class PagesHostNavigator(
@@ -113,7 +122,8 @@ private class PagesHostNavigator(
      * @return `true` если родительский экран будет закрыт (в этом случае страницы не нужно опустошать самостоятельно).
      */
     private val closeParentIfEmpty: () -> Boolean,
-) : HostNavigator {
+) : HostNavigator,
+    PagesNavigationController {
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
@@ -225,6 +235,29 @@ private class PagesHostNavigator(
             }
         }
         return pages.copy(items = newItems, selectedIndex = newIndex)
+    }
+
+    override fun reorder(fromIndex: Int, toIndex: Int) {
+        pagesNavigation.navigate(
+            transformer = { pages ->
+                if (fromIndex == toIndex || fromIndex !in pages.items.indices || toIndex !in pages.items.indices) {
+                    return@navigate pages
+                }
+                val newItems = pages.items.toMutableList()
+                val moved = newItems.removeAt(fromIndex)
+                newItems.add(toIndex, moved)
+
+                val sel = pages.selectedIndex
+                val newSel = when {
+                    sel == fromIndex -> toIndex
+                    sel > fromIndex && sel <= toIndex -> sel - 1
+                    sel < fromIndex && sel >= toIndex -> sel + 1
+                    else -> sel
+                }
+                pages.copy(items = newItems, selectedIndex = newSel.coerceIn(newItems.indices))
+            },
+            onComplete = { _, _ -> },
+        )
     }
 }
 

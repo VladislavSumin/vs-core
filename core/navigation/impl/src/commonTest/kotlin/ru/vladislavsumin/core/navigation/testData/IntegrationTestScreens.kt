@@ -159,7 +159,7 @@ class PagesRootScreen(
         }
     }
 
-    val pages: Value<ChildPages<ConfigurationHolder, Screen>> = childNavigationPages(
+    private val pagesResult = childNavigationPages(
         navigationHost = NavigationHostA,
         pageStatus = { index, pagesState ->
             when {
@@ -171,6 +171,8 @@ class PagesRootScreen(
         initialPages = { Pages(items = initial, selectedIndex = selectedIndex) },
         defaultPages = defaultPages,
     )
+    val pages = pagesResult.pages
+    val pagesController = pagesResult.controller
 
     fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
         navigator.open(screenParams, hints = hints)
@@ -278,13 +280,14 @@ class NestedRootScreen(context: ComponentContext) : Screen(context) {
         registerCustomFactory<MiddleParams, NoIntent, MiddleScreen> { ctx, params, _ -> MiddleScreen(params, ctx) }
     }
 
-    val pages: Value<ChildPages<ConfigurationHolder, Screen>> = childNavigationPages(
+    private val pagesResult = childNavigationPages(
         navigationHost = NavigationHostA,
         pageStatus = { index, pagesState ->
             if (index == pagesState.selectedIndex) ChildNavState.Status.RESUMED else ChildNavState.Status.CREATED
         },
         initialPages = { Pages(items = listOf(MiddleParams(0)), selectedIndex = 0) },
     )
+    val pages = pagesResult.pages
 
     fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
         navigator.open(screenParams, hints = hints)
@@ -362,7 +365,7 @@ class InnerPagesScreen(context: ComponentContext, closeParentWhenEmpty: Boolean)
         registerCustomFactory<LeafParams, NoIntent, LeafScreen> { ctx, params, _ -> LeafScreen(params, ctx) }
     }
 
-    val pages: Value<ChildPages<ConfigurationHolder, Screen>> = childNavigationPages(
+    private val pagesResult = childNavigationPages(
         navigationHost = NavigationHostB,
         pageStatus = { index, pagesState ->
             if (index == pagesState.selectedIndex) ChildNavState.Status.RESUMED else ChildNavState.Status.CREATED
@@ -370,6 +373,7 @@ class InnerPagesScreen(context: ComponentContext, closeParentWhenEmpty: Boolean)
         initialPages = { Pages(items = listOf(LeafParams(0)), selectedIndex = 0) },
         closeParentWhenEmpty = closeParentWhenEmpty,
     )
+    val pages = pagesResult.pages
 
     fun open(screenParams: IntentScreenParams<*>) = navigator.open(screenParams)
 

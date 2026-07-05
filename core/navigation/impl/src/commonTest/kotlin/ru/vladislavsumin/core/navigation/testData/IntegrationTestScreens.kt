@@ -103,7 +103,7 @@ class LeafScreen(val params: LeafParams, context: ComponentContext) : Screen(con
 
     fun closeScreen(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
-    fun transferScreen(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+    fun transferScreen(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>>) {
         navigator.transfer(screenParams, hints = hints)
     }
 
@@ -170,7 +170,7 @@ class PagesRootScreen(
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
-    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>>) {
         navigator.transfer(screenParams, hints = hints)
     }
 
@@ -253,7 +253,7 @@ class MiddleScreen(val params: MiddleParams, context: ComponentContext) : Screen
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
-    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>>) {
         navigator.transfer(screenParams, hints = hints)
     }
 
@@ -280,7 +280,7 @@ class NestedRootScreen(context: ComponentContext) : Screen(context) {
 
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
-    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+    fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>>) {
         navigator.transfer(screenParams, hints = hints)
     }
 

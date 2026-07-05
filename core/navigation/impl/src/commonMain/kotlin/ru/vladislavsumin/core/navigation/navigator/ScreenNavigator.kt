@@ -44,6 +44,6 @@ public interface ScreenNavigator {
      */
     public fun <S : IntentScreenParams<I>, I : ScreenIntent> transfer(
         screenParams: S,
-        hints: List<IntentScreenParams<*>> = emptyList(),
+        hints: List<IntentScreenParams<*>>,
     )
 }

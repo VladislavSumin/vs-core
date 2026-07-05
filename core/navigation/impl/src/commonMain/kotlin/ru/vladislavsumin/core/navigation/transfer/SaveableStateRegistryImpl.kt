@@ -9,8 +9,8 @@ import androidx.compose.runtime.saveable.SaveableStateRegistry
  *    напрямую между holder'ами. Любые типы (Parcelable, объекты).
  * 2. **Process death (Android)** — после вызова [attachPlatform] делегирует
  *    [performSave] / [consumeRestored] платформенному registry (Bundle/Parcelable).
- * 3. **Process death (Desktop)** — без платформы сохраняет только сериализуемые типы
- *    через [stateKeeper] (Json).
+ * 3. **Process death (Desktop)** — без платформы [performSave] возвращает пустую карту,
+ *    Compose-состояние при смерти процесса не сохраняется.
  */
 internal class SaveableStateRegistryImpl(
     restoredValues: Map<String, List<Any?>>,

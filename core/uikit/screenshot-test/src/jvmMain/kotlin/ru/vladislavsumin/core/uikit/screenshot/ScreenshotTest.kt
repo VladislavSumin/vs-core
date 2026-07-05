@@ -92,7 +92,8 @@ public fun screenshotTest(
     // Рендерим (и грузим нативный skiko) только когда активна одна из roborazzi задач record/compare/verify.
     if (!roborazziSystemPropertyTaskType().isEnabled()) return
 
-    runDesktopComposeUiTest {
+    @Suppress("MagicNumber")
+    runDesktopComposeUiTest(2560, 1440) {
         setContent {
             Box(
                 modifier = Modifier

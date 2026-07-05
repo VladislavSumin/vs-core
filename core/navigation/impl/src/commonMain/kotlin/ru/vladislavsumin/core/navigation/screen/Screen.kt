@@ -2,6 +2,10 @@ package ru.vladislavsumin.core.navigation.screen
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.GenericComponentContext
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
+import androidx.compose.runtime.saveable.SaveableStateRegistry
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.components.GenericComponent
 import ru.vladislavsumin.core.decompose.components.ViewModel
@@ -10,6 +14,7 @@ import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigator
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl
+import ru.vladislavsumin.core.navigation.transfer.SaveableStateRegistryImpl
 import ru.vladislavsumin.core.navigation.viewModel.IsNavigationViewModelConstructing
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
@@ -36,6 +41,32 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
      * экрана.
      */
     protected val navigator: ScreenNavigator get() = internalNavigator
+
+    /**
+     * Предоставляет доступ к [SaveableStateRegistry] для сохранения/восстановления
+     * Compose-состояния экрана (rememberSaveable) между переносами и при смерти процесса.
+     */
+    protected val saveableStateRegistry: SaveableStateRegistry?
+        get() = internalNavigator.holder?.saveableStateRegistry
+
+    /**
+     * Оборачивает [content] в [LocalSaveableStateRegistry], прикрепляя платформенный
+     * registry для делегирования process death (Android: Bundle/Parcelable).
+     *
+     * Если у экрана нет [saveableStateRegistry], просто вызывает [content].
+     */
+    @Composable
+    protected fun SaveableRegistryProvider(content: @Composable () -> Unit) {
+        val registry = saveableStateRegistry
+        if (registry != null && registry is SaveableStateRegistryImpl) {
+            registry.attachPlatform(LocalSaveableStateRegistry.current)
+            CompositionLocalProvider(LocalSaveableStateRegistry provides registry) {
+                content()
+            }
+        } else {
+            content()
+        }
+    }
 
     internal val internalContext: Ctx get() = context
 

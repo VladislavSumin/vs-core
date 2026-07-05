@@ -31,10 +31,12 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         // а viewModel выживает через общий instanceKeeper.
         val saved = configuration.savedInstance as TransferableScreenHolder<Ctx>
         val savedState = saved.stateKeeper.save()
+        val savedSaveable = saved.saveableStateRegistry.captureRaw()
         val newHolder = TransferableScreenHolder<Ctx>(
             key = screenParams,
             savedState = savedState,
             instanceKeeper = saved.instanceKeeper,
+            restoredSaveable = savedSaveable,
         )
         val holderContext = newHolder.createContext(childScreenContext.componentContextFactory)
         val childNavigator = internalNavigator.createChildNavigator(

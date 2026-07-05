@@ -22,12 +22,16 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     val key: Any,
     savedState: SerializableContainer? = null,
     instanceKeeper: InstanceKeeperDispatcher? = null,
+    restoredSaveable: Map<String, List<Any?>>? = null,
 ) : InstanceKeeper.Instance {
 
     val lifecycle: LifecycleRegistry = LifecycleRegistry()
     val instanceKeeper: InstanceKeeperDispatcher = instanceKeeper ?: InstanceKeeperDispatcher()
     val stateKeeper: StateKeeperDispatcher = StateKeeperDispatcher(savedState)
     val backHandler: BackDispatcher = BackDispatcher()
+
+    val saveableStateRegistry: SaveableStateRegistryImpl =
+        SaveableStateRegistryImpl(restoredSaveable ?: emptyMap())
 
     lateinit var screen: GenericScreen<Ctx>
     lateinit var navigator: ScreenNavigatorImpl<Ctx>
@@ -42,10 +46,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         factory: com.arkivanov.decompose.ComponentContextFactory<Ctx>,
     ): Ctx = factory(lifecycle, stateKeeper, instanceKeeper, backHandler)
 
-    /**
-     * Привязывает holder к mount-контексту: регистрирует stateKeeper и подписывается на lifecycle.
-     * Владелец (caller) сам помещает holder в host.instanceKeeper через getOrCreate / put.
-     */
     fun bindTo(host: Ctx, stateKey: String) {
         this.stateKey = stateKey
         boundHostInstanceKeeper = host.instanceKeeper
@@ -63,9 +63,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         host.lifecycle.subscribe(mirror)
     }
 
-    /**
-     * Отвязывает holder от текущего mount'а без уничтожения (для переноса).
-     */
     fun unbind() {
         val hostInstanceKeeper = boundHostInstanceKeeper
         val hostStateKeeper = boundHostStateKeeper
@@ -101,7 +98,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
             navigator.detachFromParent()
         }
         lifecycle.destroy()
-        // instanceKeeper НЕ уничтожаем — он передан в новый holder
     }
 
     private inner class HolderLifecycleMirror : Lifecycle.Callbacks {
@@ -110,9 +106,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         override fun onResume() = lifecycle.resume()
         override fun onPause() = lifecycle.pause()
         override fun onStop() = lifecycle.stop()
-        override fun onDestroy() {
-            // onDestroy from mount means removal or config change — not full teardown.
-            // Full teardown is driven by TransferableScreenHolder.onDestroy().
-        }
+        override fun onDestroy() {}
     }
 }

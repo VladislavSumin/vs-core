@@ -75,7 +75,11 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
                     stack[index].sendIntent(params.intent)
                     stack.subList(0, index + 1)
                 } else {
-                    stack + ConfigurationHolder(params.screenParams, params.intent)
+                    stack + ConfigurationHolder(
+                        params.screenParams,
+                        params.intent,
+                        savedInstance = params.savedInstance,
+                    )
                 }
             } ?: initialStack().map { ConfigurationHolder(it) }
 

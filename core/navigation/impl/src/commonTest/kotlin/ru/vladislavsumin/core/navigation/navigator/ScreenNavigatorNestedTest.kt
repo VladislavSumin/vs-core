@@ -80,8 +80,9 @@ class ScreenNavigatorNestedTest : NavigationIntegrationTestBase() {
         assertEquals(listOf(MiddleParams(0), MiddleParams(1)), root.pages.value.paramsList)
         // Middle(0) не тронут.
         assertEquals(listOf(LeafParams(0)), root.middle(0).stack.value.paramsList)
-        // В Middle(1) поверх стартового стека открылся Leaf(9).
-        assertEquals(listOf(LeafParams(0), LeafParams(9)), root.middle(1).stack.value.paramsList)
+        // Middle(1) — промежуточный экран цепочки, поэтому использует default-лямбду (у Middle он пустой),
+        // а не initial-лямбду ([Leaf(0)]). Итог симметричен deep-link на старте (nestedInitialPathOpensDeepChain).
+        assertEquals(listOf(LeafParams(9)), root.middle(1).stack.value.paramsList)
     }
 
     @Test

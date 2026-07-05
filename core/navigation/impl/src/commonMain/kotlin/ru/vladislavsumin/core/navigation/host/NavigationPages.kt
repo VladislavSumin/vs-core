@@ -75,8 +75,14 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
             val initial = internalNavigator.getInitialParamsFor(navigationHost)
             if (initial != null) {
                 val pages = defaultPages(initial.screenParams)
-                val holders = pages.items.map { ConfigurationHolder(it) }
-                holders.firstOrNull { it.screenParams == initial.screenParams }?.sendIntent(initial.intent)
+                val targetIndex = pages.items.indexOfFirst { it == initial.screenParams }
+                val holders = pages.items.mapIndexed { index, item ->
+                    if (index == targetIndex) {
+                        ConfigurationHolder(item, initial.intent, savedInstance = initial.savedInstance)
+                    } else {
+                        ConfigurationHolder(item)
+                    }
+                }
                 Pages(holders, pages.selectedIndex)
             } else {
                 val initial = initialPages()

@@ -148,12 +148,12 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             null
         }
         return screenParams?.let {
-            val intent = if (ip.screenPath.size == 1) {
-                ip.intent
-            } else {
-                null
-            }
-            ScreenParamsWithIntent(it, intent)
+            val isTarget = ip.screenPath.size == 1
+            ScreenParamsWithIntent(
+                screenParams = it,
+                intent = if (isTarget) ip.intent else null,
+                savedInstance = if (isTarget) ip.savedInstance else null,
+            )
         }
     }
 
@@ -199,18 +199,30 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             "ScreenNavigator(screenParams=$screenParams).openInsideThisScreen(screenPath=$screenPath)"
         }
 
+        val firstScreen = screenPath.first()
+        val childPath = ScreenPath(screenPath.drop(1))
+
+        // Если открываемый экран промежуточный (за ним в цепочке есть ещё экраны) и его ещё нет, то создаём его
+        // через initialPath-механизм. Тогда его хосты используют default-лямбду (как при deep-link на старте),
+        // а не initial-лямбду, и оставшаяся цепочка развернётся сама. Перенос инстанса (savedInstance) при этом
+        // доедет до целевого экрана через initialPath.
+        if (childPath.isNotEmpty() && findChildNavigator(firstScreen) == null) {
+            initialPath = ScreenPathWithIntent(screenPath, intent, savedInstance)
+            openInsideThisScreen(screen = firstScreen, intent = null, savedInstance = null)
+            return
+        }
+
         // Открываем первый требуемый экран внутри текущего.
         openInsideThisScreen(
-            screen = screenPath.first(),
+            screen = firstScreen,
             intent = intent?.takeIf { screenPath.size == 1 },
             savedInstance = savedInstance?.takeIf { screenPath.size == 1 },
         )
 
         // Если требуется открыть более одного экрана за раз, то передаем управление дальше, навигатору экрана
         // который только что открыли шагом выше.
-        val childPath = ScreenPath(screenPath.drop(1))
         if (childPath.isNotEmpty()) {
-            val childNavigator = findChildNavigator(childElement = screenPath.first())
+            val childNavigator = findChildNavigator(childElement = firstScreen)
             childNavigator!!.openChain(screenPath = childPath, intent = intent, savedInstance = savedInstance)
         }
     }
@@ -306,10 +318,11 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         val childInitialPath: ScreenPathWithIntent? = initialPath?.let { ip ->
             if (ip.screenPath.first().asScreenKey() == screenKey) {
                 val intent = ip.intent
+                val savedInstance = ip.savedInstance
                 initialPath = null
                 val tail = ip.screenPath.drop(1)
                 if (tail.isNotEmpty()) {
-                    ScreenPathWithIntent(ScreenPath(tail), intent)
+                    ScreenPathWithIntent(ScreenPath(tail), intent, savedInstance)
                 } else {
                     null
                 }

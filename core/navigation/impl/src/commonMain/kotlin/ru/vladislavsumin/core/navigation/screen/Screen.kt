@@ -46,7 +46,7 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
      * Предоставляет доступ к [SaveableStateRegistry] для сохранения/восстановления
      * Compose-состояния экрана (rememberSaveable) между переносами и при смерти процесса.
      */
-    protected val saveableStateRegistry: SaveableStateRegistry?
+    private val saveableStateRegistry: SaveableStateRegistry?
         get() = internalNavigator.holder?.saveableStateRegistry
 
     /**

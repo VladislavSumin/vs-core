@@ -7,9 +7,11 @@ import ru.vladislavsumin.core.logger.common.LogLevel
 import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.ExternalLoggerFactory
 
-internal actual fun createPlatformLoggerFactory(): ExternalLoggerFactory = ExternalLoggerFactory { tag ->
-    val log4jLogger = LogManager.getLogger(tag)
-    Log4jExternalLogger(log4jLogger)
+internal actual fun createPlatformLoggerFactory(): ExternalLoggerFactory = object : ExternalLoggerFactory {
+    override fun create(tag: String): ExternalLogger = Log4jExternalLogger(LogManager.getLogger(tag))
+    override fun shutdown() {
+        LogManager.shutdown()
+    }
 }
 
 private class Log4jExternalLogger(private val logger: Logger) : ExternalLogger {

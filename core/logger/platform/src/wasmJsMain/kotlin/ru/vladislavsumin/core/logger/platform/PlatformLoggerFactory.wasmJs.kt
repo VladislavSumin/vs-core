@@ -4,9 +4,11 @@ import ru.vladislavsumin.core.logger.common.LogLevel
 import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.ExternalLoggerFactory
 
-internal actual fun createPlatformLoggerFactory(): ExternalLoggerFactory = ExternalLoggerFactory { tag ->
-    MacOsExternalLogger(tag)
-}
+@Suppress("UNUSED_PARAMETER")
+internal actual fun createPlatformLoggerFactory(logPath: LogPath): ExternalLoggerFactory =
+    ExternalLoggerFactory { tag, ->
+        MacOsExternalLogger(tag)
+    }
 
 // TODO написать нормальные wasm логи
 private class MacOsExternalLogger(private val tag: String) : ExternalLogger {

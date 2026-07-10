@@ -7,7 +7,6 @@ import ru.vladislavsumin.core.logger.internal.LoggerFactory
  * Класс для настройки логера
  */
 public object LoggerManager {
-    private var isInitialized = false
     private var factory: ExternalLoggerFactory? = null
 
     /**
@@ -16,8 +15,7 @@ public object LoggerManager {
      * фильтрацию.
      */
     public fun init(externalLoggerFactory: ExternalLoggerFactory, rootLogLevel: LogLevel = LogLevel.TRACE) {
-        check(!isInitialized) { "Logger already initialized" }
-        isInitialized = true
+        check(factory == null) { "Logger already initialized" }
         factory = externalLoggerFactory
         LoggerFactory = { tag, logLevel ->
             LoggerImpl(

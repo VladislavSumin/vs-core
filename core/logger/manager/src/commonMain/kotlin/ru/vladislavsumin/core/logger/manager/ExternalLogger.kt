@@ -12,4 +12,5 @@ public interface ExternalLogger {
 
 public fun interface ExternalLoggerFactory {
     public fun create(tag: String): ExternalLogger
+    public fun shutdown() {}
 }

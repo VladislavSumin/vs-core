@@ -6,8 +6,8 @@ import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.ExternalLoggerFactory
 
 @Suppress("UNUSED_PARAMETER")
-internal actual fun createPlatformLoggerFactory(logPath: LogPath): ExternalLoggerFactory =
-    ExternalLoggerFactory { tag, ->
+internal actual fun createPlatformLoggerFactory(logPath: LogPath, stdout: Boolean): ExternalLoggerFactory =
+    ExternalLoggerFactory { tag ->
         LogcatExternalLogger(tag)
     }
 

@@ -5,19 +5,19 @@ import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.ExternalLoggerFactory
 
 @Suppress("UNUSED_PARAMETER")
-internal actual fun createPlatformLoggerFactory(logPath: LogPath): ExternalLoggerFactory =
-    ExternalLoggerFactory { tag, ->
-        MacOsExternalLogger(tag)
+internal actual fun createPlatformLoggerFactory(logPath: LogPath, stdout: Boolean): ExternalLoggerFactory =
+    ExternalLoggerFactory { tag ->
+        WasmJsExternalLogger(tag, stdout)
     }
 
 // TODO написать нормальные wasm логи
-private class MacOsExternalLogger(private val tag: String) : ExternalLogger {
+private class WasmJsExternalLogger(private val tag: String, private val stdout: Boolean) : ExternalLogger {
     override fun log(level: LogLevel, msg: String) {
-        println("[$level] ($tag) $msg")
+        if (stdout) println("[$level] ($tag) $msg")
     }
 
     override fun log(level: LogLevel, throwable: Throwable, msg: String) {
-        println("[$level] ($tag) $msg")
-        throwable.printStackTrace()
+        log(level, msg)
+        if (stdout) throwable.printStackTrace()
     }
 }

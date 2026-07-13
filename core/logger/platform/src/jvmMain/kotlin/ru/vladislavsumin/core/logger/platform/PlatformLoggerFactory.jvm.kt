@@ -10,7 +10,7 @@ import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.ExternalLoggerFactory
 import java.io.File
 
-internal actual fun createPlatformLoggerFactory(logPath: LogPath): ExternalLoggerFactory {
+internal actual fun createPlatformLoggerFactory(logPath: LogPath, stdout: Boolean): ExternalLoggerFactory {
     val logDir = when (logPath) {
         LogPath.WorkDir -> File(System.getProperty("user.dir"), "logs")
         is LogPath.UserHome -> File(System.getProperty("user.home"), "${logPath.appName}/logs")
@@ -26,11 +26,16 @@ internal actual fun createPlatformLoggerFactory(logPath: LogPath): ExternalLogge
     val layout = builder.newLayout("PatternLayout")
         .addAttribute("pattern", "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n")
 
-    builder.add(
-        builder.newAppender("Console", "CONSOLE")
-            .addAttribute("target", "SYSTEM_OUT")
-            .add(layout),
-    )
+    val rootLogger = builder.newRootLogger(Level.DEBUG)
+
+    if (stdout) {
+        builder.add(
+            builder.newAppender("Console", "CONSOLE")
+                .addAttribute("target", "SYSTEM_OUT")
+                .add(layout),
+        )
+        rootLogger.add(builder.newAppenderRef("Console"))
+    }
 
     builder.add(
         builder.newAppender("File", "FILE")
@@ -43,11 +48,8 @@ internal actual fun createPlatformLoggerFactory(logPath: LogPath): ExternalLogge
             .addComponent(builder.newAppenderRef("File")),
     )
 
-    builder.add(
-        builder.newRootLogger(Level.DEBUG)
-            .add(builder.newAppenderRef("Console"))
-            .add(builder.newAppenderRef("AsyncFile")),
-    )
+    rootLogger.add(builder.newAppenderRef("AsyncFile"))
+    builder.add(rootLogger)
 
     Configurator.initialize(builder.build())
 

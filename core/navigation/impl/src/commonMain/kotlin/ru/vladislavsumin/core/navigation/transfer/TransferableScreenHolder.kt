@@ -67,15 +67,11 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         val hostStateKeeper = boundHostStateKeeper
         val hostLifecycle = boundHostLifecycle
 
-        if (hostLifecycle != null) {
-            hostLifecycle.unsubscribe(mirror)
-        }
+        hostLifecycle?.unsubscribe(mirror)
         if (hostStateKeeper != null && stateKey.isNotEmpty()) {
             hostStateKeeper.unregister(stateKey)
         }
-        if (hostInstanceKeeper != null) {
-            hostInstanceKeeper.remove(key)
-        }
+        hostInstanceKeeper?.remove(key)
 
         lifecycle.stop()
 

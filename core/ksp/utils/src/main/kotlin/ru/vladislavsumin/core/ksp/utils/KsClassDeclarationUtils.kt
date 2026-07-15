@@ -12,17 +12,15 @@ import com.squareup.kotlinpoet.ksp.toTypeName
  * с его параметрами
  */
 public fun KSClassDeclaration.findParametrizedSuperTypeOrNull(className: ClassName): ParameterizedTypeName? =
-    getAllSuperTypes()
-        .mapNotNull { type ->
+    getAllSuperTypes().firstNotNullOfOrNull { type ->
 
-            // Пробуем зарезолвить класс
-            var parametrized: ParameterizedTypeName? = type.toTypeNameOrNull() as? ParameterizedTypeName
+        // Пробуем зарезолвить класс
+        var parametrized: ParameterizedTypeName? = type.toTypeNameOrNull() as? ParameterizedTypeName
 
-            // Пробуем зарезолвить TypeAlias
-            if (parametrized == null) {
-                parametrized = ((type.declaration as? KSTypeAlias)?.type?.toTypeName() as? ParameterizedTypeName)
-            }
-
-            if (parametrized?.rawType == className) parametrized else null
+        // Пробуем зарезолвить TypeAlias
+        if (parametrized == null) {
+            parametrized = ((type.declaration as? KSTypeAlias)?.type?.toTypeName() as? ParameterizedTypeName)
         }
-        .firstOrNull()
+
+        if (parametrized?.rawType == className) parametrized else null
+    }

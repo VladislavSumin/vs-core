@@ -247,11 +247,10 @@ private class PagesHostNavigator(
                 val moved = newItems.removeAt(fromIndex)
                 newItems.add(toIndex, moved)
 
-                val sel = pages.selectedIndex
-                val newSel = when {
-                    sel == fromIndex -> toIndex
-                    sel > fromIndex && sel <= toIndex -> sel - 1
-                    sel < fromIndex && sel >= toIndex -> sel + 1
+                val newSel = when (val sel = pages.selectedIndex) {
+                    fromIndex -> toIndex
+                    in (fromIndex + 1)..toIndex -> sel - 1
+                    in toIndex..<fromIndex -> sel + 1
                     else -> sel
                 }
                 pages.copy(items = newItems, selectedIndex = newSel.coerceIn(newItems.indices))

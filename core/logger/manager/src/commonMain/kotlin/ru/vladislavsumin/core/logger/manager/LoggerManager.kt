@@ -7,7 +7,8 @@ import ru.vladislavsumin.core.logger.internal.LoggerFactory
  * Класс для настройки логера
  */
 public object LoggerManager {
-    private var factory: ExternalLoggerFactory? = null
+    internal var factory: ExternalLoggerFactory? = null
+        private set
 
     /**
      * Инициализирует логер.

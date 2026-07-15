@@ -19,3 +19,7 @@ public final class ru/vladislavsumin/core/logger/manager/LoggerManager {
 	public final fun shutdown ()V
 }
 
+public final class ru/vladislavsumin/core/logger/manager/TestLoggersKt {
+	public static final fun initTest (Lru/vladislavsumin/core/logger/manager/LoggerManager;)V
+}
+

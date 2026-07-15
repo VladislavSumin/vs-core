@@ -8,5 +8,9 @@ kotlin {
         commonMain.dependencies {
             api(vsCoreLibs.kotlin.coroutines.core)
         }
+
+        commonTest.dependencies {
+            implementation(projects.core.coroutines.test)
+        }
     }
 }

@@ -9,12 +9,13 @@ import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.decompose.test.TestComponentContext
+import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.core.logger.manager.initTest
 import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.host.childNavigationRoot
 import ru.vladislavsumin.core.navigation.testData.CountingViewModel
 import ru.vladislavsumin.core.navigation.testData.LeafParams
 import ru.vladislavsumin.core.navigation.testData.PagesRootScreen
-import ru.vladislavsumin.core.navigation.testData.initTestLogger
 import ru.vladislavsumin.core.navigation.testData.leaf
 import ru.vladislavsumin.core.navigation.testData.pagesNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
@@ -38,7 +39,7 @@ class NavigationRetentionTest {
     private var context = TestComponentContext()
 
     init {
-        initTestLogger()
+        LoggerManager.initTest()
         CountingViewModel.nextId = 0
     }
 

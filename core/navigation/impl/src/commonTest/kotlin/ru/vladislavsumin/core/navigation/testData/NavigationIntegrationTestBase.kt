@@ -5,6 +5,8 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.errorhandler.onDecomposeError
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.arkivanov.essenty.lifecycle.resume
+import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.core.logger.manager.initTest
 import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.host.childNavigationRoot
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
@@ -24,7 +26,7 @@ abstract class NavigationIntegrationTestBase {
     val context: DefaultComponentContext = DefaultComponentContext(lifecycle)
 
     init {
-        initTestLogger()
+        LoggerManager.initTest()
         CountingViewModel.nextId = 0
     }
 

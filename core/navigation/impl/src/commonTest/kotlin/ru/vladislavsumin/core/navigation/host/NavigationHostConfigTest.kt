@@ -13,6 +13,8 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.decompose.test.TestComponentContext
+import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.core.logger.manager.initTest
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NoIntent
@@ -23,7 +25,6 @@ import ru.vladislavsumin.core.navigation.testData.LeafParams
 import ru.vladislavsumin.core.navigation.testData.LeafScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationHostA
 import ru.vladislavsumin.core.navigation.testData.StackRootParams
-import ru.vladislavsumin.core.navigation.testData.initTestLogger
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -36,7 +37,7 @@ class NavigationHostConfigTest {
     @Test
     fun allowStateSaveFalseDiscardsSavedState() = runTest {
         setMain()
-        initTestLogger()
+        LoggerManager.initTest()
         val navigation = noStateSaveStackNav()
         val context = TestComponentContext()
 

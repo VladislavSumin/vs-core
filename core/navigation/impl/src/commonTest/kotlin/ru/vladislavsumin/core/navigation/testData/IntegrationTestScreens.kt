@@ -119,7 +119,7 @@ class LeafScreen(val params: LeafParams, context: ComponentContext) : Screen(con
     fun closeSelf() = navigator.close()
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 class IntentLeafScreen(
@@ -137,7 +137,7 @@ class IntentLeafScreen(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 /**
@@ -189,7 +189,7 @@ class PagesRootScreen(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 class StackRootScreen(
@@ -218,7 +218,7 @@ class StackRootScreen(
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 class SlotRootScreen(context: ComponentContext, initial: IntentScreenParams<*>?) : Screen(context) {
@@ -242,7 +242,7 @@ class SlotRootScreen(context: ComponentContext, initial: IntentScreenParams<*>?)
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 /**
@@ -272,7 +272,7 @@ class MiddleScreen(val params: MiddleParams, context: ComponentContext) : Screen
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 class NestedRootScreen(context: ComponentContext) : Screen(context) {
@@ -300,7 +300,7 @@ class NestedRootScreen(context: ComponentContext) : Screen(context) {
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 // endregion
@@ -328,7 +328,7 @@ class OuterSlotScreen(context: ComponentContext, initial: IntentScreenParams<*>)
     )
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 /**
@@ -352,7 +352,7 @@ class InnerStackScreen(context: ComponentContext, closeParentWhenEmpty: Boolean)
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 /**
@@ -380,7 +380,7 @@ class InnerPagesScreen(context: ComponentContext, closeParentWhenEmpty: Boolean)
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 // endregion

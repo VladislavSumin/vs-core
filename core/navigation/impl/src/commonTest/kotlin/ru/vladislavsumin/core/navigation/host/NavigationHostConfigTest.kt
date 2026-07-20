@@ -92,7 +92,7 @@ private class NoStateSaveStackScreen(context: ComponentContext) : Screen(context
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 @Suppress("UNCHECKED_CAST")

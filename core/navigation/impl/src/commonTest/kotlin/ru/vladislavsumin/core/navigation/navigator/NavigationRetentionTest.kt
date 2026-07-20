@@ -21,6 +21,7 @@ import ru.vladislavsumin.core.navigation.testData.pagesNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 
@@ -98,6 +99,48 @@ class NavigationRetentionTest {
         root = mount(pagesNavigation())
 
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        val vmAfter = root.pages.value.leaf(1).vm
+        assertNotSame(vmBefore, vmAfter)
+        assertEquals(555, vmAfter.value)
+    }
+
+    @Test
+    fun configurationChangeRecreatesHolderButRetainsViewModel() = runTest {
+        setMain()
+        var root = mount(pagesNavigation())
+        root.open(LeafParams(1))
+        val leafBefore = root.pages.value.leaf(1)
+        val holderBefore = leafBefore.internalNavigator.holder
+        val vmBefore = leafBefore.vm
+        vmBefore.update(777)
+
+        recreateForConfigurationChange()
+        root = mount(pagesNavigation())
+
+        val leafAfter = root.pages.value.leaf(1)
+        val holderAfter = leafAfter.internalNavigator.holder
+
+        assertNotSame(holderBefore, holderAfter)
+        assertSame(vmBefore, leafAfter.vm)
+        assertEquals(777, leafAfter.vm.value)
+    }
+
+    @Test
+    fun processDeathDestroysOldViewModelViaInstanceKeeperHolder() = runTest {
+        setMain()
+        var root = mount(pagesNavigation())
+        root.open(LeafParams(1))
+        val vmBefore = root.pages.value.leaf(1).vm
+        vmBefore.update(555)
+
+        recreateForProcessDeath()
+
+        assertFalse(
+            vmBefore.isActive,
+            "ViewModel should be destroyed after process death",
+        )
+
+        root = mount(pagesNavigation())
         val vmAfter = root.pages.value.leaf(1).vm
         assertNotSame(vmBefore, vmAfter)
         assertEquals(555, vmAfter.value)

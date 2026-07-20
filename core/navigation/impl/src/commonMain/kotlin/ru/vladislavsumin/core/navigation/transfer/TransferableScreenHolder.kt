@@ -20,19 +20,17 @@ import ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 
 internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
-    val key: Any,
     savedState: SerializableContainer? = null,
     instanceKeeper: InstanceKeeperDispatcher? = null,
     restoredSaveable: Map<String, List<Any?>>? = null,
 ) {
 
-    val lifecycle: LifecycleRegistry = LifecycleRegistry()
-    val instanceKeeper: InstanceKeeperDispatcher = instanceKeeper ?: InstanceKeeperDispatcher()
-    val stateKeeper: StateKeeperDispatcher = StateKeeperDispatcher(savedState)
-    val backHandler: BackDispatcher = BackDispatcher()
+    val lifecycle = LifecycleRegistry()
+    val instanceKeeper = instanceKeeper ?: InstanceKeeperDispatcher()
+    val stateKeeper = StateKeeperDispatcher(savedState)
+    val backHandler = BackDispatcher()
 
-    val saveableStateRegistry: SaveableStateRegistryImpl =
-        SaveableStateRegistryImpl(restoredSaveable ?: emptyMap())
+    val saveableStateRegistry = SaveableStateRegistryImpl(restoredSaveable ?: emptyMap())
 
     lateinit var screen: GenericScreen<Ctx>
     lateinit var navigator: ScreenNavigatorImpl<Ctx>

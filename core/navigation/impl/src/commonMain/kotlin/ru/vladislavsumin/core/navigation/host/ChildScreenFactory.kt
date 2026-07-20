@@ -29,7 +29,6 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         // а viewModel выживает через общий instanceKeeper.
         val saved = configuration.savedInstance as TransferableScreenHolder<Ctx>
         val newHolder = TransferableScreenHolder<Ctx>(
-            key = screenParams,
             savedState = saved.stateKeeper.save(),
             instanceKeeper = saved.instanceKeeper,
             restoredSaveable = saved.saveableStateRegistry.captureRaw(),
@@ -48,7 +47,6 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
             STATE_KEY,
         ) as? TransferableScreenHolder.InstanceKeeperHolder
         val holder = TransferableScreenHolder<Ctx>(
-            key = screenParams,
             savedState = savedState,
             instanceKeeper = instanceKeeper?.dispatcher,
         )

@@ -44,7 +44,7 @@ object TestSources {
             @GenerateScreenFactory
             class TestScreen(context: ComponentContext): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -66,7 +66,7 @@ object TestSources {
             @GenerateScreenFactory
             class TestScreen(context: TestComponentContext): GenericScreen<TestComponentContext>(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -90,7 +90,7 @@ object TestSources {
             @GenerateScreenFactory
             class TestScreen(context: TestComponentContext): TestGenericScreen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -113,7 +113,7 @@ object TestSources {
                 context: ComponentContext,
             ): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -137,7 +137,7 @@ object TestSources {
                 context: ComponentContext,
             ): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -162,7 +162,7 @@ object TestSources {
                 context: ComponentContext,
             ): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -188,7 +188,7 @@ object TestSources {
                 context: ComponentContext,
             ): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -217,7 +217,7 @@ object TestSources {
                 constructor(context: ComponentContext) : super(context)
                 
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -245,7 +245,7 @@ object TestSources {
                 context: ComponentContext,
             ): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -265,7 +265,7 @@ object TestSources {
                 context: ComponentContext,
             ): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )
@@ -282,7 +282,7 @@ object TestSources {
             @GenerateScreenFactory
             class OrphanScreen(context: ComponentContext): Screen(context) {
                 @Composable
-                override fun Render(modifier: Modifier){}
+                override fun RenderScreen(modifier: Modifier){}
             }
         """.trimIndent(),
     )

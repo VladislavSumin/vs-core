@@ -15,8 +15,13 @@ import ru.vladislavsumin.core.navigation.GenericNavigation
 import ru.vladislavsumin.core.navigation.host.childNavigationRoot
 import ru.vladislavsumin.core.navigation.testData.CountingViewModel
 import ru.vladislavsumin.core.navigation.testData.LeafParams
+import ru.vladislavsumin.core.navigation.testData.LeafScreen
+import ru.vladislavsumin.core.navigation.testData.MiddleParams
+import ru.vladislavsumin.core.navigation.testData.MiddleScreen
+import ru.vladislavsumin.core.navigation.testData.NestedRootScreen
 import ru.vladislavsumin.core.navigation.testData.PagesRootScreen
 import ru.vladislavsumin.core.navigation.testData.leaf
+import ru.vladislavsumin.core.navigation.testData.nestedNavigation
 import ru.vladislavsumin.core.navigation.testData.pagesNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
@@ -69,6 +74,16 @@ class NavigationRetentionTest {
             instanceKeeperDispatcher = InstanceKeeperDispatcher(),
         )
     }
+
+    private fun mountNested(): NestedRootScreen {
+        val root = context.childNavigationRoot(nestedNavigation()) as NestedRootScreen
+        context.lifecycleRegistry.resume()
+        return root
+    }
+
+    private fun NestedRootScreen.middle(index: Int): MiddleScreen = pages.value.items[index].instance as MiddleScreen
+
+    private fun MiddleScreen.leaf(index: Int): LeafScreen = stack.value.items[index].instance as LeafScreen
 
     @Test
     fun configurationChangeRetainsTabViewModelInstanceAndState() = runTest {
@@ -144,5 +159,81 @@ class NavigationRetentionTest {
         val vmAfter = root.pages.value.leaf(1).vm
         assertNotSame(vmBefore, vmAfter)
         assertEquals(555, vmAfter.value)
+    }
+
+    @Test
+    fun configurationChangeAfterTransferRetainsScreenInTargetLocation() = runTest {
+        setMain()
+        var root = mountNested()
+        root.middle(0).open(LeafParams(5))
+        root.open(MiddleParams(1))
+
+        val leafVmBefore = root.middle(0).leaf(1).vm
+        leafVmBefore.update(77)
+
+        root.middle(0).transfer(LeafParams(5), hints = listOf(MiddleParams(1)))
+
+        recreateForConfigurationChange()
+        root = mountNested()
+
+        assertEquals(listOf(LeafParams(0)), root.middle(0).stack.value.paramsList)
+        assertEquals(listOf(LeafParams(0), LeafParams(5)), root.middle(1).stack.value.paramsList)
+
+        val leafVmAfter = root.middle(1).leaf(1).vm
+        assertSame(leafVmBefore, leafVmAfter)
+        assertEquals(77, leafVmAfter.value)
+    }
+
+    @Test
+    fun configurationChangeRetainsNestedSubtreeState() = runTest {
+        setMain()
+        var root = mountNested()
+        root.middle(0).open(LeafParams(1))
+        root.open(MiddleParams(1))
+
+        val middle0VmBefore = root.middle(0).vm
+        val leaf0VmBefore = root.middle(0).leaf(0).vm
+        val leaf1VmBefore = root.middle(0).leaf(1).vm
+        middle0VmBefore.update(10)
+        leaf0VmBefore.update(20)
+        leaf1VmBefore.update(30)
+
+        recreateForConfigurationChange()
+        root = mountNested()
+
+        assertEquals(listOf(MiddleParams(0), MiddleParams(1)), root.pages.value.paramsList)
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.middle(0).stack.value.paramsList)
+        assertEquals(listOf(LeafParams(0)), root.middle(1).stack.value.paramsList)
+
+        assertSame(middle0VmBefore, root.middle(0).vm)
+        assertSame(leaf0VmBefore, root.middle(0).leaf(0).vm)
+        assertSame(leaf1VmBefore, root.middle(0).leaf(1).vm)
+        assertEquals(10, root.middle(0).vm.value)
+        assertEquals(20, root.middle(0).leaf(0).vm.value)
+        assertEquals(30, root.middle(0).leaf(1).vm.value)
+    }
+
+    @Test
+    fun processDeathAfterTransferRestoresStateInTargetLocation() = runTest {
+        setMain()
+        var root = mountNested()
+        root.middle(0).open(LeafParams(5))
+        root.open(MiddleParams(1))
+
+        val leafVmBefore = root.middle(0).leaf(1).vm
+        leafVmBefore.update(77)
+
+        root.middle(0).transfer(LeafParams(5), hints = listOf(MiddleParams(1)))
+
+        recreateForProcessDeath()
+        root = mountNested()
+
+        assertEquals(listOf(LeafParams(0)), root.middle(0).stack.value.paramsList)
+        assertEquals(listOf(LeafParams(0), LeafParams(5)), root.middle(1).stack.value.paramsList)
+
+        val leafVmAfter = root.middle(1).leaf(1).vm
+        assertNotSame(leafVmBefore, leafVmAfter)
+        assertEquals(77, leafVmAfter.value)
+        assertFalse(leafVmBefore.isActive, "Old VM should be destroyed after process death")
     }
 }

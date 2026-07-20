@@ -4,6 +4,7 @@ import com.arkivanov.decompose.GenericComponentContext
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.arkivanov.essenty.instancekeeper.InstanceKeeperDispatcher
+import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.arkivanov.essenty.lifecycle.create
@@ -23,7 +24,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     savedState: SerializableContainer? = null,
     instanceKeeper: InstanceKeeperDispatcher? = null,
     restoredSaveable: Map<String, List<Any?>>? = null,
-) : InstanceKeeper.Instance {
+) {
 
     val lifecycle: LifecycleRegistry = LifecycleRegistry()
     val instanceKeeper: InstanceKeeperDispatcher = instanceKeeper ?: InstanceKeeperDispatcher()
@@ -58,6 +59,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
                 supplier = { stateKeeper.save() },
             )
         }
+        host.instanceKeeper.getOrCreate(stateKey) { InstanceKeeperHolder(instanceKeeper) }
 
         host.lifecycle.subscribe(mirror)
     }
@@ -71,21 +73,13 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         if (hostStateKeeper != null && stateKey.isNotEmpty()) {
             hostStateKeeper.unregister(stateKey)
         }
-        hostInstanceKeeper?.remove(key)
+        hostInstanceKeeper?.remove(stateKey)
 
         lifecycle.stop()
 
         boundHostInstanceKeeper = null
         boundHostStateKeeper = null
         boundHostLifecycle = null
-    }
-
-    override fun onDestroy() {
-        if (::navigator.isInitialized) {
-            navigator.detachFromParent()
-        }
-        lifecycle.destroy()
-        instanceKeeper.destroy()
     }
 
     fun destroyWithoutInstanceKeeper() {
@@ -101,6 +95,14 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         override fun onResume() = lifecycle.resume()
         override fun onPause() = lifecycle.pause()
         override fun onStop() = lifecycle.stop()
-        override fun onDestroy() { /* empty */ }
+        override fun onDestroy() {
+            /* empty */
+        }
+    }
+
+    internal class InstanceKeeperHolder(val dispatcher: InstanceKeeperDispatcher) : InstanceKeeper.Instance {
+        override fun onDestroy() {
+            dispatcher.destroy()
+        }
     }
 }

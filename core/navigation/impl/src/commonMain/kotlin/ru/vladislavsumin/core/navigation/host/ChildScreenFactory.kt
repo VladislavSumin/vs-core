@@ -1,7 +1,6 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.GenericComponentContext
-import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -41,17 +40,21 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         newHolder
     } else {
         // Нормальное создание или восстановление после смены конфигурации.
-        childScreenContext.instanceKeeper.getOrCreate<TransferableScreenHolder<Ctx>>(screenParams) {
-            val savedState = childScreenContext.stateKeeper.consume(
-                STATE_KEY,
-                SerializableContainer.serializer(),
-            )
-            val h = TransferableScreenHolder<Ctx>(key = screenParams, savedState = savedState)
-            buildScreen(h, childScreenContext, configuration)
-            h
-        }.also { h ->
-            h.bindTo(childScreenContext, STATE_KEY)
-        }
+        val savedState = childScreenContext.stateKeeper.consume(
+            STATE_KEY,
+            SerializableContainer.serializer(),
+        )
+        val instanceKeeper = childScreenContext.instanceKeeper.get(
+            STATE_KEY,
+        ) as? TransferableScreenHolder.InstanceKeeperHolder
+        val holder = TransferableScreenHolder<Ctx>(
+            key = screenParams,
+            savedState = savedState,
+            instanceKeeper = instanceKeeper?.dispatcher,
+        )
+        buildScreen(holder, childScreenContext, configuration)
+        holder.bindTo(childScreenContext, STATE_KEY)
+        holder
     }
 
     return holder.screen

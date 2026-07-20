@@ -274,9 +274,9 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         val screenKey = screenParams.asKey()
         val hostNavigator = getChildHostNavigator(screenKey)
         val childNavigator = childScreenNavigators[screenParams]
+        childNavigator?.holder?.navigator?.detachFromParent()
         val holder = if (keepInstance) {
             childNavigator?.holder?.also { h ->
-                h.navigator.detachFromParent()
                 h.unbind()
             }
         } else {

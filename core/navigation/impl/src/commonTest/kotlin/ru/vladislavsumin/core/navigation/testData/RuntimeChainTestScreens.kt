@@ -63,7 +63,7 @@ class StackMiddleScreen(
     )
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 class PagesMiddleScreen(
@@ -89,7 +89,7 @@ class PagesMiddleScreen(
     val pages = pagesResult.pages
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 class ChainRootScreen(
@@ -130,7 +130,7 @@ class ChainRootScreen(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = Unit
+    override fun RenderScreen(modifier: Modifier) = Unit
 }
 
 // endregion

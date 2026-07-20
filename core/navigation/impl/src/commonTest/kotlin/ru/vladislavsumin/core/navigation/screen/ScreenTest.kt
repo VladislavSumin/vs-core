@@ -19,7 +19,7 @@ class ScreenTest {
 
 private class WrongScreen(context: ComponentContext) : Screen(context) {
     @Composable
-    override fun Render(modifier: Modifier) {
+    override fun RenderScreen(modifier: Modifier) {
         // empty
     }
 }

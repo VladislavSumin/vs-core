@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
+import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.GenericComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
@@ -56,7 +57,7 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
      * Если у экрана нет [saveableStateRegistry], просто вызывает [content].
      */
     @Composable
-    protected fun SaveableRegistryProvider(content: @Composable () -> Unit) {
+    private fun SaveableRegistryProvider(content: @Composable () -> Unit) {
         val registry = saveableStateRegistry
         if (registry != null && registry is SaveableStateRegistryImpl) {
             registry.attachPlatform(LocalSaveableStateRegistry.current)
@@ -67,6 +68,14 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
             content()
         }
     }
+
+    @Composable
+    final override fun Render(modifier: Modifier) {
+        SaveableRegistryProvider { RenderScreen(modifier) }
+    }
+
+    @Composable
+    protected abstract fun RenderScreen(modifier: Modifier)
 
     internal val internalContext: Ctx get() = context
 

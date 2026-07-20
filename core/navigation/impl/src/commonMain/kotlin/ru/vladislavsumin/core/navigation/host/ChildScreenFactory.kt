@@ -1,7 +1,6 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.GenericComponentContext
-import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -22,7 +21,6 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
     childScreenContext: Ctx,
 ): GenericScreen<Ctx> {
     val screenParams = configuration.screenParams
-    val stateKey = STATE_KEY
 
     val holder: TransferableScreenHolder<Ctx> = if (configuration.savedInstance != null) {
         // Усыновление: экран был перенесён из другой локации.
@@ -31,28 +29,30 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         // а viewModel выживает через общий instanceKeeper.
         val saved = configuration.savedInstance as TransferableScreenHolder<Ctx>
         val newHolder = TransferableScreenHolder<Ctx>(
-            key = screenParams,
             savedState = saved.stateKeeper.save(),
             instanceKeeper = saved.instanceKeeper,
             restoredSaveable = saved.saveableStateRegistry.captureRaw(),
         )
         buildScreen(newHolder, childScreenContext, configuration)
-        newHolder.bindTo(childScreenContext, stateKey)
+        newHolder.bindTo(childScreenContext, STATE_KEY)
         saved.destroyWithoutInstanceKeeper()
         newHolder
     } else {
         // Нормальное создание или восстановление после смены конфигурации.
-        childScreenContext.instanceKeeper.getOrCreate<TransferableScreenHolder<Ctx>>(screenParams) {
-            val savedState = childScreenContext.stateKeeper.consume(
-                stateKey,
-                SerializableContainer.serializer(),
-            )
-            val h = TransferableScreenHolder<Ctx>(key = screenParams, savedState = savedState)
-            buildScreen(h, childScreenContext, configuration)
-            h
-        }.also { h ->
-            h.bindTo(childScreenContext, stateKey)
-        }
+        val savedState = childScreenContext.stateKeeper.consume(
+            STATE_KEY,
+            SerializableContainer.serializer(),
+        )
+        val instanceKeeper = childScreenContext.instanceKeeper.get(
+            STATE_KEY,
+        ) as? TransferableScreenHolder.InstanceKeeperHolder
+        val holder = TransferableScreenHolder<Ctx>(
+            savedState = savedState,
+            instanceKeeper = instanceKeeper?.dispatcher,
+        )
+        buildScreen(holder, childScreenContext, configuration)
+        holder.bindTo(childScreenContext, STATE_KEY)
+        holder
     }
 
     return holder.screen
@@ -84,4 +84,4 @@ private fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.buildScreen(
     holder.screen = screen
 }
 
-private const val STATE_KEY = "saved_screen_holder"
+private const val STATE_KEY = "ru.vladislavsumin.core.navigation.host:saved_screen_holder"

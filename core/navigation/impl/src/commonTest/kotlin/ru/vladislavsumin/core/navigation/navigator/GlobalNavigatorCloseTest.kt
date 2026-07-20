@@ -10,11 +10,13 @@ import ru.vladislavsumin.core.navigation.testData.MiddleScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationIntegrationTestBase
 import ru.vladislavsumin.core.navigation.testData.NestedRootScreen
 import ru.vladislavsumin.core.navigation.testData.PagesRootScreen
+import ru.vladislavsumin.core.navigation.testData.leaf
 import ru.vladislavsumin.core.navigation.testData.nestedNavigation
 import ru.vladislavsumin.core.navigation.testData.pagesNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Характеризационные тесты глобального закрытия экранов через [Navigation.close] →
@@ -72,6 +74,26 @@ class GlobalNavigatorCloseTest : NavigationIntegrationTestBase() {
         testScheduler.advanceUntilIdle()
 
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+    }
+
+    @Test
+    fun reopenAfterCloseWorksWithoutErrors() = runTest {
+        setMain()
+        val navigation = pagesNavigation(initial = listOf(LeafParams(0)))
+        val root = mount(navigation) as PagesRootScreen
+        root.open(LeafParams(1))
+
+        navigation.close(unsafeCast(LeafParams(1)))
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(listOf(LeafParams(0)), root.pages.value.paramsList)
+
+        root.open(LeafParams(1))
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        val leaf = root.pages.value.leaf(1)
+        assertTrue(leaf.vm.isActive)
     }
 
     companion object {

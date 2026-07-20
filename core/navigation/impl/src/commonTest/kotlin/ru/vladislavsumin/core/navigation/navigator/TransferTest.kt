@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.navigator
 
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.navigation.testData.LeafParams
@@ -8,6 +9,7 @@ import ru.vladislavsumin.core.navigation.testData.MiddleParams
 import ru.vladislavsumin.core.navigation.testData.MiddleScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationIntegrationTestBase
 import ru.vladislavsumin.core.navigation.testData.NestedRootScreen
+import ru.vladislavsumin.core.navigation.testData.lifecycleState
 import ru.vladislavsumin.core.navigation.testData.nestedNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
@@ -223,5 +225,19 @@ class TransferTest : NavigationIntegrationTestBase() {
         root.transfer(LeafParams(99), hints = listOf(MiddleParams(1)))
 
         assertEquals(before, root.pages.value.paramsList)
+    }
+
+    @Test
+    fun `transfer destroys old screen lifecycle`() = runTest {
+        setMain()
+        val root = mountNested()
+        root.middle(0).open(LeafParams(5))
+        root.open(MiddleParams(1))
+
+        val leafBefore = root.middle(0).leaf(1)
+
+        root.middle(0).transfer(LeafParams(5), hints = listOf(MiddleParams(1)))
+
+        assertEquals(Lifecycle.State.DESTROYED, leafBefore.lifecycleState)
     }
 }

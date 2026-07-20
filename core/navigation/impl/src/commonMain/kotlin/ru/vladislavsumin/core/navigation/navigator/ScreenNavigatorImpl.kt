@@ -269,21 +269,20 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
      *
      * @return результат закрытия. Если [keepInstance] — пытается сохранить инстанс экрана.
      */
-    @Suppress("UNCHECKED_CAST")
     private fun closeInsideThisScreen(screenParams: IntentScreenParams<*>, keepInstance: Boolean = false): CloseResult {
         val screenKey = screenParams.asKey()
         val hostNavigator = getChildHostNavigator(screenKey)
         val childNavigator = childScreenNavigators[screenParams]
+        childNavigator?.holder?.navigator?.detachFromParent()
         val holder = if (keepInstance) {
             childNavigator?.holder?.also { h ->
-                h.navigator.detachFromParent()
                 h.unbind()
             }
         } else {
             null
         }
         val closed = hostNavigator.close(screenParams)
-        return CloseResult(closed, holder as TransferableScreenHolder<Ctx>?)
+        return CloseResult(closed, holder)
     }
 
     /**

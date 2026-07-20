@@ -1,5 +1,8 @@
 package ru.vladislavsumin.core.navigation.navigator
 
+import com.arkivanov.essenty.backhandler.BackCallback
+import com.arkivanov.essenty.backhandler.BackDispatcher
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.navigation.screen.ScreenPath
@@ -10,6 +13,7 @@ import ru.vladislavsumin.core.navigation.testData.MiddleScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationIntegrationTestBase
 import ru.vladislavsumin.core.navigation.testData.NestedRootParams
 import ru.vladislavsumin.core.navigation.testData.NestedRootScreen
+import ru.vladislavsumin.core.navigation.testData.lifecycleState
 import ru.vladislavsumin.core.navigation.testData.nestedNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
@@ -135,5 +139,37 @@ class ScreenNavigatorNestedTest : NavigationIntegrationTestBase() {
         // Состояние поддерева Middle(0) сохранено.
         assertTrue(middle0Vm.isActive)
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.middle(0).stack.value.paramsList)
+    }
+
+    @Test
+    fun closingParentDestroysChildLifecycle() = runTest {
+        setMain()
+        val root = mountNested()
+        root.middle(0).open(LeafParams(1))
+        root.open(MiddleParams(1))
+
+        val leaf0 = root.middle(0).stack.value.items[0].instance as LeafScreen
+        val leaf1 = root.middle(0).stack.value.items[1].instance as LeafScreen
+
+        root.close(MiddleParams(0))
+
+        assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
+    }
+
+    @Test
+    fun childScreenBackHandlerReceivesBackEvents() = runTest {
+        setMain()
+        val root = mountNested()
+        root.middle(0).open(LeafParams(1))
+        val leaf = root.middle(0).stack.value.items[1].instance as LeafScreen
+
+        val dispatcher = leaf.internalContext.backHandler as BackDispatcher
+        var backCalled = false
+        val callback = BackCallback(onBack = { backCalled = true })
+        dispatcher.register(callback)
+
+        assertTrue(dispatcher.back())
+        assertTrue(backCalled)
     }
 }

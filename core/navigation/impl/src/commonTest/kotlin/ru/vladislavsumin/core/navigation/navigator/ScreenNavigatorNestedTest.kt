@@ -1,5 +1,7 @@
 package ru.vladislavsumin.core.navigation.navigator
 
+import com.arkivanov.essenty.backhandler.BackCallback
+import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
@@ -153,5 +155,21 @@ class ScreenNavigatorNestedTest : NavigationIntegrationTestBase() {
 
         assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
         assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
+    }
+
+    @Test
+    fun childScreenBackHandlerReceivesBackEvents() = runTest {
+        setMain()
+        val root = mountNested()
+        root.middle(0).open(LeafParams(1))
+        val leaf = root.middle(0).stack.value.items[1].instance as LeafScreen
+
+        val dispatcher = leaf.internalContext.backHandler as BackDispatcher
+        var backCalled = false
+        val callback = BackCallback(onBack = { backCalled = true })
+        dispatcher.register(callback)
+
+        assertTrue(dispatcher.back())
+        assertTrue(backCalled)
     }
 }

@@ -10,6 +10,9 @@ public abstract class ru/vladislavsumin/core/decompose/components/GenericCompone
 	protected fun viewModel (Lkotlin/jvm/functions/Function0;)Lru/vladislavsumin/core/decompose/components/ViewModel;
 }
 
+public abstract interface annotation class ru/vladislavsumin/core/decompose/components/InternalDecomposeApi : java/lang/annotation/Annotation {
+}
+
 public abstract class ru/vladislavsumin/core/decompose/components/ViewModel {
 	public fun <init> ()V
 	protected final fun getViewModelScope ()Lkotlinx/coroutines/CoroutineScope;

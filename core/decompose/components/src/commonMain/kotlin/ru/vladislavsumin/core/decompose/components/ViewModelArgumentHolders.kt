@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
  * исключаем вероятность гонки потоков.
  */
 @Suppress("PropertyName")
-internal var WhileConstructedViewModelStateKeeper: StateKeeper? = null
+@InternalDecomposeApi
+public var WhileConstructedViewModelStateKeeper: StateKeeper? = null
 
 @Suppress("PropertyName")
-internal var WhileConstructedViewModelUiLifecycle: StateFlow<Lifecycle.State>? = null
+@InternalDecomposeApi
+public var WhileConstructedViewModelUiLifecycle: StateFlow<Lifecycle.State>? = null

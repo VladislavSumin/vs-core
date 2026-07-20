@@ -7,11 +7,7 @@ import com.arkivanov.essenty.instancekeeper.InstanceKeeperDispatcher
 import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import com.arkivanov.essenty.lifecycle.create
 import com.arkivanov.essenty.lifecycle.destroy
-import com.arkivanov.essenty.lifecycle.pause
-import com.arkivanov.essenty.lifecycle.resume
-import com.arkivanov.essenty.lifecycle.start
 import com.arkivanov.essenty.lifecycle.stop
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.StateKeeper
@@ -38,7 +34,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     private var boundHostInstanceKeeper: InstanceKeeper? = null
     private var boundHostStateKeeper: StateKeeper? = null
     private var boundHostLifecycle: Lifecycle? = null
-    private val mirror = HolderLifecycleMirror()
     private var stateKey: String = ""
 
     fun createContext(factory: com.arkivanov.decompose.ComponentContextFactory<Ctx>): Ctx =
@@ -59,7 +54,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         }
         host.instanceKeeper.getOrCreate(stateKey) { InstanceKeeperHolder(instanceKeeper) }
 
-        host.lifecycle.subscribe(mirror)
+        host.lifecycle.subscribe(lifecycle)
     }
 
     fun unbind() {
@@ -67,7 +62,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         val hostStateKeeper = boundHostStateKeeper
         val hostLifecycle = boundHostLifecycle
 
-        hostLifecycle?.unsubscribe(mirror)
+        hostLifecycle?.unsubscribe(lifecycle)
         if (hostStateKeeper != null && stateKey.isNotEmpty()) {
             hostStateKeeper.unregister(stateKey)
         }
@@ -82,17 +77,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
 
     fun destroyWithoutInstanceKeeper() {
         lifecycle.destroy()
-    }
-
-    private inner class HolderLifecycleMirror : Lifecycle.Callbacks {
-        override fun onCreate() = lifecycle.create()
-        override fun onStart() = lifecycle.start()
-        override fun onResume() = lifecycle.resume()
-        override fun onPause() = lifecycle.pause()
-        override fun onStop() = lifecycle.stop()
-        override fun onDestroy() {
-            /* empty */
-        }
     }
 
     internal class InstanceKeeperHolder(val dispatcher: InstanceKeeperDispatcher) : InstanceKeeper.Instance {

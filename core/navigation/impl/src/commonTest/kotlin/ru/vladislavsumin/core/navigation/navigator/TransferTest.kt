@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.navigator
 
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.navigation.testData.LeafParams
@@ -223,5 +224,22 @@ class TransferTest : NavigationIntegrationTestBase() {
         root.transfer(LeafParams(99), hints = listOf(MiddleParams(1)))
 
         assertEquals(before, root.pages.value.paramsList)
+    }
+
+    @Test
+    fun `transfer destroys old holder lifecycle`() = runTest {
+        setMain()
+        val root = mountNested()
+        root.middle(0).open(LeafParams(5))
+        root.open(MiddleParams(1))
+
+        val leafBefore = root.middle(0).leaf(1)
+        val oldHolder = leafBefore.internalNavigator.holder
+        assertNotNull(oldHolder)
+        val oldLifecycle = oldHolder.lifecycle
+
+        root.middle(0).transfer(LeafParams(5), hints = listOf(MiddleParams(1)))
+
+        assertEquals(Lifecycle.State.DESTROYED, oldLifecycle.state)
     }
 }

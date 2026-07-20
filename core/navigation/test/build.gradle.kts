@@ -5,14 +5,15 @@ plugins {
     id("ru.vladislavsumin.convention.preset.publish")
 }
 
-internalApi("ru.vladislavsumin.core.decompose.components.InternalDecomposeApi")
+internalApi("ru.vladislavsumin.core.navigation.InternalNavigationApi")
 
 kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(kotlin("test"))
+            api(projects.core.navigation.impl)
+            implementation(projects.core.decompose.test)
             implementation(vsCoreLibs.decompose.core)
-            api(projects.core.decompose.components)
         }
     }
 }

@@ -19,11 +19,11 @@ import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
  * переходе [Lifecycle] в состояние [Lifecycle.State.DESTROYED] как это делает [DefaultComponentContext].
  * В данном случае поведение похоже на Android, где состояние [InstanceKeeper] **нужно очищать вручную**.
  */
-class TestComponentContext(
-    val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(),
-    val stateKeeperDispatcher: StateKeeperDispatcher = StateKeeperDispatcher(),
-    val instanceKeeperDispatcher: InstanceKeeperDispatcher = InstanceKeeperDispatcher(),
-    val backDispatcher: BackDispatcher = BackDispatcher(),
+public class TestComponentContext(
+    public val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(),
+    public val stateKeeperDispatcher: StateKeeperDispatcher = StateKeeperDispatcher(),
+    public val instanceKeeperDispatcher: InstanceKeeperDispatcher = InstanceKeeperDispatcher(),
+    public val backDispatcher: BackDispatcher = BackDispatcher(),
 ) : ComponentContext {
     override val lifecycle: Lifecycle = lifecycleRegistry
     override val stateKeeper: StateKeeper = stateKeeperDispatcher

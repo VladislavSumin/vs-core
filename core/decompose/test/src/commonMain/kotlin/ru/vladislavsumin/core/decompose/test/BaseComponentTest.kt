@@ -10,14 +10,14 @@ import kotlin.test.assertNotEquals
 /**
  * Базовая реализация для тестов проверяющих компоненты Decompose.
  */
-abstract class BaseComponentTest {
+public abstract class BaseComponentTest {
     init {
         // В тестах повсеместно элементы decompose вызываются с тестового (не main) потока. Поэтому для тестов
         // глушим все ошибки decompose.
         onDecomposeError = {}
     }
 
-    protected var context = TestComponentContext()
+    protected var context: TestComponentContext = TestComponentContext()
         private set
 
     /**
@@ -82,7 +82,7 @@ abstract class BaseComponentTest {
      *  Этот кейс эквивалентен пересозданию Activity системой Android при смене ориентации экрана или других изменениях
      *  конфигурации которые явно не обрабатываются.
      */
-    enum class RecreateContextType {
+    public enum class RecreateContextType {
         Full,
         ProcessDeath,
         ConfigurationChange,

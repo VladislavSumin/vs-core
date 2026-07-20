@@ -9,6 +9,7 @@ import ru.vladislavsumin.core.navigation.testData.MiddleParams
 import ru.vladislavsumin.core.navigation.testData.MiddleScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationIntegrationTestBase
 import ru.vladislavsumin.core.navigation.testData.NestedRootScreen
+import ru.vladislavsumin.core.navigation.testData.lifecycleState
 import ru.vladislavsumin.core.navigation.testData.nestedNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
@@ -227,19 +228,16 @@ class TransferTest : NavigationIntegrationTestBase() {
     }
 
     @Test
-    fun `transfer destroys old holder lifecycle`() = runTest {
+    fun `transfer destroys old screen lifecycle`() = runTest {
         setMain()
         val root = mountNested()
         root.middle(0).open(LeafParams(5))
         root.open(MiddleParams(1))
 
         val leafBefore = root.middle(0).leaf(1)
-        val oldHolder = leafBefore.internalNavigator.holder
-        assertNotNull(oldHolder)
-        val oldLifecycle = oldHolder.lifecycle
 
         root.middle(0).transfer(LeafParams(5), hints = listOf(MiddleParams(1)))
 
-        assertEquals(Lifecycle.State.DESTROYED, oldLifecycle.state)
+        assertEquals(Lifecycle.State.DESTROYED, leafBefore.lifecycleState)
     }
 }

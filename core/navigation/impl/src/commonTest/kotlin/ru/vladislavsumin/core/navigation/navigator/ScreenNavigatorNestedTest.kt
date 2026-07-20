@@ -11,12 +11,12 @@ import ru.vladislavsumin.core.navigation.testData.MiddleScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationIntegrationTestBase
 import ru.vladislavsumin.core.navigation.testData.NestedRootParams
 import ru.vladislavsumin.core.navigation.testData.NestedRootScreen
+import ru.vladislavsumin.core.navigation.testData.lifecycleState
 import ru.vladislavsumin.core.navigation.testData.nestedNavigation
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -140,7 +140,7 @@ class ScreenNavigatorNestedTest : NavigationIntegrationTestBase() {
     }
 
     @Test
-    fun closingParentDestroysChildHolderLifecycle() = runTest {
+    fun closingParentDestroysChildLifecycle() = runTest {
         setMain()
         val root = mountNested()
         root.middle(0).open(LeafParams(1))
@@ -148,14 +148,10 @@ class ScreenNavigatorNestedTest : NavigationIntegrationTestBase() {
 
         val leaf0 = root.middle(0).stack.value.items[0].instance as LeafScreen
         val leaf1 = root.middle(0).stack.value.items[1].instance as LeafScreen
-        val leaf0Holder = leaf0.internalNavigator.holder
-        val leaf1Holder = leaf1.internalNavigator.holder
-        assertNotNull(leaf0Holder)
-        assertNotNull(leaf1Holder)
 
         root.close(MiddleParams(0))
 
-        assertEquals(Lifecycle.State.DESTROYED, leaf0Holder.lifecycle.state)
-        assertEquals(Lifecycle.State.DESTROYED, leaf1Holder.lifecycle.state)
+        assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
     }
 }

@@ -81,9 +81,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     }
 
     fun destroyWithoutInstanceKeeper() {
-        if (::navigator.isInitialized) {
-            navigator.detachFromParent()
-        }
         lifecycle.destroy()
     }
 

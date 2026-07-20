@@ -24,7 +24,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     private val lifecycle = LifecycleRegistry()
     val instanceKeeper = instanceKeeper ?: InstanceKeeperDispatcher()
     val stateKeeper = StateKeeperDispatcher(savedState)
-    val backHandler = BackDispatcher()
+    private val backHandler = BackDispatcher()
 
     val saveableStateRegistry = SaveableStateRegistryImpl(restoredSaveable ?: emptyMap())
 

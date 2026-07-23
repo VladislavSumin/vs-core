@@ -190,10 +190,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     }
 
     @PublishedApi
-    internal fun registerInProviderRegistry(
-        screenKey: ScreenKey,
-        screenFactory: ScreenFactory<Ctx, *, *, *>,
-    ) {
+    internal fun registerInProviderRegistry(screenKey: ScreenKey, screenFactory: ScreenFactory<Ctx, *, *, *>) {
         globalNavigator.factoryProviderRegistry.register(
             providerParams = screenParams,
             targetKey = screenKey,
@@ -285,6 +282,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         val hostNavigator = getChildHostNavigator(screenKey)
         when (screen) {
             is ScreenPath.PathElement.Key -> hostNavigator.open(screen.screenKey) { childNode.value.defaultParams!! }
+
             is ScreenPath.PathElement.Params -> hostNavigator.open(
                 params = screen.screenParams,
                 intent = intent,
@@ -330,9 +328,8 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     /**
      * Пытается найти фабрику для создания дочернего экрана. Возвращает null, если фабрика не найдена.
      */
-    fun tryGetChildScreenFactory(screenKey: ScreenKey): ScreenFactory<Ctx, *, *, *>? =
-        customFactories[screenKey]
-            ?: node.children.find { it.value.screenKey == screenKey }?.value?.factory
+    fun tryGetChildScreenFactory(screenKey: ScreenKey): ScreenFactory<Ctx, *, *, *>? = customFactories[screenKey]
+        ?: node.children.find { it.value.screenKey == screenKey }?.value?.factory
 
     /**
      * Запрашивает задержку splash экрана, сначала для текущего экрана и только потом для всех дочерних навигаторов.

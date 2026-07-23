@@ -11,11 +11,7 @@ internal class FactoryProviderRegistry<Ctx : GenericComponentContext<Ctx>> {
     private val callbacks = mutableMapOf<ProviderKey, MutableList<(ScreenFactory<Ctx, *, *, *>) -> Unit>>()
     private val dependentNavigators = mutableMapOf<IntentScreenParams<*>, MutableSet<ScreenNavigatorImpl<*>>>()
 
-    fun register(
-        providerParams: IntentScreenParams<*>,
-        targetKey: ScreenKey,
-        factory: ScreenFactory<Ctx, *, *, *>,
-    ) {
+    fun register(providerParams: IntentScreenParams<*>, targetKey: ScreenKey, factory: ScreenFactory<Ctx, *, *, *>) {
         val key = ProviderKey(providerParams, targetKey)
         factories[key] = factory
         val pending = callbacks.remove(key)
@@ -63,8 +59,5 @@ internal class FactoryProviderRegistry<Ctx : GenericComponentContext<Ctx>> {
         }
     }
 
-    data class ProviderKey(
-        val providerParams: IntentScreenParams<*>,
-        val targetKey: ScreenKey,
-    )
+    data class ProviderKey(val providerParams: IntentScreenParams<*>, val targetKey: ScreenKey)
 }

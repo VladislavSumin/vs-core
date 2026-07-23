@@ -15,7 +15,7 @@ import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
  * Все экраны строятся на управляемом контексте (TransferableScreenHolder),
  * что делает их универсально переносимыми (transferable) без дополнительных маркеров.
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "LongMethod")
 internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreenFactory(
     configuration: ConfigurationHolder,
     childScreenContext: Ctx,

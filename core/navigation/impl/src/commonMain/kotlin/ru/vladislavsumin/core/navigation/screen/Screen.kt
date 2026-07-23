@@ -109,7 +109,8 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
      * Регистрирует кастомную фабрику для экрана [T]. Данный экран должен открываться в хостах навигации этого экрана.
      * **Внимание** Регистрировать фабрики нужно ДО объявления хостов навигации. Это важно при восстановлении состояния.
      *
-     * Фабрика так же регистрируется в глобальном реестре ([ru.vladislavsumin.core.navigation.navigator.FactoryProviderRegistry])
+     * Фабрика так же регистрируется в глобальном реестре
+     * [ru.vladislavsumin.core.navigation.navigator.FactoryProviderRegistry]
      * что позволяет другим экранам открывать [T] используя этот экран как провайдера фабрики.
      */
     protected inline fun <

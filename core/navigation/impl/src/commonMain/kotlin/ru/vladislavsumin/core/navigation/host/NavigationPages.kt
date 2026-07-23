@@ -12,7 +12,6 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ListSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -39,6 +38,7 @@ import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
  * @param handleBackButton будет ли эта навигация перехватывать нажатия назад.
  * @param allowStateSave разрешает сохранять состояние экранов открытых в данном навигаторе.
  */
+@Suppress("LongMethod")
 public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigationPages(
     navigationHost: NavigationHost,
     initialPages: () -> Pages<IntentScreenParams<*>>,

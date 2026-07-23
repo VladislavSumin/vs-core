@@ -6,6 +6,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.serialization.Serializable
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NoIntent
@@ -14,10 +15,8 @@ import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.host.childNavigationSlot
 import ru.vladislavsumin.core.navigation.host.childNavigationStack
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
-import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
-import kotlinx.coroutines.channels.ReceiveChannel
 
 @Serializable
 data object CrossRootParams : ScreenParams
@@ -37,8 +36,7 @@ class CrossRootScreen(context: ComponentContext) : Screen(context) {
         initialStack = { listOf(CrossMiddleParams(0)) },
     )
 
-    fun middle(index: Int): CrossMiddleScreen =
-        stack.value.items[index].instance as CrossMiddleScreen
+    fun middle(index: Int): CrossMiddleScreen = stack.value.items[index].instance as CrossMiddleScreen
 
     fun open(params: CrossMiddleParams) = navigator.open(params)
 
@@ -46,10 +44,7 @@ class CrossRootScreen(context: ComponentContext) : Screen(context) {
     override fun RenderScreen(modifier: Modifier) = Unit
 }
 
-class CrossMiddleScreen(
-    val params: CrossMiddleParams,
-    context: ComponentContext,
-) : Screen(context) {
+class CrossMiddleScreen(val params: CrossMiddleParams, context: ComponentContext) : Screen(context) {
     val vm: CountingViewModel = viewModel { CountingViewModel() }
 
     init {
@@ -124,10 +119,7 @@ class ProviderRootScreen(context: ComponentContext) : Screen(context) {
     override fun RenderScreen(modifier: Modifier) = Unit
 }
 
-class ProviderScreen(
-    val params: ProviderParams,
-    context: ComponentContext,
-) : Screen(context) {
+class ProviderScreen(val params: ProviderParams, context: ComponentContext) : Screen(context) {
     val vm: CountingViewModel = viewModel { CountingViewModel() }
 
     var createdTarget: TargetScreen? = null
@@ -160,10 +152,7 @@ class ProviderScreen(
     override fun RenderScreen(modifier: Modifier) = Unit
 }
 
-class TargetScreen(
-    val params: TargetParams,
-    context: ComponentContext,
-) : Screen(context) {
+class TargetScreen(val params: TargetParams, context: ComponentContext) : Screen(context) {
     val vm: CountingViewModel = viewModel { CountingViewModel() }
 
     @Composable

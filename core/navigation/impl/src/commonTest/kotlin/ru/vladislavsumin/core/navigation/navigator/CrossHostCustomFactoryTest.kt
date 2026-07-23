@@ -67,5 +67,21 @@ class CrossHostCustomFactoryTest : NavigationIntegrationTestBase() {
         )
     }
 
+    @Test
+    fun navigatorDetachedWhenRemovedFromStack() = runTest {
+        setMain()
+        val root = mountRoot()
+
+        root.open(CrossMiddleParams(1))
+
+        val middle1 = root.middle(1)
+        middle1.closeItself()
+
+        root.open(CrossMiddleParams(1))
+        val recreatedMiddle = root.middle(1)
+        recreatedMiddle.openLeaf(LeafParams(99))
+        assertEquals(listOf(LeafParams(0), LeafParams(99)), recreatedMiddle.stack.value.paramsList)
+    }
+
     // endregion
 }

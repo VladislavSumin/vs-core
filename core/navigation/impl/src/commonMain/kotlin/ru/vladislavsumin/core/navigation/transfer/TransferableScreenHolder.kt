@@ -64,6 +64,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
             )
         }
         host.instanceKeeper.getOrCreate(stateKey) { InstanceKeeperHolder(instanceKeeper) }
+            .also { (it as InstanceKeeperHolder).screenNavigator = navigator }
 
         host.lifecycle.subscribe(lifecycle)
     }
@@ -90,9 +91,13 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         lifecycle.destroy()
     }
 
-    internal class InstanceKeeperHolder(val dispatcher: InstanceKeeperDispatcher) : InstanceKeeper.Instance {
+    internal class InstanceKeeperHolder(
+        val dispatcher: InstanceKeeperDispatcher,
+        var screenNavigator: ScreenNavigatorImpl<*>? = null,
+    ) : InstanceKeeper.Instance {
         override fun onDestroy() {
             dispatcher.destroy()
+            screenNavigator?.detachFromParent()
         }
     }
 }

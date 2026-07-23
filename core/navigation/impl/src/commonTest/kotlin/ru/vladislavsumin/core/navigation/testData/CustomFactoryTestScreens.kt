@@ -67,6 +67,8 @@ class CrossMiddleScreen(
 
     fun openLeafWithCustomFactory(params: LeafParams) = navigator.openWithCustomFactory(params)
 
+    fun closeItself() = navigator.close()
+
     @Composable
     override fun RenderScreen(modifier: Modifier) = Unit
 }

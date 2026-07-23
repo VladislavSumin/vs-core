@@ -8,4 +8,5 @@ internal data class ScreenParamsWithIntent(
     val screenParams: IntentScreenParams<*>,
     val intent: ScreenIntent?,
     val savedInstance: TransferableScreenHolder<*>? = null,
+    val providerParams: IntentScreenParams<*>? = null,
 )

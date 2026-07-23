@@ -8,10 +8,12 @@ import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.arkivanov.essenty.lifecycle.destroy
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.stop
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 
@@ -19,6 +21,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     savedState: SerializableContainer? = null,
     instanceKeeper: InstanceKeeperDispatcher? = null,
     restoredSaveable: Map<String, List<Any?>>? = null,
+    val providerParams: IntentScreenParams<*>? = null,
 ) {
 
     private val lifecycle = LifecycleRegistry()
@@ -30,6 +33,14 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
 
     lateinit var screen: GenericScreen<Ctx>
     lateinit var navigator: ScreenNavigatorImpl<Ctx>
+
+    init {
+        lifecycle.doOnDestroy {
+            if (::navigator.isInitialized) {
+                navigator.globalNavigator.factoryProviderRegistry.removeProvider(navigator.screenParams)
+            }
+        }
+    }
 
     private var boundHostInstanceKeeper: InstanceKeeper? = null
     private var boundHostStateKeeper: StateKeeper? = null

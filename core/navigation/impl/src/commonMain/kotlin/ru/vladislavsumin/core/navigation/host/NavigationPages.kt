@@ -12,6 +12,7 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -68,7 +69,11 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         savePages = { state ->
             if (allowStateSave) {
                 SerializableContainer(
-                    value = SerializablePages(items = state.items.map { it.screenParams }, state.selectedIndex),
+                    value = SerializablePages(
+                        items = state.items.map { it.screenParams },
+                        providerParamsList = state.items.map { it.providerParams },
+                        selectedIndex = state.selectedIndex,
+                    ),
                     strategy = SerializablePages.serializer(internalNavigator.serializer),
                 )
             } else {
@@ -77,22 +82,32 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         },
         restorePages = { container ->
             val pages = container.consumeRequired(strategy = SerializablePages.serializer(internalNavigator.serializer))
-            Pages(pages.items.map { ConfigurationHolder(it) }, pages.selectedIndex)
+            Pages(
+                items = pages.items.zip(pages.providerParamsList) { sp, pp ->
+                    ConfigurationHolder(sp, providerParams = pp)
+                },
+                selectedIndex = pages.selectedIndex,
+            )
         },
         key = key,
         initialPages = {
             val initial = internalNavigator.getInitialParamsFor(navigationHost)
             if (initial != null) {
-                val pages = defaultPages(initial.screenParams)
-                val targetIndex = pages.items.indexOfFirst { it == initial.screenParams }
-                val holders = pages.items.mapIndexed { index, item ->
+                val dp = defaultPages(initial.screenParams)
+                val targetIndex = dp.items.indexOfFirst { it == initial.screenParams }
+                val holders = dp.items.mapIndexed { index, item ->
                     if (index == targetIndex) {
-                        ConfigurationHolder(item, initial.intent, savedInstance = initial.savedInstance)
+                        ConfigurationHolder(
+                            item,
+                            initial.intent,
+                            savedInstance = initial.savedInstance,
+                            providerParams = initial.providerParams,
+                        )
                     } else {
                         ConfigurationHolder(item)
                     }
                 }
-                Pages(holders, pages.selectedIndex)
+                Pages(holders, dp.selectedIndex)
             } else {
                 val initial = initialPages()
                 Pages(initial.items.map { ConfigurationHolder(it) }, initial.selectedIndex)
@@ -128,6 +143,7 @@ private class PagesHostNavigator(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
         savedInstance: TransferableScreenHolder<*>?,
+        providerParams: IntentScreenParams<*>?,
     ) {
         pagesNavigation.navigate(
             transformer = { pages ->
@@ -136,7 +152,11 @@ private class PagesHostNavigator(
                     pages.items[indexOfScreen].sendIntent(intent)
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
-                    val newItem = ConfigurationHolder(params, savedInstance = savedInstance)
+                    val newItem = ConfigurationHolder(
+                        params,
+                        savedInstance = savedInstance,
+                        providerParams = providerParams,
+                    )
                     newItem.sendIntent(intent)
                     val newItems = pages.items + newItem
                     Pages(newItems, newItems.size - 1)
@@ -279,4 +299,8 @@ internal fun getDefaultInitialPages(params: IntentScreenParams<*>): Pages<Intent
     Pages(listOf(params), 0)
 
 @Serializable
-private class SerializablePages<T : IntentScreenParams<*>>(val items: List<T>, val selectedIndex: Int)
+private class SerializablePages<T : IntentScreenParams<*>>(
+    val items: List<T>,
+    val providerParamsList: List<IntentScreenParams<*>?>,
+    val selectedIndex: Int,
+)

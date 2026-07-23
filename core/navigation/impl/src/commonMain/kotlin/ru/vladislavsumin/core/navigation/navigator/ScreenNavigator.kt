@@ -23,6 +23,22 @@ public interface ScreenNavigator {
     )
 
     /**
+     * Открывает экран используя кастомную фабрику, зарегистрированную в этом экране через
+     * [ru.vladislavsumin.core.navigation.screen.GenericScreen.registerCustomFactory].
+     *
+     * Фреймворк гарантирует, что экран-провайдер (текущий) будет создан до целевого экрана: если провайдер еще не
+     * существует, то целевой экран будет создан отложенно в момент появления провайдера. Это корректно работает
+     * при восстановлении состояния (process death, config change).
+     *
+     * @see open
+     */
+    public fun <S : IntentScreenParams<I>, I : ScreenIntent> openWithCustomFactory(
+        screenParams: S,
+        intent: I? = null,
+        hints: List<IntentScreenParams<*>> = emptyList(),
+    )
+
+    /**
      * Закрывает экран соответствующий переданным [screenParams].
      */
     public fun close(screenParams: IntentScreenParams<*>)

@@ -153,6 +153,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
                 screenParams = it,
                 intent = if (isTarget) ip.intent else null,
                 savedInstance = if (isTarget) ip.savedInstance else null,
+                providerParams = if (isTarget) ip.providerParams else null,
             )
         }
     }
@@ -188,13 +189,30 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         check(oldCustomFactory == null) { "Custom factory for $screenKey already registered" }
     }
 
+    @PublishedApi
+    internal fun registerInProviderRegistry(
+        screenKey: ScreenKey,
+        screenFactory: ScreenFactory<Ctx, *, *, *>,
+    ) {
+        globalNavigator.factoryProviderRegistry.register(
+            providerParams = screenParams,
+            targetKey = screenKey,
+            factory = screenFactory,
+        )
+    }
+
     /**
      * Последовательно открывает все экраны в цепочке [screenPath]. Первый экран в этой цепочке это экран который
      * должен быть открыт одним из [NavigationHost] этого экрана.
      */
     // TODO после закрепления поведения тестами хочется избавиться тут от пересоздания screenPath на каждый хоп
     // что бы уменьшить количество алокаций памяти, а так же снизить алгоритмическую сложность.
-    fun openChain(screenPath: ScreenPath, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>? = null) {
+    fun openChain(
+        screenPath: ScreenPath,
+        intent: ScreenIntent?,
+        savedInstance: TransferableScreenHolder<*>? = null,
+        providerParams: IntentScreenParams<*>? = null,
+    ) {
         NavigationLogger.t {
             "ScreenNavigator(screenParams=$screenParams).openInsideThisScreen(screenPath=$screenPath)"
         }
@@ -207,7 +225,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         // а не initial-лямбду, и оставшаяся цепочка развернётся сама. Перенос инстанса (savedInstance) при этом
         // доедет до целевого экрана через initialPath.
         if (childPath.isNotEmpty() && findChildNavigator(firstScreen) == null) {
-            initialPath = ScreenPathWithIntent(screenPath, intent, savedInstance)
+            initialPath = ScreenPathWithIntent(screenPath, intent, savedInstance, providerParams = providerParams)
             openInsideThisScreen(screen = firstScreen, intent = null, savedInstance = null)
             return
         }
@@ -217,13 +235,19 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             screen = firstScreen,
             intent = intent?.takeIf { screenPath.size == 1 },
             savedInstance = savedInstance?.takeIf { screenPath.size == 1 },
+            providerParams = providerParams?.takeIf { screenPath.size == 1 },
         )
 
         // Если требуется открыть более одного экрана за раз, то передаем управление дальше, навигатору экрана
         // который только что открыли шагом выше.
         if (childPath.isNotEmpty()) {
             val childNavigator = findChildNavigator(childElement = firstScreen)
-            childNavigator!!.openChain(screenPath = childPath, intent = intent, savedInstance = savedInstance)
+            childNavigator!!.openChain(
+                screenPath = childPath,
+                intent = intent,
+                savedInstance = savedInstance,
+                providerParams = providerParams,
+            )
         }
     }
 
@@ -253,6 +277,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         screen: ScreenPath.PathElement,
         intent: ScreenIntent?,
         savedInstance: TransferableScreenHolder<*>? = null,
+        providerParams: IntentScreenParams<*>? = null,
     ) {
         val screenKey = screen.asScreenKey()
         val childNode = node.children.find { it.value.screenKey == screenKey }
@@ -260,7 +285,12 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         val hostNavigator = getChildHostNavigator(screenKey)
         when (screen) {
             is ScreenPath.PathElement.Key -> hostNavigator.open(screen.screenKey) { childNode.value.defaultParams!! }
-            is ScreenPath.PathElement.Params -> hostNavigator.open(screen.screenParams, intent, savedInstance)
+            is ScreenPath.PathElement.Params -> hostNavigator.open(
+                params = screen.screenParams,
+                intent = intent,
+                savedInstance = savedInstance,
+                providerParams = providerParams,
+            )
         }
     }
 
@@ -286,18 +316,23 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     }
 
     /**
-     * Возвращает фабрику для создания дочернего экрана.
+     * Возвращает фабрику для создания дочернего экрана, не проверяя реестр провайдеров.
      */
     @Suppress("UNCHECKED_CAST")
     fun getChildScreenFactory(
         screenKey: ScreenKey,
     ): ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *> {
-        // Ищем среди локальных фабрик, потом, если не нашли, смотрим в глобальных фабриках.
-        val factory = customFactories[screenKey]
-            ?: node.children.find { it.value.screenKey == screenKey }?.value?.factory
+        val factory = tryGetChildScreenFactory(screenKey)
         check(factory != null) { "Factory for screen $screenKey not found" }
         return factory as ScreenFactory<Ctx, IntentScreenParams<ScreenIntent>, ScreenIntent, *>
     }
+
+    /**
+     * Пытается найти фабрику для создания дочернего экрана. Возвращает null, если фабрика не найдена.
+     */
+    fun tryGetChildScreenFactory(screenKey: ScreenKey): ScreenFactory<Ctx, *, *, *>? =
+        customFactories[screenKey]
+            ?: node.children.find { it.value.screenKey == screenKey }?.value?.factory
 
     /**
      * Запрашивает задержку splash экрана, сначала для текущего экрана и только потом для всех дочерних навигаторов.
@@ -318,10 +353,11 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
             if (ip.screenPath.first().asScreenKey() == screenKey) {
                 val intent = ip.intent
                 val savedInstance = ip.savedInstance
-                initialPath = null
+                val providerParams = ip.providerParams
                 val tail = ip.screenPath.drop(1)
+                initialPath = null
                 if (tail.isNotEmpty()) {
-                    ScreenPathWithIntent(ScreenPath(tail), intent, savedInstance)
+                    ScreenPathWithIntent(ScreenPath(tail), intent, savedInstance, providerParams = providerParams)
                 } else {
                     null
                 }
@@ -350,6 +386,18 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         targetScreenParams = screenParams,
         intent = intent,
         hints = hints,
+    )
+
+    override fun <S : IntentScreenParams<I>, I : ScreenIntent> openWithCustomFactory(
+        screenParams: S,
+        intent: I?,
+        hints: List<IntentScreenParams<*>>,
+    ): Unit = globalNavigator.open(
+        startScreenPath = screenPath,
+        targetScreenParams = screenParams,
+        intent = intent,
+        hints = hints,
+        providerParams = this.screenParams,
     )
 
     override fun close(screenParams: IntentScreenParams<*>): Unit =

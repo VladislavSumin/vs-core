@@ -16,7 +16,12 @@ internal interface HostNavigator {
      * @param params параметры экрана.
      * @param savedInstance усыновляемый инстанс экрана (при переносе).
      */
-    fun open(params: IntentScreenParams<*>, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>? = null)
+    fun open(
+        params: IntentScreenParams<*>,
+        intent: ScreenIntent?,
+        savedInstance: TransferableScreenHolder<*>? = null,
+        providerParams: IntentScreenParams<*>? = null,
+    )
 
     fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<*>)
 

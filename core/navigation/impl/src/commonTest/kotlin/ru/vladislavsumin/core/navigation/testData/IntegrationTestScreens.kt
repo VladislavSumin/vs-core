@@ -265,6 +265,8 @@ class MiddleScreen(val params: MiddleParams, context: ComponentContext) : Screen
         navigator.open(screenParams, hints = hints)
     }
 
+    fun openWithCustomFactory(params: IntentScreenParams<*>) = navigator.openWithCustomFactory(params)
+
     fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
 
     fun transfer(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>>) {

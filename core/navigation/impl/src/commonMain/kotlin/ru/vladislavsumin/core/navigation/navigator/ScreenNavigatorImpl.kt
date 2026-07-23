@@ -241,7 +241,7 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         // Если требуется открыть более одного экрана за раз, то передаем управление дальше, навигатору экрана
         // который только что открыли шагом выше.
         if (childPath.isNotEmpty()) {
-            val childNavigator = findChildNavigator(childElement = firstScreen)
+            val childNavigator = resolveChildNavigatorAfterOpen(firstScreen)
             childNavigator!!.openChain(
                 screenPath = childPath,
                 intent = intent,
@@ -424,6 +424,19 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
 
             is ScreenPath.PathElement.Params -> childScreenNavigators[childElement.screenParams]
         }
+
+    private fun resolveChildNavigatorAfterOpen(firstScreen: ScreenPath.PathElement): ScreenNavigatorImpl<Ctx>? {
+        if (firstScreen is ScreenPath.PathElement.Params) {
+            return childScreenNavigators[firstScreen.screenParams]
+        }
+        val keyElement = firstScreen as ScreenPath.PathElement.Key
+        val activeParams = getChildHostNavigator(keyElement.screenKey).getActiveParams(keyElement.screenKey)
+        return if (activeParams != null) {
+            childScreenNavigators[activeParams]
+        } else {
+            findChildNavigator(firstScreen)
+        }
+    }
 
     private fun getChildHostNavigator(screenKey: ScreenKey): HostNavigator {
         val childNode = node.children.find { it.value.screenKey == screenKey }

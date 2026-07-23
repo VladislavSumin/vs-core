@@ -96,6 +96,8 @@ private class SlotHostNavigator(
     private val slotNavigation: SlotNavigation<ConfigurationHolder>,
     private val allowCloseScreen: () -> Boolean,
 ) : HostNavigator {
+    private var activeParams: IntentScreenParams<*>? = null
+    private var activeScreenKey: ScreenKey? = null
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
@@ -119,9 +121,14 @@ private class SlotHostNavigator(
         // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
         slotNavigation.navigate { currentOpenedScreen ->
             if (currentOpenedScreen != null && currentOpenedScreen.screenParams.asKey() == screenKey) {
+                activeParams = currentOpenedScreen.screenParams
+                activeScreenKey = screenKey
                 currentOpenedScreen
             } else {
-                ConfigurationHolder(defaultParams())
+                val params = defaultParams()
+                activeParams = params
+                activeScreenKey = screenKey
+                ConfigurationHolder(params)
             }
         }
     }
@@ -164,6 +171,11 @@ private class SlotHostNavigator(
             }
         }
         return isSuccess ?: error("unreachable")
+    }
+
+    override fun getActiveParams(screenKey: ScreenKey): IntentScreenParams<*>? {
+        val params = activeParams
+        return if (activeScreenKey == screenKey && params != null) params else null
     }
 }
 

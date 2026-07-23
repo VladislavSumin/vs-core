@@ -44,4 +44,13 @@ internal interface HostNavigator {
      * @return true если экран был успешно закрыт, false в других случаях.
      */
     fun close(screenKey: ScreenKey): Boolean
+
+    /**
+     * Возвращает параметры активного экрана с заданным [screenKey] в этом хосте.
+     * Используется для однозначного поиска навигатора после открытия через [open] по ключу,
+     * когда в хосте несколько инстансов одного типа.
+     *
+     * @return параметры активного экрана или `null`, если экран с таким ключом не активен.
+     */
+    fun getActiveParams(screenKey: ScreenKey): IntentScreenParams<*>?
 }

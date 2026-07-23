@@ -139,6 +139,9 @@ private class PagesHostNavigator(
     private val closeParentIfEmpty: () -> Boolean,
 ) : HostNavigator,
     PagesNavigationController {
+    private var activeParams: IntentScreenParams<*>? = null
+    private var activeScreenKey: ScreenKey? = null
+
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
@@ -171,13 +174,20 @@ private class PagesHostNavigator(
             transformer = { pages ->
                 val indexOfScreen = pages.items.map { it.screenParams.asKey() }.indexOf(screenKey)
                 if (indexOfScreen >= 0) {
+                    activeParams = pages.items[indexOfScreen].screenParams
+                    activeScreenKey = screenKey
                     pages.copy(selectedIndex = indexOfScreen)
                 } else {
-                    val indexOfDefaultScreen = pages.items.indexOfFirst { it.screenParams == defaultParams() }
+                    val params = defaultParams()
+                    val indexOfDefaultScreen = pages.items.indexOfFirst { it.screenParams == params }
                     if (indexOfDefaultScreen >= 0) {
+                        activeParams = params
+                        activeScreenKey = screenKey
                         pages.copy(selectedIndex = indexOfDefaultScreen)
                     } else {
-                        val newItem = ConfigurationHolder(defaultParams())
+                        activeParams = params
+                        activeScreenKey = screenKey
+                        val newItem = ConfigurationHolder(params)
                         val newItems = pages.items + newItem
                         Pages(newItems, newItems.size - 1)
                     }
@@ -277,6 +287,11 @@ private class PagesHostNavigator(
             },
             onComplete = { _, _ -> },
         )
+    }
+
+    override fun getActiveParams(screenKey: ScreenKey): IntentScreenParams<*>? {
+        val params = activeParams
+        return if (activeScreenKey == screenKey && params != null) params else null
     }
 }
 

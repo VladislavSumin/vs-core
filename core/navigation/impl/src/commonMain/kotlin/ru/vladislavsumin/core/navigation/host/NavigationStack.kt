@@ -114,6 +114,8 @@ private class StackHostNavigator(
      */
     private val closeParentIfEmpty: () -> Boolean,
 ) : HostNavigator {
+    private var activeParams: IntentScreenParams<*>? = null
+    private var activeScreenKey: ScreenKey? = null
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
@@ -144,9 +146,14 @@ private class StackHostNavigator(
             transformer = { stack ->
                 val indexOfScreen = stack.map { it.screenParams.asKey() }.indexOf(screenKey)
                 if (indexOfScreen >= 0) {
+                    activeParams = stack[indexOfScreen].screenParams
+                    activeScreenKey = screenKey
                     stack.subList(0, indexOfScreen + 1)
                 } else {
-                    stack + ConfigurationHolder(defaultParams())
+                    val params = defaultParams()
+                    activeParams = params
+                    activeScreenKey = screenKey
+                    stack + ConfigurationHolder(params)
                 }
             },
             onComplete = { _, _ -> },
@@ -222,6 +229,11 @@ private class StackHostNavigator(
             onComplete = { _, _ -> },
         )
         return isSuccess ?: error("unreachable")
+    }
+
+    override fun getActiveParams(screenKey: ScreenKey): IntentScreenParams<*>? {
+        val params = activeParams
+        return if (activeScreenKey == screenKey && params != null) params else null
     }
 }
 

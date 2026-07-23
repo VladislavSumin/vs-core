@@ -9,6 +9,7 @@ internal class FactoryProviderRegistry<Ctx : GenericComponentContext<Ctx>> {
 
     private val factories = mutableMapOf<ProviderKey, ScreenFactory<Ctx, *, *, *>>()
     private val callbacks = mutableMapOf<ProviderKey, MutableList<(ScreenFactory<Ctx, *, *, *>) -> Unit>>()
+    private val dependentNavigators = mutableMapOf<IntentScreenParams<*>, MutableSet<ScreenNavigatorImpl<*>>>()
 
     fun register(
         providerParams: IntentScreenParams<*>,
@@ -42,10 +43,24 @@ internal class FactoryProviderRegistry<Ctx : GenericComponentContext<Ctx>> {
         }
     }
 
+    fun registerDependent(providerParams: IntentScreenParams<*>, dependentNav: ScreenNavigatorImpl<*>) {
+        dependentNavigators.getOrPut(providerParams) { mutableSetOf() }.add(dependentNav)
+    }
+
+    fun unregisterDependent(providerParams: IntentScreenParams<*>, dependentNav: ScreenNavigatorImpl<*>) {
+        dependentNavigators[providerParams]?.remove(dependentNav)
+    }
+
     fun removeProvider(providerParams: IntentScreenParams<*>) {
         val toRemove = factories.keys.filter { it.providerParams == providerParams }
         toRemove.forEach { factories.remove(it) }
         callbacks.keys.filter { it.providerParams == providerParams }.forEach { callbacks.remove(it) }
+        dependentNavigators.remove(providerParams)?.forEach { nav ->
+            nav.globalNavigator.close(
+                startScreenPath = nav.screenPath,
+                targetScreenParams = nav.screenParams,
+            )
+        }
     }
 
     data class ProviderKey(

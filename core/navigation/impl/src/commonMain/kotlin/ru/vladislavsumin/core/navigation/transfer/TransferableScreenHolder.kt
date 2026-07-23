@@ -8,7 +8,6 @@ import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.arkivanov.essenty.lifecycle.destroy
-import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.stop
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.StateKeeper
@@ -34,14 +33,6 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     lateinit var screen: GenericScreen<Ctx>
     lateinit var navigator: ScreenNavigatorImpl<Ctx>
 
-    init {
-        lifecycle.doOnDestroy {
-            if (::navigator.isInitialized) {
-                navigator.globalNavigator.factoryProviderRegistry.removeProvider(navigator.screenParams)
-            }
-        }
-    }
-
     private var boundHostInstanceKeeper: InstanceKeeper? = null
     private var boundHostStateKeeper: StateKeeper? = null
     private var boundHostLifecycle: Lifecycle? = null
@@ -64,7 +55,10 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
             )
         }
         host.instanceKeeper.getOrCreate(stateKey) { InstanceKeeperHolder(instanceKeeper) }
-            .also { (it as InstanceKeeperHolder).screenNavigator = navigator }
+            .also { h ->
+                h.screenNavigator = navigator
+                h.providerParams = providerParams
+            }
 
         host.lifecycle.subscribe(lifecycle)
     }
@@ -94,10 +88,16 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     internal class InstanceKeeperHolder(
         val dispatcher: InstanceKeeperDispatcher,
         var screenNavigator: ScreenNavigatorImpl<*>? = null,
+        var providerParams: IntentScreenParams<*>? = null,
     ) : InstanceKeeper.Instance {
         override fun onDestroy() {
             dispatcher.destroy()
             screenNavigator?.detachFromParent()
+            screenNavigator?.let { nav ->
+                val registry = nav.globalNavigator.factoryProviderRegistry
+                registry.removeProvider(nav.screenParams)
+                providerParams?.let { pp -> registry.unregisterDependent(pp, nav) }
+            }
         }
     }
 }

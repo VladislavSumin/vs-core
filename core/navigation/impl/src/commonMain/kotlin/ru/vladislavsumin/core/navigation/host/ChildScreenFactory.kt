@@ -54,6 +54,9 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         childNavigator.holder = holder
         holder.navigator = childNavigator
         holder.bindTo(childScreenContext, STATE_KEY)
+        providerParams?.let { pp ->
+            internalNavigator.globalNavigator.factoryProviderRegistry.registerDependent(pp, childNavigator)
+        }
 
         val deferredScreen = try {
             ScreenNavigatorHolder = childNavigator
@@ -83,6 +86,9 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         )
         buildScreen(newHolder, childScreenContext, configuration)
         newHolder.bindTo(childScreenContext, STATE_KEY)
+        providerParams?.let { pp ->
+            internalNavigator.globalNavigator.factoryProviderRegistry.registerDependent(pp, newHolder.navigator)
+        }
         saved.destroyWithoutInstanceKeeper()
         newHolder
     } else {
@@ -100,6 +106,9 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         )
         buildScreen(holder, childScreenContext, configuration)
         holder.bindTo(childScreenContext, STATE_KEY)
+        providerParams?.let { pp ->
+            internalNavigator.globalNavigator.factoryProviderRegistry.registerDependent(pp, holder.navigator)
+        }
         holder
     }
 

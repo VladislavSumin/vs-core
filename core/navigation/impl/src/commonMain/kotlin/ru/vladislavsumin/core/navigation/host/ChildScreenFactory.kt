@@ -9,6 +9,12 @@ import ru.vladislavsumin.core.navigation.screen.ScreenNavigatorHolder
 import ru.vladislavsumin.core.navigation.screen.asKey
 import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
 
+/**
+ * Стандартная фабрика дочерних экранов для использования в compose навигации.
+ *
+ * Все экраны строятся на управляемом контексте (TransferableScreenHolder),
+ * что делает их универсально переносимыми (transferable) без дополнительных маркеров.
+ */
 @Suppress("UNCHECKED_CAST")
 internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreenFactory(
     configuration: ConfigurationHolder,

@@ -30,6 +30,15 @@ public abstract class NavigationViewModel : ViewModel() {
     ): Unit = send(NavigationEvent.Open(screenParams, intent, hints))
 
     /**
+     * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl.openWithCustomFactory].
+     */
+    protected fun <S : IntentScreenParams<I>, I : ScreenIntent> openWithCustomFactory(
+        screenParams: S,
+        intent: I? = null,
+        hints: List<IntentScreenParams<*>> = emptyList(),
+    ): Unit = send(NavigationEvent.OpenWithCustomFactory(screenParams, intent, hints))
+
+    /**
      * Работает аналогично [ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl.close].
      */
     protected fun close(screenParams: IntentScreenParams<*>): Unit = send(NavigationEvent.Close(screenParams))
@@ -45,6 +54,12 @@ public abstract class NavigationViewModel : ViewModel() {
 
     internal sealed interface NavigationEvent {
         data class Open(
+            val screenParams: IntentScreenParams<*>,
+            val intent: ScreenIntent?,
+            val hints: List<IntentScreenParams<*>>,
+        ) : NavigationEvent
+
+        data class OpenWithCustomFactory(
             val screenParams: IntentScreenParams<*>,
             val intent: ScreenIntent?,
             val hints: List<IntentScreenParams<*>>,

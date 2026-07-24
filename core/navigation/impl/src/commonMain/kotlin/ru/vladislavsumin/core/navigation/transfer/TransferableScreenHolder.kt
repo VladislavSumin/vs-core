@@ -12,6 +12,7 @@ import com.arkivanov.essenty.lifecycle.stop
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.navigator.ScreenNavigatorImpl
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 
@@ -19,6 +20,7 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
     savedState: SerializableContainer? = null,
     instanceKeeper: InstanceKeeperDispatcher? = null,
     restoredSaveable: Map<String, List<Any?>>? = null,
+    val providerParams: IntentScreenParams<*>? = null,
 ) {
 
     private val lifecycle = LifecycleRegistry()
@@ -53,6 +55,10 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
             )
         }
         host.instanceKeeper.getOrCreate(stateKey) { InstanceKeeperHolder(instanceKeeper) }
+            .also { h ->
+                h.screenNavigator = navigator
+                h.providerParams = providerParams
+            }
 
         host.lifecycle.subscribe(lifecycle)
     }
@@ -79,9 +85,19 @@ internal class TransferableScreenHolder<Ctx : GenericComponentContext<Ctx>>(
         lifecycle.destroy()
     }
 
-    internal class InstanceKeeperHolder(val dispatcher: InstanceKeeperDispatcher) : InstanceKeeper.Instance {
+    internal class InstanceKeeperHolder(
+        val dispatcher: InstanceKeeperDispatcher,
+        var screenNavigator: ScreenNavigatorImpl<*>? = null,
+        var providerParams: IntentScreenParams<*>? = null,
+    ) : InstanceKeeper.Instance {
         override fun onDestroy() {
             dispatcher.destroy()
+            screenNavigator?.detachFromParent()
+            screenNavigator?.let { nav ->
+                val registry = nav.globalNavigator.factoryProviderRegistry
+                registry.removeProvider(nav.screenParams)
+                providerParams?.let { pp -> registry.unregisterDependent(pp, nav) }
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
@@ -64,33 +65,38 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         saveStack = { state ->
             if (allowStateSave) {
                 SerializableContainer(
-                    value = state.map { it.screenParams },
-                    strategy = ListSerializer(internalNavigator.serializer),
+                    value = state.map { StackItem(it.screenParams, it.providerParams) },
+                    strategy = ListSerializer(StackItem.serializer(internalNavigator.serializer)),
                 )
             } else {
                 null
             }
         },
         restoreStack = { container ->
-            container.consumeRequired(strategy = ListSerializer(internalNavigator.serializer))
-                .map { ConfigurationHolder(it) }
+            container
+                .consumeRequired(strategy = ListSerializer(StackItem.serializer(internalNavigator.serializer)))
+                .map { ConfigurationHolder(it.screenParams, providerParams = it.providerParams) }
         },
         key = key,
         initialStack = {
-            val stack = internalNavigator.getInitialParamsFor(navigationHost)?.let { params ->
-                val stack = defaultStack().map { ConfigurationHolder(it) }
-                val index = stack.indexOfFirst { it.screenParams == params.screenParams }
-                if (index >= 0) {
-                    stack[index].sendIntent(params.intent)
-                    stack.subList(0, index + 1)
+            val initial = internalNavigator.getInitialParamsFor(navigationHost)
+            val stack = if (initial != null) {
+                val paramsList = defaultStack()
+                val index = paramsList.indexOfFirst { it == initial.screenParams }
+                val holders = if (index >= 0) {
+                    paramsList.subList(0, index + 1).map { ConfigurationHolder(it) }
                 } else {
-                    stack + ConfigurationHolder(
-                        params.screenParams,
-                        params.intent,
-                        savedInstance = params.savedInstance,
+                    paramsList.map { ConfigurationHolder(it) } + ConfigurationHolder(
+                        initial.screenParams,
+                        initial.intent,
+                        savedInstance = initial.savedInstance,
+                        providerParams = initial.providerParams,
                     )
                 }
-            } ?: initialStack().map { ConfigurationHolder(it) }
+                holders
+            } else {
+                initialStack().map { ConfigurationHolder(it) }
+            }
 
             stack
         },
@@ -108,10 +114,13 @@ private class StackHostNavigator(
      */
     private val closeParentIfEmpty: () -> Boolean,
 ) : HostNavigator {
+    private var activeParams: IntentScreenParams<*>? = null
+    private var activeScreenKey: ScreenKey? = null
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
         savedInstance: TransferableScreenHolder<*>?,
+        providerParams: IntentScreenParams<*>?,
     ) {
         // Если такого экрана еще нет в стеке, то открываем его.
         // Если же экран уже есть в стеке, то закрываем все экраны после него.
@@ -121,7 +130,7 @@ private class StackHostNavigator(
                 val newStack = if (indexOfScreen >= 0) {
                     stack.subList(0, indexOfScreen + 1)
                 } else {
-                    stack + ConfigurationHolder(params, savedInstance = savedInstance)
+                    stack + ConfigurationHolder(params, savedInstance = savedInstance, providerParams = providerParams)
                 }
                 newStack.last().sendIntent(intent)
                 newStack
@@ -137,9 +146,14 @@ private class StackHostNavigator(
             transformer = { stack ->
                 val indexOfScreen = stack.map { it.screenParams.asKey() }.indexOf(screenKey)
                 if (indexOfScreen >= 0) {
+                    activeParams = stack[indexOfScreen].screenParams
+                    activeScreenKey = screenKey
                     stack.subList(0, indexOfScreen + 1)
                 } else {
-                    stack + ConfigurationHolder(defaultParams())
+                    val params = defaultParams()
+                    activeParams = params
+                    activeScreenKey = screenKey
+                    stack + ConfigurationHolder(params)
                 }
             },
             onComplete = { _, _ -> },
@@ -216,4 +230,15 @@ private class StackHostNavigator(
         )
         return isSuccess ?: error("unreachable")
     }
+
+    override fun getActiveParams(screenKey: ScreenKey): IntentScreenParams<*>? {
+        val params = activeParams
+        return if (activeScreenKey == screenKey && params != null) params else null
+    }
 }
+
+@Serializable
+private class StackItem<T : IntentScreenParams<*>>(
+    val screenParams: T,
+    val providerParams: IntentScreenParams<*>? = null,
+)

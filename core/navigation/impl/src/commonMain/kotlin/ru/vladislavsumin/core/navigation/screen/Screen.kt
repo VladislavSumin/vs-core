@@ -108,6 +108,10 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
     /**
      * Регистрирует кастомную фабрику для экрана [T]. Данный экран должен открываться в хостах навигации этого экрана.
      * **Внимание** Регистрировать фабрики нужно ДО объявления хостов навигации. Это важно при восстановлении состояния.
+     *
+     * Фабрика так же регистрируется в глобальном реестре
+     * [ru.vladislavsumin.core.navigation.navigator.FactoryProviderRegistry]
+     * что позволяет другим экранам открывать [T] используя этот экран как провайдера фабрики.
      */
     protected inline fun <
         reified T : IntentScreenParams<I>,
@@ -116,7 +120,9 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
         > registerCustomFactory(
         factory: ScreenFactory<Ctx, T, I, S>,
     ) {
-        internalNavigator.registerCustomFactory(ScreenKey(T::class), factory)
+        val targetKey = ScreenKey(T::class)
+        internalNavigator.registerCustomFactory(targetKey, factory)
+        internalNavigator.registerInProviderRegistry(targetKey, factory)
     }
 
     @PublishedApi
@@ -124,6 +130,12 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
         for (event in navigationChannel) {
             when (event) {
                 is NavigationViewModel.NavigationEvent.Open -> navigator.open(
+                    screenParams = event.screenParams as IntentScreenParams<ScreenIntent>,
+                    intent = event.intent,
+                    hints = event.hints,
+                )
+
+                is NavigationViewModel.NavigationEvent.OpenWithCustomFactory -> navigator.openWithCustomFactory(
                     screenParams = event.screenParams as IntentScreenParams<ScreenIntent>,
                     intent = event.intent,
                     hints = event.hints,

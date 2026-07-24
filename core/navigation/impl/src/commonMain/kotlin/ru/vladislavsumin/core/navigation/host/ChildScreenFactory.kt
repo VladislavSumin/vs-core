@@ -15,30 +15,89 @@ import ru.vladislavsumin.core.navigation.transfer.TransferableScreenHolder
  * Все экраны строятся на управляемом контексте (TransferableScreenHolder),
  * что делает их универсально переносимыми (transferable) без дополнительных маркеров.
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "LongMethod")
 internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreenFactory(
     configuration: ConfigurationHolder,
     childScreenContext: Ctx,
 ): GenericScreen<Ctx> {
     val screenParams = configuration.screenParams
+    val screenKey = screenParams.asKey()
+    val providerParams = configuration.providerParams
+
+    val factory = internalNavigator.tryGetChildScreenFactory(screenKey)
+    val needsDeferred = factory == null && providerParams != null
+
+    if (needsDeferred) {
+        val effectiveProviderParams = providerParams
+            ?: (configuration.savedInstance as? TransferableScreenHolder<Ctx>)?.providerParams
+        val holder: TransferableScreenHolder<Ctx> = if (configuration.savedInstance != null) {
+            val saved = configuration.savedInstance as TransferableScreenHolder<Ctx>
+            val newHolder = TransferableScreenHolder<Ctx>(
+                savedState = saved.stateKeeper.save(),
+                instanceKeeper = saved.instanceKeeper,
+                restoredSaveable = saved.saveableStateRegistry.captureRaw(),
+                providerParams = saved.providerParams,
+            )
+            saved.destroyWithoutInstanceKeeper()
+            newHolder
+        } else {
+            val savedState = childScreenContext.stateKeeper.consume(
+                STATE_KEY,
+                SerializableContainer.serializer(),
+            )
+            val instanceKeeper = childScreenContext.instanceKeeper.get(
+                STATE_KEY,
+            ) as? TransferableScreenHolder.InstanceKeeperHolder
+            TransferableScreenHolder<Ctx>(
+                savedState = savedState,
+                instanceKeeper = instanceKeeper?.dispatcher,
+                providerParams = effectiveProviderParams,
+            )
+        }
+
+        val holderContext = holder.createContext(childScreenContext.componentContextFactory)
+        val childNavigator = internalNavigator.createChildNavigator(screenParams, holderContext)
+        childNavigator.holder = holder
+        holder.navigator = childNavigator
+        holder.bindTo(childScreenContext, STATE_KEY)
+        providerParams?.let { pp ->
+            internalNavigator.globalNavigator.factoryProviderRegistry.registerDependent(pp, childNavigator)
+        }
+
+        val deferredScreen = try {
+            ScreenNavigatorHolder = childNavigator
+            DeferredScreen(
+                context = holderContext,
+                holder = holder,
+                configuration = configuration,
+                providerParams = providerParams!!,
+                targetKey = screenKey,
+                registry = internalNavigator.globalNavigator.factoryProviderRegistry,
+            )
+        } finally {
+            ScreenNavigatorHolder = null
+        }
+        childNavigator.screen = deferredScreen
+        holder.screen = deferredScreen
+        return deferredScreen
+    }
 
     val holder: TransferableScreenHolder<Ctx> = if (configuration.savedInstance != null) {
-        // Усыновление: экран был перенесён из другой локации.
-        // Создаём новый holder с живым instanceKeeper (со всеми VM) и сохранённым stateKeeper,
-        // строим свежий экран на новом контексте — так window-зависимости инжектятся заново,
-        // а viewModel выживает через общий instanceKeeper.
         val saved = configuration.savedInstance as TransferableScreenHolder<Ctx>
         val newHolder = TransferableScreenHolder<Ctx>(
             savedState = saved.stateKeeper.save(),
             instanceKeeper = saved.instanceKeeper,
             restoredSaveable = saved.saveableStateRegistry.captureRaw(),
+            providerParams = saved.providerParams,
         )
         buildScreen(newHolder, childScreenContext, configuration)
         newHolder.bindTo(childScreenContext, STATE_KEY)
+        providerParams?.let { pp ->
+            internalNavigator.globalNavigator.factoryProviderRegistry.registerDependent(pp, newHolder.navigator)
+        }
         saved.destroyWithoutInstanceKeeper()
         newHolder
     } else {
-        // Нормальное создание или восстановление после смены конфигурации.
         val savedState = childScreenContext.stateKeeper.consume(
             STATE_KEY,
             SerializableContainer.serializer(),
@@ -49,9 +108,13 @@ internal fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childScreen
         val holder = TransferableScreenHolder<Ctx>(
             savedState = savedState,
             instanceKeeper = instanceKeeper?.dispatcher,
+            providerParams = providerParams,
         )
         buildScreen(holder, childScreenContext, configuration)
         holder.bindTo(childScreenContext, STATE_KEY)
+        providerParams?.let { pp ->
+            internalNavigator.globalNavigator.factoryProviderRegistry.registerDependent(pp, holder.navigator)
+        }
         holder
     }
 

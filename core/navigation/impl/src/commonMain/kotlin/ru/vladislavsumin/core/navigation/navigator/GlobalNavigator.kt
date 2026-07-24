@@ -21,6 +21,7 @@ import kotlin.time.measureTimedValue
 internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val navigation: GenericNavigation<Ctx>) {
 
     internal lateinit var rootNavigator: ScreenNavigatorImpl<Ctx>
+    internal val factoryProviderRegistry = FactoryProviderRegistry<Ctx>()
     private val relay = UnsafeRelay()
 
     /**
@@ -37,6 +38,7 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
         targetScreenParams: IntentScreenParams<*>,
         intent: ScreenIntent?,
         hints: List<IntentScreenParams<*>>,
+        providerParams: IntentScreenParams<*>? = null,
     ) {
         NavigationLogger.i { "Open screen ${targetScreenParams::class.simpleName}" }
         relay.accept {
@@ -44,7 +46,7 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
                 createOpenPath(startScreenPath, targetScreenParams, hints)
             }
             NavigationLogger.d { "Screen path calculated at ${screenPath.duration}" }
-            rootNavigator.openChain(screenPath.value, intent)
+            rootNavigator.openChain(screenPath.value, intent, providerParams = providerParams)
         }
     }
 
@@ -194,6 +196,7 @@ internal class GlobalNavigator<Ctx : GenericComponentContext<Ctx>>(private val n
                 screenPath = targetPath,
                 intent = null,
                 savedInstance = holder,
+                providerParams = holder.providerParams,
             )
         }
     }

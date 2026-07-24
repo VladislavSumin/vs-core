@@ -10,6 +10,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.statekeeper.SerializableContainer
 import com.arkivanov.essenty.statekeeper.consumeRequired
+import kotlinx.serialization.Serializable
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.NavigationHost
 import ru.vladislavsumin.core.navigation.ScreenIntent
@@ -58,20 +59,28 @@ public fun <Ctx : GenericComponentContext<Ctx>> GenericScreen<Ctx>.childNavigati
         source = source,
         saveConfiguration = { state ->
             if (allowStateSave && state != null) {
-                SerializableContainer(value = state.screenParams, strategy = internalNavigator.serializer)
+                SerializableContainer(
+                    value = SlotState(state.screenParams, state.providerParams),
+                    strategy = SlotState.serializer(internalNavigator.serializer),
+                )
             } else {
                 null
             }
         },
         restoreConfiguration = { container ->
-            val screenParams = container.consumeRequired(strategy = internalNavigator.serializer)
-            ConfigurationHolder(screenParams)
+            val slotState = container.consumeRequired(strategy = SlotState.serializer(internalNavigator.serializer))
+            ConfigurationHolder(slotState.screenParams, providerParams = slotState.providerParams)
         },
         key = key,
         initialConfiguration = {
             val initial = internalNavigator.getInitialParamsFor(navigationHost)
             if (initial != null) {
-                ConfigurationHolder(initial.screenParams, initial.intent, savedInstance = initial.savedInstance)
+                ConfigurationHolder(
+                    initial.screenParams,
+                    initial.intent,
+                    savedInstance = initial.savedInstance,
+                    providerParams = initial.providerParams,
+                )
             } else {
                 initialConfiguration()?.let { ConfigurationHolder(it) }
             }
@@ -87,10 +96,13 @@ private class SlotHostNavigator(
     private val slotNavigation: SlotNavigation<ConfigurationHolder>,
     private val allowCloseScreen: () -> Boolean,
 ) : HostNavigator {
+    private var activeParams: IntentScreenParams<*>? = null
+    private var activeScreenKey: ScreenKey? = null
     override fun open(
         params: IntentScreenParams<*>,
         intent: ScreenIntent?,
         savedInstance: TransferableScreenHolder<*>?,
+        providerParams: IntentScreenParams<*>?,
     ) {
         // Просто открываем переданный экран, логика слот навигации закроет предыдущий экран если он другой
         // или не будет делать ничего если уже открыт искомый экран.
@@ -98,7 +110,7 @@ private class SlotHostNavigator(
             val newConfig = if (currentOpenedScreen != null && currentOpenedScreen.screenParams == params) {
                 currentOpenedScreen
             } else {
-                ConfigurationHolder(params, savedInstance = savedInstance)
+                ConfigurationHolder(params, savedInstance = savedInstance, providerParams = providerParams)
             }
             newConfig.sendIntent(intent)
             newConfig
@@ -109,9 +121,14 @@ private class SlotHostNavigator(
         // Проверяем, если текущий экран имеет такой же ключ, то оставляем его, иначе заменяем на defaultParams
         slotNavigation.navigate { currentOpenedScreen ->
             if (currentOpenedScreen != null && currentOpenedScreen.screenParams.asKey() == screenKey) {
+                activeParams = currentOpenedScreen.screenParams
+                activeScreenKey = screenKey
                 currentOpenedScreen
             } else {
-                ConfigurationHolder(defaultParams())
+                val params = defaultParams()
+                activeParams = params
+                activeScreenKey = screenKey
+                ConfigurationHolder(params)
             }
         }
     }
@@ -155,4 +172,15 @@ private class SlotHostNavigator(
         }
         return isSuccess ?: error("unreachable")
     }
+
+    override fun getActiveParams(screenKey: ScreenKey): IntentScreenParams<*>? {
+        val params = activeParams
+        return if (activeScreenKey == screenKey && params != null) params else null
+    }
 }
+
+@Serializable
+private class SlotState<T : IntentScreenParams<*>>(
+    val screenParams: T,
+    val providerParams: IntentScreenParams<*>? = null,
+)

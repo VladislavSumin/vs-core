@@ -16,7 +16,12 @@ internal interface HostNavigator {
      * @param params параметры экрана.
      * @param savedInstance усыновляемый инстанс экрана (при переносе).
      */
-    fun open(params: IntentScreenParams<*>, intent: ScreenIntent?, savedInstance: TransferableScreenHolder<*>? = null)
+    fun open(
+        params: IntentScreenParams<*>,
+        intent: ScreenIntent?,
+        savedInstance: TransferableScreenHolder<*>? = null,
+        providerParams: IntentScreenParams<*>? = null,
+    )
 
     fun open(screenKey: ScreenKey, defaultParams: () -> IntentScreenParams<*>)
 
@@ -39,4 +44,13 @@ internal interface HostNavigator {
      * @return true если экран был успешно закрыт, false в других случаях.
      */
     fun close(screenKey: ScreenKey): Boolean
+
+    /**
+     * Возвращает параметры активного экрана с заданным [screenKey] в этом хосте.
+     * Используется для однозначного поиска навигатора после открытия через [open] по ключу,
+     * когда в хосте несколько инстансов одного типа.
+     *
+     * @return параметры активного экрана или `null`, если экран с таким ключом не активен.
+     */
+    fun getActiveParams(screenKey: ScreenKey): IntentScreenParams<*>?
 }

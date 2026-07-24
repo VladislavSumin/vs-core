@@ -14,6 +14,7 @@ public final class ru/vladislavsumin/core/navigation/GenericNavigation$Companion
 public final class ru/vladislavsumin/core/navigation/host/ConfigurationHolder {
 	public static final field $stable I
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getProviderParams ()Lru/vladislavsumin/core/navigation/IntentScreenParams;
 	public final fun getScreenParams ()Lru/vladislavsumin/core/navigation/IntentScreenParams;
 	public fun hashCode ()I
 }
@@ -65,11 +66,14 @@ public abstract interface class ru/vladislavsumin/core/navigation/navigator/Scre
 	public abstract fun close (Lru/vladislavsumin/core/navigation/IntentScreenParams;)V
 	public abstract fun open (Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;)V
 	public static synthetic fun open$default (Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;ILjava/lang/Object;)V
+	public abstract fun openWithCustomFactory (Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;)V
+	public static synthetic fun openWithCustomFactory$default (Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;ILjava/lang/Object;)V
 	public abstract fun transfer (Lru/vladislavsumin/core/navigation/IntentScreenParams;Ljava/util/List;)V
 }
 
 public final class ru/vladislavsumin/core/navigation/navigator/ScreenNavigator$DefaultImpls {
 	public static synthetic fun open$default (Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;ILjava/lang/Object;)V
+	public static synthetic fun openWithCustomFactory$default (Lru/vladislavsumin/core/navigation/navigator/ScreenNavigator;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;ILjava/lang/Object;)V
 }
 
 public abstract interface class ru/vladislavsumin/core/navigation/registration/GenericNavigationRegistrar {
@@ -136,5 +140,7 @@ public abstract class ru/vladislavsumin/core/navigation/viewModel/NavigationView
 	protected final fun close (Lru/vladislavsumin/core/navigation/IntentScreenParams;)V
 	protected final fun open (Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;)V
 	public static synthetic fun open$default (Lru/vladislavsumin/core/navigation/viewModel/NavigationViewModel;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;ILjava/lang/Object;)V
+	protected final fun openWithCustomFactory (Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;)V
+	public static synthetic fun openWithCustomFactory$default (Lru/vladislavsumin/core/navigation/viewModel/NavigationViewModel;Lru/vladislavsumin/core/navigation/IntentScreenParams;Lru/vladislavsumin/core/navigation/ScreenIntent;Ljava/util/List;ILjava/lang/Object;)V
 }
 

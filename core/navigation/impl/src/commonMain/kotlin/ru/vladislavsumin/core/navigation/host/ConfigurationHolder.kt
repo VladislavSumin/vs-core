@@ -12,6 +12,7 @@ public class ConfigurationHolder internal constructor(
     public val screenParams: IntentScreenParams<*>,
     initialIntent: ScreenIntent? = null,
     internal val savedInstance: Any? = null,
+    public val providerParams: IntentScreenParams<*>? = null,
 ) {
     private val intents: Channel<ScreenIntent> = Channel(Channel.BUFFERED)
     internal val intentReceiveChannel: ReceiveChannel<ScreenIntent> = intents

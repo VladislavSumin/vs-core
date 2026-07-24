@@ -71,15 +71,16 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
         parentNavigator?.registerScreenNavigatorDirect(this)
 
         lifecycle.doOnCreate {
+            // Данная проверка более не может быть выполнена из-за того что фабрика экрана может теперь находится на любом экране.
             // Проверяем что экран зарегистрировал кастомные фабрики для всех дочерних экранов которые требуют таковых.
-            val screenWithoutFactory = node.children
-                .filter { it.value.factory == null }
-                .map { it.value.screenKey }
-                .toSet()
-            val registeredScreenFactory = customFactories.keys
-            check(screenWithoutFactory == registeredScreenFactory) {
-                "Actual factory registration wrong. Expected $screenWithoutFactory, actual $registeredScreenFactory"
-            }
+            // val screenWithoutFactory = node.children
+            //     .filter { it.value.factory == null }
+            //     .map { it.value.screenKey }
+            //     .toSet()
+            // val registeredScreenFactory = customFactories.keys
+            // check(screenWithoutFactory == registeredScreenFactory) {
+            //     "Actual factory registration wrong. Expected $screenWithoutFactory, actual $registeredScreenFactory"
+            // }
 
             // Проверяем что экран действительно зарегистрировал все типы навигации которые может открывать.
             val expectedHosts = node.value.navigationHosts

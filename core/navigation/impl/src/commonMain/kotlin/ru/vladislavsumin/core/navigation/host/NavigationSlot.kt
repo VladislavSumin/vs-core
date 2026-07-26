@@ -129,30 +129,4 @@ private class SlotHostNavigator(
         }
         return isSuccess ?: error("unreachable")
     }
-
-    override fun close(screenKey: ScreenKey): Boolean {
-        var isSuccess: Boolean? = null
-        slotNavigation.navigate { currentOpenedScreen ->
-            when {
-                // Все экраны закрыты
-                currentOpenedScreen == null -> {
-                    isSuccess = false
-                    currentOpenedScreen
-                }
-
-                // Открыт нужный нам экран
-                screenKey == currentOpenedScreen.screenParams.asKey() -> {
-                    isSuccess = true
-                    if (allowCloseScreen()) null else currentOpenedScreen
-                }
-
-                // Открыт другой экран, закрывать нечего.
-                else -> {
-                    isSuccess = false
-                    currentOpenedScreen
-                }
-            }
-        }
-        return isSuccess ?: error("unreachable")
-    }
 }

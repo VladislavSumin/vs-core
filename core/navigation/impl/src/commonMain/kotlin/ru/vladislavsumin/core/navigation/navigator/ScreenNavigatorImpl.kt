@@ -91,17 +91,6 @@ internal class ScreenNavigatorImpl<Ctx : GenericComponentContext<Ctx>>(
     }
 
     /**
-     * Рекурсивно обновляет [screenPath] и [parentNavigator] для этого навигатора и всего его поддерева.
-     */
-    fun rebase(newParent: ScreenNavigatorImpl<Ctx>?, newScreenPath: ScreenPath) {
-        parentNavigator = newParent
-        screenPath = newScreenPath
-        childScreenNavigators.forEach { (params, child) ->
-            child.rebase(this, screenPath + params)
-        }
-    }
-
-    /**
      * Убирает этот навигатор из родительского [childScreenNavigators] без вызова destroy.
      */
     fun detachFromParent() {

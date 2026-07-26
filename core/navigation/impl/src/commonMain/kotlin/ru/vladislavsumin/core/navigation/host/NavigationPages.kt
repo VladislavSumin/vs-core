@@ -190,29 +190,6 @@ private class PagesHostNavigator(
         return isSuccess ?: error("Unreachable")
     }
 
-    override fun close(screenKey: ScreenKey): Boolean {
-        var isSuccess: Boolean? = null
-        pagesNavigation.navigate(
-            transformer = { pages ->
-                val indexOfScreen = pages.items.indexOfFirst { it.screenParams.asKey() == screenKey }
-                if (indexOfScreen >= 0) {
-                    isSuccess = true
-                    if (pages.items.size == 1 && closeParentIfEmpty()) {
-                        // Закрываем последнюю страницу — вместо опустошения навигации закрываем родительский экран.
-                        pages
-                    } else {
-                        removePageAt(pages, indexOfScreen)
-                    }
-                } else {
-                    isSuccess = false
-                    pages
-                }
-            },
-            onComplete = { _, _ -> },
-        )
-        return isSuccess ?: error("Unreachable")
-    }
-
     /**
      * Удаляет страницу по индексу [indexOfScreen], пересчитывая выбранную страницу.
      */

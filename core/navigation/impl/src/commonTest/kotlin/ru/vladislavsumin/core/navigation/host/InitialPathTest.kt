@@ -1,12 +1,21 @@
 package ru.vladislavsumin.core.navigation.host
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.pages.Pages
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.Serializable
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.navigation.Navigation
+import ru.vladislavsumin.core.navigation.NoIntent
+import ru.vladislavsumin.core.navigation.ScreenParams
 import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
+import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.testData.IntentLeafParams
 import ru.vladislavsumin.core.navigation.testData.IntentLeafScreen
@@ -180,6 +189,28 @@ class InitialPathTest : NavigationIntegrationTestBase() {
         assertEquals(listOf(TestLeafIntent(99)), screen.receivedIntents)
     }
 
+    @Test
+    fun stackChainOpensByScreenKey() = runTest {
+        setMain()
+        val navigation = stackChainNavigation()
+        navigation.open(LeafParams(42))
+        val root = mount(navigation) as StackChainRootScreen
+
+        val middle = root.stack.value.items[0].instance as MiddleScreen
+        assertEquals(listOf(LeafParams(42)), middle.stack.value.paramsList)
+    }
+
+    @Test
+    fun slotChainOpensByScreenKey() = runTest {
+        setMain()
+        val navigation = slotChainNavigation()
+        navigation.open(LeafParams(42))
+        val root = mount(navigation) as SlotChainRootScreen
+
+        val middle = root.slot.value.child?.instance as MiddleScreen
+        assertEquals(listOf(LeafParams(42)), middle.stack.value.paramsList)
+    }
+
     companion object {
         /**
          * Граф навигации аналогичен [nestedNavigation], но [MiddleParams] зарегистрирован с defaultParams,
@@ -238,5 +269,103 @@ class InitialPathTest : NavigationIntegrationTestBase() {
                 },
             ),
         )
+
+        /**
+         * Граф: StackChainRoot (Stack, HostA) → Middle(id) (Stack, HostB) → Leaf(id).
+         * Используется для проверки `open(ScreenKey)` на Stack-хосте через deep-link цепочку.
+         */
+        private fun stackChainNavigation(): Navigation = Navigation(
+            setOf(
+                GenericNavigationRegistrar {
+                    registerScreen(
+                        defaultParams = StackChainRootParams,
+                        factory = StackChainRootFactory(),
+                        navigationHosts = { NavigationHostA opens setOf(MiddleParams::class) },
+                    )
+                    registerScreen<MiddleParams>(
+                        defaultParams = MiddleParams(0),
+                        navigationHosts = {
+                            NavigationHostB opens setOf(LeafParams::class)
+                        },
+                    )
+                    registerScreen<LeafParams>()
+                },
+            ),
+        )
+
+        /**
+         * Граф: SlotChainRoot (Slot, HostA) → Middle(id) (Stack, HostB) → Leaf(id).
+         * Используется для проверки `open(ScreenKey)` на Slot-хосте через deep-link цепочку.
+         */
+        private fun slotChainNavigation(): Navigation = Navigation(
+            setOf(
+                GenericNavigationRegistrar {
+                    registerScreen(
+                        defaultParams = SlotChainRootParams,
+                        factory = SlotChainRootFactory(),
+                        navigationHosts = { NavigationHostA opens setOf(MiddleParams::class) },
+                    )
+                    registerScreen<MiddleParams>(
+                        defaultParams = MiddleParams(0),
+                        navigationHosts = {
+                            NavigationHostB opens setOf(LeafParams::class)
+                        },
+                    )
+                    registerScreen<LeafParams>()
+                },
+            ),
+        )
     }
+}
+
+@Serializable
+private data object StackChainRootParams : ScreenParams
+
+@Serializable
+private data object SlotChainRootParams : ScreenParams
+
+private class StackChainRootScreen(context: ComponentContext) : Screen(context) {
+    init {
+        registerCustomFactory<MiddleParams, NoIntent, MiddleScreen> { ctx, params, _ -> MiddleScreen(params, ctx) }
+    }
+
+    val stack: Value<ChildStack<ConfigurationHolder, Screen>> = childNavigationStack(
+        navigationHost = NavigationHostA,
+        initialStack = { listOf(MiddleParams(0)) },
+    )
+
+    @Composable
+    override fun RenderScreen(modifier: Modifier) = Unit
+}
+
+private class SlotChainRootScreen(context: ComponentContext) : Screen(context) {
+    init {
+        registerCustomFactory<MiddleParams, NoIntent, MiddleScreen> { ctx, params, _ -> MiddleScreen(params, ctx) }
+    }
+
+    val slot: Value<ChildSlot<ConfigurationHolder, Screen>> = childNavigationSlot(
+        navigationHost = NavigationHostA,
+        initialConfiguration = { MiddleParams(0) },
+    )
+
+    @Composable
+    override fun RenderScreen(modifier: Modifier) = Unit
+}
+
+private class StackChainRootFactory :
+    ScreenFactory<ComponentContext, StackChainRootParams, NoIntent, StackChainRootScreen> {
+    override fun create(
+        context: ComponentContext,
+        params: StackChainRootParams,
+        intents: ReceiveChannel<NoIntent>,
+    ): StackChainRootScreen = StackChainRootScreen(context)
+}
+
+private class SlotChainRootFactory :
+    ScreenFactory<ComponentContext, SlotChainRootParams, NoIntent, SlotChainRootScreen> {
+    override fun create(
+        context: ComponentContext,
+        params: SlotChainRootParams,
+        intents: ReceiveChannel<NoIntent>,
+    ): SlotChainRootScreen = SlotChainRootScreen(context)
 }

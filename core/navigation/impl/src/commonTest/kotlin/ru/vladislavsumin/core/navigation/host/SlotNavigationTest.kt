@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
@@ -17,6 +18,7 @@ import ru.vladislavsumin.core.navigation.testData.SlotRootFactory
 import ru.vladislavsumin.core.navigation.testData.SlotRootParams
 import ru.vladislavsumin.core.navigation.testData.SlotRootScreen
 import ru.vladislavsumin.core.navigation.testData.TestLeafIntent
+import ru.vladislavsumin.core.navigation.testData.lifecycleState
 import ru.vladislavsumin.core.navigation.testData.slotNavigation
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -53,12 +55,14 @@ class SlotNavigationTest : NavigationIntegrationTestBase() {
     fun openReplacesCurrentScreenAndDestroysOld() = runTest {
         setMain()
         val root = mountSlot(LeafParams(0))
-        val oldVm = root.activeLeaf!!.vm
+        val oldLeaf = root.activeLeaf!!
+        val oldVm = oldLeaf.vm
 
         root.open(LeafParams(1))
 
         assertEquals(LeafParams(1), root.activeParams)
         assertFalse(oldVm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, oldLeaf.lifecycleState)
         assertTrue(root.activeLeaf!!.vm.isActive)
     }
 
@@ -80,12 +84,14 @@ class SlotNavigationTest : NavigationIntegrationTestBase() {
     fun closeActiveScreenEmptiesSlot() = runTest {
         setMain()
         val root = mountSlot(LeafParams(0))
-        val vm = root.activeLeaf!!.vm
+        val leaf = root.activeLeaf!!
+        val vm = leaf.vm
 
         root.close(LeafParams(0))
 
         assertNull(root.slot.value.child)
         assertFalse(vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf.lifecycleState)
     }
 
     @Test

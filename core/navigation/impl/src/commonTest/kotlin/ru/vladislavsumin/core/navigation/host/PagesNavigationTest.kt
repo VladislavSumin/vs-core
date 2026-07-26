@@ -100,11 +100,13 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         root.open(LeafParams(1))
         root.open(LeafParams(2))
         assertEquals(2, root.pages.value.selectedIndex)
+        val leaf2 = root.pages.value.leaf(2)
 
         root.close(LeafParams(2))
 
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
         assertEquals(1, root.pages.value.selectedIndex)
+        assertEquals(Lifecycle.State.DESTROYED, leaf2.lifecycleState)
     }
 
     @Test
@@ -113,6 +115,7 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         val root = mountPages()
         root.open(LeafParams(1))
         root.open(LeafParams(2)) // selected = 2 (LeafParams(2))
+        val leaf0 = root.pages.value.leaf(0)
 
         root.close(LeafParams(0)) // удаляем вкладку до выбранной
 
@@ -120,6 +123,7 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         // Выбранной остаётся LeafParams(2), но её индекс сместился на 1.
         assertEquals(1, root.pages.value.selectedIndex)
         assertEquals(LeafParams(2), root.pages.value.paramsList[root.pages.value.selectedIndex])
+        assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
     }
 
     @Test
@@ -127,13 +131,15 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         setMain()
         val root = mountPages()
         root.open(LeafParams(1))
-        val vm1 = root.pages.value.leaf(1).vm
+        val leaf1 = root.pages.value.leaf(1)
+        val vm1 = leaf1.vm
         assertTrue(vm1.isActive)
 
         root.close(LeafParams(1))
 
         assertEquals(listOf(LeafParams(0)), root.pages.value.paramsList)
         assertFalse(vm1.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
     }
 
     @Test
@@ -153,7 +159,8 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         setMain()
         val root = mountPages()
         root.open(LeafParams(1))
-        val vm1First = root.pages.value.leaf(1).vm
+        val leaf1First = root.pages.value.leaf(1)
+        val vm1First = leaf1First.vm
 
         root.close(LeafParams(1))
         root.open(LeafParams(1))
@@ -162,6 +169,7 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         assertTrue(vm1Second !== vm1First)
         assertTrue(vm1Second.isActive)
         assertFalse(vm1First.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1First.lifecycleState)
     }
 
     @Test
@@ -212,6 +220,7 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
 
         assertEquals(listOf(LeafParams(0)), root.pages.value.paramsList)
         assertFalse(leaf1.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
     }
 
     @Test
@@ -302,5 +311,49 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
 
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
         assertEquals(1, root.pages.value.selectedIndex)
+    }
+
+    @Test
+    fun closeSelectedNotLastTabKeepsSelectionIndex() = runTest {
+        setMain()
+        val root = mountPages(
+            initial = listOf(LeafParams(0), LeafParams(1), LeafParams(2)),
+            selectedIndex = 1,
+        )
+
+        root.close(LeafParams(1))
+
+        assertEquals(listOf(LeafParams(0), LeafParams(2)), root.pages.value.paramsList)
+        assertEquals(1, root.pages.value.selectedIndex)
+        assertEquals(LeafParams(2), root.pages.value.paramsList[1])
+    }
+
+    @Test
+    fun closeTabAfterSelectedKeepsSelectedIndex() = runTest {
+        setMain()
+        val root = mountPages(
+            initial = listOf(LeafParams(0), LeafParams(1), LeafParams(2)),
+            selectedIndex = 0,
+        )
+
+        root.close(LeafParams(2))
+
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        assertEquals(0, root.pages.value.selectedIndex)
+        assertEquals(LeafParams(0), root.pages.value.paramsList[0])
+    }
+
+    @Test
+    fun reorderBothSidesDontAffectSelection() = runTest {
+        setMain()
+        val root = mountPages(
+            initial = listOf(LeafParams(0), LeafParams(1), LeafParams(2), LeafParams(3)),
+            selectedIndex = 2,
+        )
+
+        root.pagesController.reorder(fromIndex = 0, toIndex = 1)
+
+        assertEquals(listOf(LeafParams(1), LeafParams(0), LeafParams(2), LeafParams(3)), root.pages.value.paramsList)
+        assertEquals(2, root.pages.value.selectedIndex)
     }
 }

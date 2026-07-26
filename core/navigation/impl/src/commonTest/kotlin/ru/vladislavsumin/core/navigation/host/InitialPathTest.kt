@@ -11,7 +11,6 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import ru.vladislavsumin.core.coroutines.test.setMain
-import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.NoIntent
 import ru.vladislavsumin.core.navigation.ScreenParams
@@ -21,7 +20,6 @@ import ru.vladislavsumin.core.navigation.screen.ScreenFactory
 import ru.vladislavsumin.core.navigation.testData.IntentLeafParams
 import ru.vladislavsumin.core.navigation.testData.IntentLeafScreen
 import ru.vladislavsumin.core.navigation.testData.LeafParams
-import ru.vladislavsumin.core.navigation.testData.LeafScreen
 import ru.vladislavsumin.core.navigation.testData.MiddleParams
 import ru.vladislavsumin.core.navigation.testData.MiddleScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationHostA
@@ -354,7 +352,8 @@ private class SlotChainRootScreen(context: ComponentContext) : Screen(context) {
     override fun RenderScreen(modifier: Modifier) = Unit
 }
 
-private class StackChainRootFactory : ScreenFactory<ComponentContext, StackChainRootParams, NoIntent, StackChainRootScreen> {
+private class StackChainRootFactory :
+    ScreenFactory<ComponentContext, StackChainRootParams, NoIntent, StackChainRootScreen> {
     override fun create(
         context: ComponentContext,
         params: StackChainRootParams,
@@ -362,7 +361,8 @@ private class StackChainRootFactory : ScreenFactory<ComponentContext, StackChain
     ): StackChainRootScreen = StackChainRootScreen(context)
 }
 
-private class SlotChainRootFactory : ScreenFactory<ComponentContext, SlotChainRootParams, NoIntent, SlotChainRootScreen> {
+private class SlotChainRootFactory :
+    ScreenFactory<ComponentContext, SlotChainRootParams, NoIntent, SlotChainRootScreen> {
     override fun create(
         context: ComponentContext,
         params: SlotChainRootParams,

@@ -182,38 +182,4 @@ private class StackHostNavigator(
         )
         return isSuccess ?: error("unreachable")
     }
-
-    override fun close(screenKey: ScreenKey): Boolean {
-        // То же самое как при закрытии по инстансу экрана, но ищем по ключу с конца стека до первого найденного экрана.
-        var isSuccess: Boolean? = null
-        stackNavigation.navigate(
-            transformer = { stack ->
-                val keysStack = stack.map { it.screenParams.asKey() }
-                val indexOfScreen = keysStack.indexOfLast { it == screenKey }
-                when {
-                    indexOfScreen > 0 -> {
-                        isSuccess = true
-                        stack.subList(0, indexOfScreen)
-                    }
-
-                    indexOfScreen == 0 && stack.size == 1 && closeParentIfEmpty() -> {
-                        isSuccess = true
-                        stack
-                    }
-
-                    indexOfScreen == 0 -> {
-                        isSuccess = false
-                        stack.subList(0, 1)
-                    }
-
-                    else -> {
-                        isSuccess = false
-                        stack
-                    }
-                }
-            },
-            onComplete = { _, _ -> },
-        )
-        return isSuccess ?: error("unreachable")
-    }
 }

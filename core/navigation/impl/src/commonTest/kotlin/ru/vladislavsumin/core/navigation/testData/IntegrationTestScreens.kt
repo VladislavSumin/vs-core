@@ -27,6 +27,7 @@ import ru.vladislavsumin.core.navigation.registration.GenericNavigationRegistrar
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.screen.ScreenFactory
+import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 
 /**
  * Тестовые экраны и view model'и для end-to-end характеризационных тестов навигации.
@@ -72,6 +73,9 @@ data class InnerStackParams(val closeParentWhenEmpty: Boolean) : ScreenParams
 
 @Serializable
 data class InnerPagesParams(val closeParentWhenEmpty: Boolean) : ScreenParams
+
+@Serializable
+data class InnerSlotParams(val closeParentWhenEmpty: Boolean) : ScreenParams
 
 // endregion
 
@@ -320,6 +324,9 @@ class OuterSlotScreen(context: ComponentContext, initial: IntentScreenParams<*>)
         registerCustomFactory<InnerPagesParams, NoIntent, InnerPagesScreen> { ctx, params, _ ->
             InnerPagesScreen(ctx, params.closeParentWhenEmpty)
         }
+        registerCustomFactory<InnerSlotParams, NoIntent, InnerSlotScreen> { ctx, params, _ ->
+            InnerSlotScreen(ctx, params.closeParentWhenEmpty)
+        }
     }
 
     val slot: Value<ChildSlot<ConfigurationHolder, Screen>> = childNavigationSlot(
@@ -382,6 +389,105 @@ class InnerPagesScreen(context: ComponentContext, closeParentWhenEmpty: Boolean)
     @Composable
     override fun RenderScreen(modifier: Modifier) = Unit
 }
+
+/**
+ * Вложенный экран со slot-host'ом, поддерживающий `closeParentWhenEmpty`.
+ */
+class InnerSlotScreen(context: ComponentContext, closeParentWhenEmpty: Boolean) : Screen(context) {
+    val vm: CountingViewModel = viewModel { CountingViewModel() }
+
+    init {
+        registerCustomFactory<LeafParams, NoIntent, LeafScreen> { ctx, params, _ -> LeafScreen(params, ctx) }
+    }
+
+    val slot: Value<ChildSlot<ConfigurationHolder, Screen>> = childNavigationSlot(
+        navigationHost = NavigationHostB,
+        initialConfiguration = { LeafParams(0) },
+        closeParentWhenEmpty = closeParentWhenEmpty,
+    )
+
+    fun close(screenParams: IntentScreenParams<*>) = navigator.close(screenParams)
+
+    @Composable
+    override fun RenderScreen(modifier: Modifier) = Unit
+}
+
+// endregion
+
+// region NavigationViewModel test screens
+
+@Serializable
+data object NavVmRootParams : ScreenParams
+
+@Serializable
+data class NavVmTargetParams(val id: Int) : ScreenParams
+
+class NavViewModel : NavigationViewModel() {
+    val isActive: Boolean get() = viewModelScope.isActive
+    var openedParams: IntentScreenParams<*>? = null
+        private set
+    var closedParams: IntentScreenParams<*>? = null
+        private set
+    var closeSelfCalled: Boolean = false
+        private set
+
+    fun doOpen(params: IntentScreenParams<*>) = open(params)
+    fun doClose(params: IntentScreenParams<*>) = close(params)
+    fun doCloseSelf() = close()
+}
+
+class NavVmScreen(params: NavVmTargetParams, context: ComponentContext) : Screen(context) {
+    val vm: NavViewModel = viewModel { NavViewModel() }
+    val screenParams: NavVmTargetParams = params
+
+    @Composable
+    override fun RenderScreen(modifier: Modifier) = Unit
+}
+
+class NavVmRootScreen(context: ComponentContext) : Screen(context) {
+    init {
+        registerCustomFactory<NavVmTargetParams, NoIntent, NavVmScreen> { ctx, params, _ ->
+            NavVmScreen(params, ctx)
+        }
+    }
+
+    private val pagesResult = childNavigationPages(
+        navigationHost = NavigationHostA,
+        pageStatus = { index, pagesState ->
+            if (index == pagesState.selectedIndex) ChildNavState.Status.RESUMED else ChildNavState.Status.CREATED
+        },
+        initialPages = { Pages(items = listOf(NavVmTargetParams(0)), selectedIndex = 0) },
+    )
+    val pages = pagesResult.pages
+
+    fun open(screenParams: IntentScreenParams<*>, hints: List<IntentScreenParams<*>> = emptyList()) {
+        navigator.open(screenParams, hints = hints)
+    }
+
+    @Composable
+    override fun RenderScreen(modifier: Modifier) = Unit
+}
+
+class NavVmRootFactory : ScreenFactory<ComponentContext, NavVmRootParams, NoIntent, NavVmRootScreen> {
+    override fun create(
+        context: ComponentContext,
+        params: NavVmRootParams,
+        intents: ReceiveChannel<NoIntent>,
+    ): NavVmRootScreen = NavVmRootScreen(context)
+}
+
+fun navViewModelNavigation(): Navigation = Navigation(
+    setOf(
+        GenericNavigationRegistrar {
+            registerScreen(
+                defaultParams = NavVmRootParams,
+                factory = NavVmRootFactory(),
+                navigationHosts = { NavigationHostA opens setOf(NavVmTargetParams::class) },
+            )
+            registerScreen<NavVmTargetParams>()
+        },
+    ),
+)
 
 // endregion
 
@@ -511,13 +617,20 @@ fun closeParentNavigation(inner: IntentScreenParams<*>): Navigation = Navigation
                 defaultParams = OuterSlotParams,
                 factory = OuterSlotFactory(inner),
                 navigationHosts = {
-                    NavigationHostA opens setOf(InnerStackParams::class, InnerPagesParams::class)
+                    NavigationHostA opens setOf(
+                        InnerStackParams::class,
+                        InnerPagesParams::class,
+                        InnerSlotParams::class,
+                    )
                 },
             )
             registerScreen<InnerStackParams>(
                 navigationHosts = { NavigationHostB opens setOf(LeafParams::class) },
             )
             registerScreen<InnerPagesParams>(
+                navigationHosts = { NavigationHostB opens setOf(LeafParams::class) },
+            )
+            registerScreen<InnerSlotParams>(
                 navigationHosts = { NavigationHostB opens setOf(LeafParams::class) },
             )
             registerScreen<LeafParams>()

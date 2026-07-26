@@ -312,4 +312,48 @@ class PagesNavigationTest : NavigationIntegrationTestBase() {
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
         assertEquals(1, root.pages.value.selectedIndex)
     }
+
+    @Test
+    fun closeSelectedNotLastTabKeepsSelectionIndex() = runTest {
+        setMain()
+        val root = mountPages(
+            initial = listOf(LeafParams(0), LeafParams(1), LeafParams(2)),
+            selectedIndex = 1,
+        )
+
+        root.close(LeafParams(1))
+
+        assertEquals(listOf(LeafParams(0), LeafParams(2)), root.pages.value.paramsList)
+        assertEquals(1, root.pages.value.selectedIndex)
+        assertEquals(LeafParams(2), root.pages.value.paramsList[1])
+    }
+
+    @Test
+    fun closeTabAfterSelectedKeepsSelectedIndex() = runTest {
+        setMain()
+        val root = mountPages(
+            initial = listOf(LeafParams(0), LeafParams(1), LeafParams(2)),
+            selectedIndex = 0,
+        )
+
+        root.close(LeafParams(2))
+
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        assertEquals(0, root.pages.value.selectedIndex)
+        assertEquals(LeafParams(0), root.pages.value.paramsList[0])
+    }
+
+    @Test
+    fun reorderBothSidesDontAffectSelection() = runTest {
+        setMain()
+        val root = mountPages(
+            initial = listOf(LeafParams(0), LeafParams(1), LeafParams(2), LeafParams(3)),
+            selectedIndex = 2,
+        )
+
+        root.pagesController.reorder(fromIndex = 0, toIndex = 1)
+
+        assertEquals(listOf(LeafParams(1), LeafParams(0), LeafParams(2), LeafParams(3)), root.pages.value.paramsList)
+        assertEquals(2, root.pages.value.selectedIndex)
+    }
 }

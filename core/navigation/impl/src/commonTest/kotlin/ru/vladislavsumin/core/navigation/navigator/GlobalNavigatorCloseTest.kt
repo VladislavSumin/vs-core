@@ -108,6 +108,20 @@ class GlobalNavigatorCloseTest : NavigationIntegrationTestBase() {
         assertTrue(leaf.vm.isActive)
     }
 
+    @Test
+    fun globalOpenThroughChannelOpensScreen() = runTest {
+        setMain()
+        val navigation = pagesNavigation(initial = listOf(LeafParams(0)))
+        val root = mount(navigation) as PagesRootScreen
+
+        navigation.open(LeafParams(1))
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(listOf(LeafParams(0), LeafParams(1)), root.pages.value.paramsList)
+        val leaf = root.pages.value.leaf(1)
+        assertTrue(leaf.vm.isActive)
+    }
+
     companion object {
         @Suppress("UNCHECKED_CAST")
         private fun unsafeCast(params: IntentScreenParams<*>): IntentScreenParams<ScreenIntent> =

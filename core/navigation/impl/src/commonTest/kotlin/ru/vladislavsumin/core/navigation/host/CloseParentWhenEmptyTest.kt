@@ -5,6 +5,8 @@ import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.navigation.testData.InnerPagesParams
 import ru.vladislavsumin.core.navigation.testData.InnerPagesScreen
+import ru.vladislavsumin.core.navigation.testData.InnerSlotParams
+import ru.vladislavsumin.core.navigation.testData.InnerSlotScreen
 import ru.vladislavsumin.core.navigation.testData.InnerStackParams
 import ru.vladislavsumin.core.navigation.testData.InnerStackScreen
 import ru.vladislavsumin.core.navigation.testData.LeafParams
@@ -31,9 +33,11 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
 
     private val OuterSlotScreen.innerStack get() = slot.value.child?.instance as InnerStackScreen?
     private val OuterSlotScreen.innerPages get() = slot.value.child?.instance as InnerPagesScreen?
+    private val OuterSlotScreen.innerSlot get() = slot.value.child?.instance as InnerSlotScreen?
 
     private fun InnerStackScreen.leaf(index: Int): LeafScreen = stack.value.items[index].instance as LeafScreen
     private fun InnerPagesScreen.leaf(index: Int): LeafScreen = pages.value.items[index].instance as LeafScreen
+    private fun InnerSlotScreen.leaf(): LeafScreen = slot.value.child?.instance as LeafScreen
 
     // region stack
 
@@ -165,6 +169,43 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
         assertNotNull(outer.slot.value.child)
         assertTrue(inner.pages.value.items.isEmpty())
         assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
+    }
+
+    // endregion
+
+    // region slot
+
+    @Test
+    fun closingSlotScreenClosesParent() = runTest {
+        setMain()
+        val outer: OuterSlotScreen = mount(closeParentNavigation(InnerSlotParams(closeParentWhenEmpty = true)))
+        val inner = outer.innerSlot!!
+        val innerVm = inner.vm
+        val leaf = inner.leaf()!!
+
+        leaf.closeSelf()
+
+        assertNull(outer.slot.value.child)
+        assertFalse(innerVm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, inner.lifecycleState)
+        assertFalse(leaf.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf.lifecycleState)
+    }
+
+    @Test
+    fun defaultSlotFlagKeepsParentAndPreservesScreen() = runTest {
+        setMain()
+        val outer: OuterSlotScreen = mount(closeParentNavigation(InnerSlotParams(closeParentWhenEmpty = false)))
+        val inner = outer.innerSlot!!
+        val leaf = inner.leaf()!!
+
+        inner.close(LeafParams(0))
+
+        // Флаг выключен: родитель остаётся, слот очищается (штатное поведение слота).
+        assertNotNull(outer.slot.value.child)
+        assertTrue(inner.vm.isActive)
+        assertFalse(leaf.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf.lifecycleState)
     }
 
     // endregion

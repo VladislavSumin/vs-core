@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.navigation.host
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
@@ -17,6 +18,7 @@ import ru.vladislavsumin.core.navigation.testData.StackRootFactory
 import ru.vladislavsumin.core.navigation.testData.StackRootParams
 import ru.vladislavsumin.core.navigation.testData.StackRootScreen
 import ru.vladislavsumin.core.navigation.testData.TestLeafIntent
+import ru.vladislavsumin.core.navigation.testData.lifecycleState
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import ru.vladislavsumin.core.navigation.testData.stackNavigation
 import kotlin.test.Test
@@ -83,14 +85,16 @@ class StackNavigationTest : NavigationIntegrationTestBase() {
         val root = mountStack()
         root.open(LeafParams(1))
         root.open(LeafParams(2))
-        val vm1 = root.stack.value.items[1].instance as LeafScreen
-        val vm2 = root.stack.value.items[2].instance as LeafScreen
+        val screen1 = root.stack.value.items[1].instance as LeafScreen
+        val screen2 = root.stack.value.items[2].instance as LeafScreen
 
         root.close(LeafParams(1))
 
         assertEquals(listOf(LeafParams(0)), root.stack.value.paramsList)
-        assertFalse(vm1.vm.isActive)
-        assertFalse(vm2.vm.isActive)
+        assertFalse(screen1.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, screen1.lifecycleState)
+        assertFalse(screen2.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, screen2.lifecycleState)
     }
 
     @Test
@@ -99,11 +103,13 @@ class StackNavigationTest : NavigationIntegrationTestBase() {
         val root = mountStack()
         root.open(LeafParams(1))
         root.open(LeafParams(2))
+        val top = root.stack.value.active.instance as LeafScreen
 
         root.close(LeafParams(2))
 
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.stack.value.paramsList)
         assertEquals(LeafParams(1), root.stack.value.active.configuration.screenParams)
+        assertEquals(Lifecycle.State.DESTROYED, top.lifecycleState)
     }
 
     @Test
@@ -134,7 +140,8 @@ class StackNavigationTest : NavigationIntegrationTestBase() {
         setMain()
         val root = mountStack()
         root.open(LeafParams(1))
-        val firstVm = (root.stack.value.active.instance as LeafScreen).vm
+        val firstScreen = root.stack.value.active.instance as LeafScreen
+        val firstVm = firstScreen.vm
 
         root.close(LeafParams(1))
         root.open(LeafParams(1))
@@ -142,6 +149,7 @@ class StackNavigationTest : NavigationIntegrationTestBase() {
         val secondVm = (root.stack.value.active.instance as LeafScreen).vm
         assertTrue(secondVm !== firstVm)
         assertFalse(firstVm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, firstScreen.lifecycleState)
         assertTrue(secondVm.isActive)
     }
 
@@ -157,6 +165,7 @@ class StackNavigationTest : NavigationIntegrationTestBase() {
 
         assertEquals(listOf(LeafParams(0), LeafParams(1)), root.stack.value.paramsList)
         assertFalse(top.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, top.lifecycleState)
     }
 
     @Test

@@ -1,5 +1,6 @@
 package ru.vladislavsumin.core.navigation.host
 
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.test.setMain
 import ru.vladislavsumin.core.navigation.testData.InnerPagesParams
@@ -11,6 +12,7 @@ import ru.vladislavsumin.core.navigation.testData.LeafScreen
 import ru.vladislavsumin.core.navigation.testData.NavigationIntegrationTestBase
 import ru.vladislavsumin.core.navigation.testData.OuterSlotScreen
 import ru.vladislavsumin.core.navigation.testData.closeParentNavigation
+import ru.vladislavsumin.core.navigation.testData.lifecycleState
 import ru.vladislavsumin.core.navigation.testData.paramsList
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -47,7 +49,9 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
 
         assertNull(outer.slot.value.child)
         assertFalse(innerVm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, inner.lifecycleState)
         assertFalse(leaf0.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
     }
 
     @Test
@@ -56,12 +60,14 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
         val outer: OuterSlotScreen = mount(closeParentNavigation(InnerStackParams(closeParentWhenEmpty = true)))
         val inner = outer.innerStack!!
         inner.open(LeafParams(1))
+        val leaf1 = inner.leaf(1)
 
         inner.close(LeafParams(1))
 
         assertNotNull(outer.slot.value.child)
         assertEquals(listOf(LeafParams(0)), inner.stack.value.paramsList)
         assertTrue(inner.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
     }
 
     @Test
@@ -107,7 +113,9 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
 
         assertNull(outer.slot.value.child)
         assertFalse(innerVm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, inner.lifecycleState)
         assertFalse(leaf0.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
     }
 
     @Test
@@ -116,12 +124,14 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
         val outer: OuterSlotScreen = mount(closeParentNavigation(InnerPagesParams(closeParentWhenEmpty = true)))
         val inner = outer.innerPages!!
         inner.open(LeafParams(1))
+        val leaf1 = inner.leaf(1)
 
         inner.close(LeafParams(1))
 
         assertNotNull(outer.slot.value.child)
         assertEquals(listOf(LeafParams(0)), inner.pages.value.paramsList)
         assertTrue(inner.vm.isActive)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
     }
 
     @Test
@@ -130,12 +140,16 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
         val outer: OuterSlotScreen = mount(closeParentNavigation(InnerPagesParams(closeParentWhenEmpty = true)))
         val inner = outer.innerPages!!
         inner.open(LeafParams(1))
+        val leaf1 = inner.leaf(1)
+        val leaf0 = inner.leaf(0)
 
         inner.close(LeafParams(1))
         assertNotNull(outer.slot.value.child)
+        assertEquals(Lifecycle.State.DESTROYED, leaf1.lifecycleState)
 
         inner.close(LeafParams(0))
         assertNull(outer.slot.value.child)
+        assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
     }
 
     @Test
@@ -143,12 +157,14 @@ class CloseParentWhenEmptyTest : NavigationIntegrationTestBase() {
         setMain()
         val outer: OuterSlotScreen = mount(closeParentNavigation(InnerPagesParams(closeParentWhenEmpty = false)))
         val inner = outer.innerPages!!
+        val leaf0 = inner.leaf(0)
 
         inner.close(LeafParams(0))
 
         // Флаг выключен: родитель остаётся, а навигация pages опустошается (штатное поведение).
         assertNotNull(outer.slot.value.child)
         assertTrue(inner.pages.value.items.isEmpty())
+        assertEquals(Lifecycle.State.DESTROYED, leaf0.lifecycleState)
     }
 
     // endregion

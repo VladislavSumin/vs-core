@@ -2,8 +2,8 @@
 vs-core = "NO_VERSION"
 
 # Kotlin
-kotlin-core = "2.3.21"
-kotlin-ksp = "2.3.9"
+kotlin-core = "2.4.10"
+kotlin-ksp = "2.3.10"
 kotlin-coroutines = "1.11.0"
 kotlin-serialization-core = "1.11.0"
 kotlin-serialization-kaml = "0.104.0"
@@ -12,10 +12,10 @@ kotlin-compileTesting = "0.13.0"
 kotlin-io = "0.9.1"
 
 # Gradle
-gradlePlugins-android = "9.2.1"
+gradlePlugins-android = "9.3.1"
 gradlePlugins-detekt = "2.0.0-alpha.5"
 gradlePlugins-checkUpdates = "0.54.0"
-gradlePlugins-kover = "0.9.8"
+gradlePlugins-kover = "0.9.9"
 gradlePlugins-mavenPublish = "0.37.0" # Внимание! Менять синхронно с build-scripts/build.gradle.kts
 
 # Other
@@ -26,12 +26,12 @@ kodein = "7.32.0"
 scout = "0.9.3"
 
 # Logging
-logging-log4j = "2.26.0"
+logging-log4j = "2.26.1"
 logging-slf4j = "2.0.18"
 
 # Testing
 testing-mockk = "1.14.11"
-testing-roborazzi = "1.65.0"
+testing-roborazzi = "1.70.0"
 
 [libraries]
 

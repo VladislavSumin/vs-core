@@ -31,8 +31,8 @@ open class ProjectConfiguration(project: Project, propertyProvider: PropertyProv
         @Suppress("MagicNumber") // В данном случае значение цифр понятно без пояснения.
         inner class Android : Configuration("android", this) {
             val minSdk = property("minSdk", 26)
-            val targetSdk = property("targetSdk", 36)
-            val compileSdk = property("compileSdk", 36)
+            val targetSdk = property("targetSdk", 37)
+            val compileSdk = property("compileSdk", 37)
         }
     }
 

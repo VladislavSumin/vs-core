@@ -18,8 +18,7 @@ internal class SaveableStateRegistryImpl(
 ) : SaveableStateRegistry {
 
     private val restored = restoredValues.toMutableMap()
-    private val providers = linkedMapOf<String, () -> Any?>()
-    private val platformEntries = mutableMapOf<String, SaveableStateRegistry.Entry?>()
+    private val entries = linkedMapOf<String, MutableList<EntryImpl>>()
 
     /**
      * Прикрепляет платформенный registry (Android: из [LocalSaveableStateRegistry.current]).
@@ -28,10 +27,9 @@ internal class SaveableStateRegistryImpl(
     fun attachPlatform(newPlatform: SaveableStateRegistry?) {
         if (platform === newPlatform) return
         platform = newPlatform
-        // Перерегистрируем провайдеры в новой платформе
-        providers.forEach { (key, provider) ->
-            platformEntries[key]?.unregister()
-            platformEntries[key] = platform?.registerProvider(key, provider)
+        entries.values.flatten().forEach { entry ->
+            entry.platformEntry?.unregister()
+            entry.platformEntry = platform?.registerProvider(entry.key, entry.valueProvider)
         }
     }
 
@@ -50,9 +48,10 @@ internal class SaveableStateRegistryImpl(
     override fun canBeSaved(value: Any): Boolean = platform?.canBeSaved(value) ?: true
 
     override fun registerProvider(key: String, valueProvider: () -> Any?): SaveableStateRegistry.Entry {
-        providers[key] = valueProvider
-        platformEntries[key] = platform?.registerProvider(key, valueProvider)
-        return Entry(key)
+        val entry = EntryImpl(key, valueProvider)
+        entry.platformEntry = platform?.registerProvider(key, valueProvider)
+        entries.getOrPut(key) { mutableListOf() }.add(entry)
+        return entry
     }
 
     override fun performSave(): Map<String, List<Any?>> = platform?.performSave() ?: emptyMap()
@@ -62,12 +61,18 @@ internal class SaveableStateRegistryImpl(
      * Формат хранения соответствует стандартному Compose [SaveableStateRegistry.performSave]:
      * каждое значение провайдера оборачивается в [listOf] (без разворачивания).
      */
-    fun captureRaw(): Map<String, List<Any?>> = providers.mapValues { (_, provider) -> listOf(provider()) }
+    fun captureRaw(): Map<String, List<Any?>> = entries.mapValues { (_, list) -> list.map { it.valueProvider() } }
 
-    private inner class Entry(private val key: String) : SaveableStateRegistry.Entry {
+    private inner class EntryImpl(val key: String, val valueProvider: () -> Any?) : SaveableStateRegistry.Entry {
+        var platformEntry: SaveableStateRegistry.Entry? = null
+
         override fun unregister() {
-            providers.remove(key)
-            platformEntries.remove(key)?.unregister()
+            platformEntry?.unregister()
+            val list = entries[key]
+            list?.remove(this)
+            if (list.isNullOrEmpty()) {
+                entries.remove(key)
+            }
         }
     }
 }

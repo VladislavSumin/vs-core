@@ -129,4 +129,106 @@ class SaveableStateRegistryImplTest {
         entry.unregister()
         assertNull(platform.performSave()["k"])
     }
+
+    // --- Multiple providers per key ---
+
+    @Test
+    fun `captureRaw with multiple providers per key returns all values`() {
+        val r = registry()
+        r.registerProvider("a") { "first" }
+        r.registerProvider("a") { "second" }
+        r.registerProvider("b") { 1 }
+        r.registerProvider("b") { 2 }
+        r.registerProvider("b") { 3 }
+
+        val captured = r.captureRaw()
+        assertEquals(listOf("first", "second"), captured["a"])
+        assertEquals(listOf(1, 2, 3), captured["b"])
+    }
+
+    @Test
+    fun `registerProvider with same key does not overwrite`() {
+        val r = registry()
+        r.registerProvider("k") { "first" }
+        r.registerProvider("k") { "second" }
+
+        val captured = r.captureRaw()
+        assertEquals(listOf("first", "second"), captured["k"])
+    }
+
+    @Test
+    fun `unregister removes only specific provider leaving others`() {
+        val r = registry()
+        val first = r.registerProvider("k") { "first" }
+        r.registerProvider("k") { "second" }
+        assertEquals(listOf("first", "second"), r.captureRaw()["k"])
+
+        first.unregister()
+        assertEquals(listOf("second"), r.captureRaw()["k"])
+    }
+
+    @Test
+    fun `unregister one of many keeps key in entries`() {
+        val r = registry()
+        r.registerProvider("k") { "first" }
+        val second = r.registerProvider("k") { "second" }
+        assertEquals(2, r.captureRaw()["k"]!!.size)
+
+        second.unregister()
+        assertEquals(listOf("first"), r.captureRaw()["k"])
+    }
+
+    // --- Multiple providers + platform ---
+
+    @Test
+    fun `multiple providers per key work correctly with platform`() {
+        val platform = emptyPlatform()
+        val r = SaveableStateRegistryImpl(emptyMap(), platform)
+        r.registerProvider("k") { "first" }
+        r.registerProvider("k") { "second" }
+
+        val saved = platform.performSave()
+        val values = saved["k"]
+        assertNotNull(values)
+        assertTrue(values.contains("first"))
+        assertTrue(values.contains("second"))
+    }
+
+    @Test
+    fun `attachPlatform with multiple providers per key re-registers all in new platform`() {
+        val r = registry()
+        r.registerProvider("k") { "first" }
+        r.registerProvider("k") { "second" }
+
+        val newPlatform = emptyPlatform()
+        r.attachPlatform(newPlatform)
+
+        val saved = newPlatform.performSave()
+        val values = saved["k"]
+        assertNotNull(values)
+        assertTrue(values.contains("first"))
+        assertTrue(values.contains("second"))
+    }
+
+    // --- Provider returning null ---
+
+    @Test
+    fun `captureRaw includes null values from providers`() {
+        val r = registry()
+        r.registerProvider("a") { "hello" }
+        r.registerProvider("a") { null }
+
+        val captured = r.captureRaw()
+        assertEquals(listOf("hello", null), captured["a"])
+    }
+
+    // --- Empty list in restored values ---
+
+    @Test
+    fun `consumeRestored with empty list returns null`() {
+        val restored = mapOf("k" to emptyList<Any?>())
+        val r = registry(restored)
+
+        assertNull(r.consumeRestored("k"))
+    }
 }

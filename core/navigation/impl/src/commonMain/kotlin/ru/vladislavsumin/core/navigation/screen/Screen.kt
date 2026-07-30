@@ -2,6 +2,8 @@ package ru.vladislavsumin.core.navigation.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.ui.Modifier
@@ -71,7 +73,14 @@ public abstract class GenericScreen<Ctx : GenericComponentContext<Ctx>>(context:
 
     @Composable
     final override fun Render(modifier: Modifier) {
-        SaveableRegistryProvider { RenderScreen(modifier) }
+        SaveableRegistryProvider {
+            // Необходим для корректной работы transfer механики, причины понятны не до конца,
+            // но без такого хака ломается перенос состояния композиции.
+            val hackyContent = remember {
+                movableContentOf<Modifier> { RenderScreen(it) }
+            }
+            hackyContent(modifier)
+        }
     }
 
     @Composable

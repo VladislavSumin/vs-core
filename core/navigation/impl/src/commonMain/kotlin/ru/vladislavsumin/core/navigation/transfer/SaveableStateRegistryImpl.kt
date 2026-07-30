@@ -63,7 +63,7 @@ internal class SaveableStateRegistryImpl(
      */
     fun captureRaw(): Map<String, List<Any?>> = entries.mapValues { (_, list) -> list.map { it.valueProvider() } }
 
-    private inner class EntryImpl(val key: String, val valueProvider: () -> Any?,) : SaveableStateRegistry.Entry {
+    private inner class EntryImpl(val key: String, val valueProvider: () -> Any?) : SaveableStateRegistry.Entry {
         var platformEntry: SaveableStateRegistry.Entry? = null
 
         override fun unregister() {
